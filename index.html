@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11233A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gym Plan">
+<title>Gym Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #E7EEEA;
+  --card: #FFFFFF;
+  --ink: #11233A;
+  --muted: #586977;
+  --line: #C8D4CE;
+  --field: #F3F7F5;
+  --cone: #E8621A;
+  --cone-soft: #FCE4D4;
+  --turf: #23704A;
+  --turf-soft: #DBEEE2;
+  --warn: #9A6505;
+  --warn-soft: #FAEFD3;
+  --crit: #B3301F;
+  --crit-soft: #F8DDD8;
+  --band: #11233A;
+  --band-ink: #F2F5F8;
+  --band-muted: #9FB2C4;
+  --fig: #11233A;
+  --fig-far: #9DAEBB;
+  --equip: #7F909C;
+  --stage: #F3F7F5;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0C141C;
+    --card: #15202B;
+    --ink: #E6EDF3;
+    --muted: #93A4B3;
+    --line: #2A3947;
+    --field: #0F1923;
+    --cone: #FF7A30;
+    --cone-soft: #3A2315;
+    --turf: #55B884;
+    --turf-soft: #15301F;
+    --warn: #E5AE45;
+    --warn-soft: #33290F;
+    --crit: #F06C5C;
+    --crit-soft: #3B1A16;
+    --band: #08111A;
+    --fig: #E6EDF3;
+    --fig-far: #566A7D;
+    --equip: #6E8091;
+    --stage: #0F1923;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.45 Barlow, system-ui, -apple-system, "Segoe UI", sans-serif;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+body.locked { overflow: hidden; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--cone); outline-offset: 2px; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+/* Header band */
+.band { background: var(--band); color: var(--band-ink); padding: calc(12px + env(safe-area-inset-top)) 0 14px; }
+.hd-row { display: flex; align-items: center; gap: 4px; }
+.nav {
+  width: 40px; height: 56px; border: 0; background: transparent; color: var(--band-muted);
+  border-radius: 8px; display: grid; place-items: center;
+}
+.nav:disabled { opacity: .3; cursor: default; }
+.nav svg { width: 22px; height: 22px; }
+.wk { display: flex; align-items: baseline; gap: 6px; min-width: 112px; justify-content: center; }
+.wk-label { font: 600 20px/1 "Barlow Condensed", sans-serif; color: var(--band-muted); }
+.wk-num { font: 700 76px/0.9 "Barlow Condensed", sans-serif; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.ph { margin-left: auto; text-align: right; display: flex; flex-direction: column; gap: 2px; }
+.ph strong { font: 600 22px/1.1 "Barlow Condensed", sans-serif; }
+.ph span { color: var(--band-muted); font-size: 14px; }
+.badge {
+  align-self: flex-end; margin-top: 4px; background: var(--cone); color: #fff;
+  font: 600 14px/1 "Barlow Condensed", sans-serif; padding: 4px 8px; border-radius: 6px;
+}
+.strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin-top: 12px; }
+.seg {
+  border: 0; padding: 0; height: 30px; background: transparent; display: flex; flex-direction: column; gap: 2px;
+  justify-content: flex-end; border-radius: 4px; position: relative;
+}
+.seg .h { display: block; height: 7px; border-radius: 2px; background: #2B3F55; }
+.seg .h.on { background: var(--cone); }
+.seg .n { font: 500 11px/1 Barlow, sans-serif; color: var(--band-muted); text-align: center; margin-bottom: 3px; }
+.seg.cur .n { color: var(--band-ink); font-weight: 600; }
+.seg.cur::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: var(--band-ink); border-radius: 1px; }
+.seg.gate .n { color: var(--cone); }
+
+/* Tabs */
+.tabs { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.tabs .wrap { display: flex; gap: 4px; }
+.tab {
+  flex: 1; border: 0; background: transparent; padding: 12px 4px 10px; border-bottom: 3px solid transparent;
+  font: 600 18px/1.1 "Barlow Condensed", sans-serif; color: var(--muted);
+}
+.tab small { display: block; font: 400 12px/1.2 Barlow, sans-serif; margin-top: 2px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--cone); }
+
+/* Sections */
+main { padding-top: 16px; }
+.sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.sec h2 { margin: 0 0 4px; font: 600 22px/1.15 "Barlow Condensed", sans-serif; }
+.sec p { margin: 0 0 10px; color: var(--muted); font-size: 15px; }
+.sum { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 4px 2px 12px; }
+.sum h1 { margin: 0; font: 600 26px/1.1 "Barlow Condensed", sans-serif; }
+.sum .count { font: 600 18px/1 "Barlow Condensed", sans-serif; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sum .count b { color: var(--cone); }
+.meter { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: -4px 2px 12px; }
+.meter i { display: block; height: 100%; background: var(--cone); }
+.run-cta { margin-bottom: 16px; }
+.run-cta .btn { display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px; font-size: 24px; }
+.run-cta .btn svg { width: 22px; height: 22px; }
+
+/* Knee check */
+.pain { display: grid; grid-template-columns: repeat(11, 1fr); gap: 3px; margin-top: 4px; }
+.pain button {
+  height: 40px; border: 1px solid var(--line); background: var(--field); border-radius: 6px;
+  font: 600 17px/1 "Barlow Condensed", sans-serif; padding: 0;
+}
+.pain button[aria-pressed="true"] { color: #fff; border-color: transparent; }
+.pain button.g[aria-pressed="true"] { background: var(--turf); }
+.pain button.y[aria-pressed="true"] { background: var(--warn); }
+.pain button.r[aria-pressed="true"] { background: var(--crit); }
+.pain-scale { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 4px; }
+.verdict { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-weight: 500; }
+.verdict.g { background: var(--turf-soft); color: var(--turf); }
+.verdict.y { background: var(--warn-soft); color: var(--warn); }
+.verdict.r { background: var(--crit-soft); color: var(--crit); }
+.fine { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+
+/* Warm-up */
+.checks { list-style: none; margin: 6px 0 0; padding: 0; }
+.checks li + li { border-top: 1px solid var(--line); }
+.checks label { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; cursor: pointer; }
+.checks input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--cone); flex: none; }
+.checks .done span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+.bal { margin: 0 0 10px 34px; display: flex; flex-direction: column; gap: 4px; }
+.bal label { padding: 0; font-size: 13px; color: var(--muted); }
+.bal select { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); font-size: 15px; }
+
+/* Exercise cards */
+.pair { border-left: 3px solid var(--cone); padding-left: 10px; margin: 0 0 12px; }
+.pair-note { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.pair .ex { margin-bottom: 8px; }
+.pair .ex:last-child { margin-bottom: 0; }
+.ex { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 12px 10px; margin-bottom: 12px; }
+.ex.skip { opacity: .55; }
+.ex-hd { display: grid; grid-template-columns: 44px 1fr; gap: 6px; align-items: start; }
+.ex-num { font: 700 30px/0.95 "Barlow Condensed", sans-serif; color: var(--cone); }
+.ex.all-done .ex-num { color: var(--turf); }
+.ex-name { margin: 0; font: 600 20px/1.15 "Barlow Condensed", sans-serif; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { font-size: 13px; padding: 2px 8px; border-radius: 6px; background: var(--field); border: 1px solid var(--line); color: var(--muted); }
+.chip.spec { color: var(--ink); font-weight: 600; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; font-weight: 600; }
+.variant { display: inline-flex; margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.variant button { border: 0; background: var(--field); padding: 6px 12px; font-size: 14px; font-weight: 500; color: var(--muted); }
+.variant button[aria-pressed="true"] { background: var(--ink); color: var(--card); }
+.tip { margin: 8px 0 0 50px; font-size: 14px; color: var(--muted); }
+.tip summary { cursor: pointer; color: var(--ink); font-weight: 500; }
+.tip p { margin: 6px 0 0; }
+.tip .fig { margin-top: 8px; max-width: 320px; }
+.last { margin: 6px 0 0 50px; font-size: 13px; color: var(--muted); }
+.sets { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.set { display: grid; grid-template-columns: 30px 1fr 1fr 48px; gap: 6px; align-items: center; }
+.set.one { grid-template-columns: 30px 1fr 48px; }
+.set-n { font: 600 17px/1 "Barlow Condensed", sans-serif; color: var(--muted); text-align: center; }
+.fld { position: relative; display: block; }
+.fld input {
+  width: 100%; height: 46px; border: 1px solid var(--line); border-radius: 8px; background: var(--field);
+  padding: 0 44px 0 12px; font: 600 20px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
+.fld input::placeholder { color: var(--muted); opacity: .55; font-weight: 500; }
+.fld span { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--muted); pointer-events: none; }
+.fld-text { height: 46px; display: flex; align-items: center; padding: 0 12px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 15px; }
+.tick {
+  width: 48px; height: 46px; border-radius: 8px; border: 2px solid var(--line); background: var(--card);
+  display: grid; place-items: center; color: var(--line); padding: 0;
+}
+.tick svg { width: 22px; height: 22px; }
+.set.is-done .tick { background: var(--cone); border-color: var(--cone); color: #fff; }
+.set.is-done input { background: var(--cone-soft); border-color: transparent; }
+
+/* Figure */
+.fig { display: block; width: 100%; height: auto; background: var(--stage); border-radius: 8px; }
+
+/* Tests */
+.tests { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tests label { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.tests .fld input { padding-right: 34px; }
+.tests .prev { font-size: 12px; color: var(--muted); min-height: 16px; }
+
+textarea { width: 100%; min-height: 84px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); padding: 10px 12px; resize: vertical; }
+
+.btn {
+  display: block; width: 100%; height: 52px; border: 0; border-radius: var(--radius); background: var(--cone); color: #fff;
+  font: 600 20px/1 "Barlow Condensed", sans-serif;
+}
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.done { background: var(--turf); }
+.row-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.danger { color: var(--crit); border-color: var(--crit-soft); }
+
+/* Progress tables */
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 15px; }
+th, td { text-align: left; padding: 8px 5px; border-bottom: 1px solid var(--line); }
+th { font-weight: 600; color: var(--muted); font-size: 13px; }
+td.num, th.num { text-align: right; }
+.up { color: var(--turf); font-weight: 600; }
+.down { color: var(--crit); font-weight: 600; }
+.big { font: 700 44px/1 "Barlow Condensed", sans-serif; }
+.big small { font: 500 18px/1 Barlow, sans-serif; color: var(--muted); margin-left: 6px; }
+.dot { display: inline-block; min-width: 26px; text-align: center; padding: 2px 6px; border-radius: 6px; font-weight: 600; color: #fff; }
+.dot.g { background: var(--turf); } .dot.y { background: var(--warn); } .dot.r { background: var(--crit); }
+
+/* Rest timer bar (log view) */
+.timer {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--band); color: var(--band-ink);
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+}
+.timer .wrap { display: flex; align-items: center; gap: 10px; }
+.timer .lbl { font-size: 14px; color: var(--band-muted); }
+.timer .clock { font: 700 38px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; min-width: 86px; }
+.timer.go .clock { color: var(--cone); }
+.timer button { margin-left: auto; height: 42px; padding: 0 14px; border-radius: 8px; border: 1px solid #34495F; background: transparent; color: var(--band-ink); font-weight: 600; }
+.timer button + button { margin-left: 0; }
+
+/* Run workout overlay */
+.run { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: flex; flex-direction: column; }
+.run[hidden] { display: none; }
+.run-top { background: var(--band); color: var(--band-ink); padding: calc(8px + env(safe-area-inset-top)) 0 10px; flex: none; }
+.run-top .wrap { display: flex; align-items: center; gap: 10px; }
+.run-close { border: 1px solid #34495F; background: transparent; color: var(--band-ink); height: 38px; padding: 0 12px; border-radius: 8px; font-weight: 600; }
+.run-where { font: 600 18px/1.1 "Barlow Condensed", sans-serif; }
+.run-where span { display: block; font: 400 13px/1.2 Barlow, sans-serif; color: var(--band-muted); }
+.run-step { margin-left: auto; font: 600 18px/1 "Barlow Condensed", sans-serif; color: var(--band-muted); font-variant-numeric: tabular-nums; }
+.run-top .wrap.barwrap { display: block; }
+.run-bar { height: 4px; background: #2B3F55; margin-top: 10px; border-radius: 2px; overflow: hidden; }
+.run-bar i { display: block; height: 100%; background: var(--cone); }
+.run-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 0 20px; }
+.run-foot { flex: none; border-top: 1px solid var(--line); background: var(--card); padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
+.run-foot .wrap { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
+.run-foot .btn { height: 56px; font-size: 22px; }
+.run-ex { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; }
+.run-ex .ex-num { font-size: 40px; }
+.run-ex h2 { margin: 0; font: 600 28px/1.05 "Barlow Condensed", sans-serif; }
+.run-setof { font: 600 20px/1.2 "Barlow Condensed", sans-serif; color: var(--muted); margin: 4px 0 10px; }
+.run-setof b { color: var(--cone); }
+.run .fig { margin: 0 auto 10px; max-width: 420px; max-height: 38vh; }
+.rest-view .fig { max-height: 26vh; }
+.run-tip { font-size: 15px; color: var(--muted); margin: 0 0 8px; }
+.run-last { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
+.steppers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.steppers.single { grid-template-columns: 1fr; }
+.stepper { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px; }
+.stepper .lab { font-size: 13px; color: var(--muted); margin: 0 0 6px 4px; display: block; }
+.stepper .ctl { display: grid; grid-template-columns: 44px 1fr 44px; gap: 6px; align-items: center; }
+.stepper button { height: 48px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); font: 600 26px/1 "Barlow Condensed", sans-serif; padding: 0; }
+.stepper input { width: 100%; height: 48px; border: 0; background: transparent; text-align: center; font: 700 32px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; padding: 0; }
+.stepper input::placeholder { color: var(--muted); opacity: .5; }
+.run-skip { display: block; margin: 12px auto 0; border: 0; background: transparent; color: var(--muted); text-decoration: underline; font-size: 15px; padding: 8px; }
+.rest-view { text-align: center; padding-top: 8px; }
+.rest-view .lbl { font: 600 22px/1 "Barlow Condensed", sans-serif; color: var(--muted); }
+.rest-view .clock { font: 700 120px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; margin: 6px 0 4px; }
+.rest-view.go .clock { color: var(--cone); }
+.rest-view .next { font-size: 15px; color: var(--muted); margin: 0 0 12px; }
+.rest-view .next b { color: var(--ink); }
+.rest-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 360px; margin: 14px auto 0; }
+.run-done h2 { font: 700 40px/1 "Barlow Condensed", sans-serif; margin: 6px 0 6px; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  background: var(--ink); color: var(--card); padding: 10px 16px; border-radius: 8px; font-weight: 500; z-index: 60;
+  opacity: 0; pointer-events: none; transition: opacity .2s; max-width: calc(100% - 32px);
+}
+.toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+<header class="band"><div class="wrap" id="hd"></div></header>
+<nav class="tabs" aria-label="Day"><div class="wrap" id="tabs" role="tablist"></div></nav>
+<main class="wrap" id="main"></main>
+<div class="timer" id="timer" hidden></div>
+<section class="run" id="run" hidden role="dialog" aria-modal="true" aria-label="Run workout"></section>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+   Figure engine: a stick figure posed by joint angles, animated between
+   keyframes. Angles are in degrees: 0 points up, 90 points forward
+   (right), 180 points down. Every limb angle is absolute, not relative.
+   ===================================================================== */
+const LEN = { torso: 44, neck: 6, head: 10, ua: 26, fa: 24, th: 38, sh: 36, ft: 12 };
+const GY = 156;
+const RAD = Math.PI / 180;
+const dir = a => [Math.sin(a * RAD), -Math.cos(a * RAD)];
+const add = (p, a, l) => { const d = dir(a); return [p[0] + d[0] * l, p[1] + d[1] * l]; };
+const angTo = (p, q) => Math.atan2(q[0] - p[0], -(q[1] - p[1])) / RAD;
+const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+
+// Two-link inverse kinematics: angles that put the end of the chain on q.
+function ik(p, q, l1, l2, bend) {
+  const base = angTo(p, q);
+  let d = Math.hypot(q[0] - p[0], q[1] - p[1]);
+  if (d >= l1 + l2 - 0.01) return [base, base];
+  d = Math.max(d, Math.abs(l1 - l2) + 0.01);
+  const a = Math.acos((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d)) / RAD;
+  const u = base + (bend || 1) * a;
+  return [u, angTo(add(p, u, l1), q)];
+}
+
+// Turn an authored pose into a uniform, interpolatable one.
+function norm(p) {
+  const t = p.t || 0;
+  const ln0 = p.ln || [180, 180];
+  const lf0 = p.lf || ln0;
+  let hip;
+  if (p.v === 'foot') hip = add(add([p.x, p.y], ln0[1] + 180, LEN.sh), ln0[0] + 180, LEN.th);
+  else if (p.v === 'footF') hip = add(add([p.x, p.y], lf0[1] + 180, LEN.sh), lf0[0] + 180, LEN.th);
+  else hip = [p.x, p.y];
+  const ln = p.lnT ? ik(hip, p.lnT, LEN.th, LEN.sh, p.lnB) : ln0;
+  const lf = p.lfT ? ik(hip, p.lfT, LEN.th, LEN.sh, p.lfB) : lf0;
+  const neck = add(hip, t, LEN.torso);
+  const tgt = v => (typeof v === 'function' ? v(neck, t) : v);
+  const an = p.anT ? ik(neck, tgt(p.anT), LEN.ua, LEN.fa, p.anB) : (p.an || [180, 180]);
+  const af = p.afT ? ik(neck, tgt(p.afT), LEN.ua, LEN.fa, p.afB) : (p.af || an);
+  const ftn = p.ftn == null ? 90 : p.ftn;
+  return { hx: hip[0], hy: hip[1], t, hd: p.hd || 0, ln, lf, an, af, ftn, ftf: p.ftf == null ? ftn : p.ftf, bf: p.bf || 0 };
+}
+const lerp = (a, b, u) => a + (b - a) * u;
+const lerpA = (a, b, u) => a + ((((b - a) % 360) + 540) % 360 - 180) * u;
+const lerp2 = (a, b, u) => [lerpA(a[0], b[0], u), lerpA(a[1], b[1], u)];
+function mixPose(A, B, u) {
+  return {
+    hx: lerp(A.hx, B.hx, u), hy: lerp(A.hy, B.hy, u), t: lerpA(A.t, B.t, u), hd: lerpA(A.hd, B.hd, u),
+    ln: lerp2(A.ln, B.ln, u), lf: lerp2(A.lf, B.lf, u), an: lerp2(A.an, B.an, u), af: lerp2(A.af, B.af, u),
+    ftn: lerpA(A.ftn, B.ftn, u), ftf: lerpA(A.ftf, B.ftf, u), bf: lerp(A.bf, B.bf, u)
+  };
+}
+function joints(n) {
+  const hip = [n.hx, n.hy];
+  const neck = add(hip, n.t, LEN.torso);
+  const head = add(neck, n.t + n.hd, LEN.neck + LEN.head);
+  const kn = add(hip, n.ln[0], LEN.th), ankN = add(kn, n.ln[1], LEN.sh), toeN = add(ankN, n.ftn, LEN.ft);
+  const kf = add(hip, n.lf[0], LEN.th), ankF = add(kf, n.lf[1], LEN.sh), toeF = add(ankF, n.ftf, LEN.ft);
+  const en = add(neck, n.an[0], LEN.ua), hn = add(en, n.an[1], LEN.fa);
+  const ef = add(neck, n.af[0], LEN.ua), hf = add(ef, n.af[1], LEN.fa);
+  return { hip, neck, head, kn, ankN, toeN, kf, ankF, toeF, en, hn, ef, hf, t: n.t };
+}
+
+const f1 = v => v.toFixed(1);
+const pts = arr => arr.map(p => f1(p[0]) + ',' + f1(p[1])).join(' ');
+const chain = (arr, w, c) => `<polyline points="${pts(arr)}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const EQ = 'var(--equip)', LOAD = 'var(--cone)';
+const P = {
+  ground: `<line x1="6" y1="${GY + 3}" x2="234" y2="${GY + 3}" stroke="var(--line)" stroke-width="3" stroke-linecap="round"/>`,
+  db: (p, r = 6) => `<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="${r}" fill="var(--cone-soft)" stroke="${LOAD}" stroke-width="2.5"/>`,
+  plate: (p, r) => `<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="${r}" fill="${LOAD}" fill-opacity=".16" stroke="${LOAD}" stroke-width="3"/><circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="2.5" fill="${LOAD}"/>`,
+  ball: p => `<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="8" fill="${LOAD}"/><path d="M${f1(p[0] - 8)} ${f1(p[1])}h16M${f1(p[0])} ${f1(p[1] - 8)}v16" stroke="var(--cone-soft)" stroke-width="1.5"/>`,
+  bench: (x, y, w) => `<rect x="${x}" y="${y}" width="${w}" height="6" rx="2" fill="${EQ}"/><path d="M${x + 8} ${y + 6}V${GY}M${x + w - 8} ${y + 6}V${GY}" stroke="${EQ}" stroke-width="3"/>`,
+  wall: x => `<rect x="${x}" y="-20" width="10" height="${GY + 20 + 4}" fill="${EQ}" fill-opacity=".35"/>`,
+  post: (x, y) => `<path d="M${x} ${y}V${GY}" stroke="${EQ}" stroke-width="4" stroke-linecap="round"/>`,
+  cone: x => `<path d="M${x - 6} ${GY + 2}L${x} ${GY - 14}L${x + 6} ${GY + 2}Z" fill="${LOAD}"/>`
+};
+
+function drawPose(f, n, alpha) {
+  const j = joints(n);
+  const far = 'var(--fig-far)', ink = 'var(--fig)';
+  let s = '';
+  if (f.back) s += f.back(j, n);
+  s += `<g transform="translate(3 0)">${chain([j.neck, j.ef, j.hf], 6, far)}${chain([j.hip, j.kf, j.ankF, j.toeF], 7, far)}${f.farFront ? f.farFront(j, n) : ''}</g>`;
+  s += chain([j.hip, j.neck], 9, ink);
+  s += `<circle cx="${f1(j.head[0])}" cy="${f1(j.head[1])}" r="${LEN.head}" fill="${ink}"/>`;
+  s += chain([j.hip, j.kn, j.ankN, j.toeN], 7, ink);
+  s += chain([j.neck, j.en, j.hn], 6, ink);
+  if (f.front) s += f.front(j, n);
+  if (f.ball) {
+    const h = mid(j.hn, j.hf);
+    s += P.ball([lerp(h[0], f.ball[0], n.bf), lerp(h[1], f.ball[1], n.bf)]);
+  }
+  return alpha == null ? s : `<g opacity="${alpha}">${s}</g>`;
+}
+
+const S = o => Object.assign({ v: 'foot', x: 110, y: GY, t: 0, ln: [180, 180], lf: [180, 180], an: [180, 180], af: [180, 180], ftn: 90, ftf: 90 }, o);
+const DIP = { t: 40, ln: [140, 205], lf: [140, 205] };
+const backBar = (neck, t) => add(add(neck, t - 90, 8), t + 180, 3);
+
+const FIG = {
+  cmj: {
+    frames: [
+      { p: S({}), ms: 500, hold: 500 },
+      { p: S({ ...DIP, an: [225, 225], af: [228, 228] }), ms: 500, hold: 80 },
+      { p: S({ y: 136, t: 2, ln: [182, 182], lf: [182, 182], an: [12, 12], af: [16, 16], ftn: 155, ftf: 155 }), ms: 280, hold: 80 },
+      { p: S({ ...DIP, an: [95, 100], af: [98, 103] }), ms: 280, hold: 1100 }
+    ], key: 3
+  },
+  broad: {
+    frames: [
+      { p: S({ x: 48 }), ms: 1, hold: 400 },
+      { p: S({ x: 48, ...DIP, an: [225, 225], af: [228, 228] }), ms: 450, hold: 80 },
+      { p: S({ x: 100, y: 122, t: 35, ln: [115, 175], lf: [118, 178], an: [60, 70], af: [64, 74], ftn: 120, ftf: 120 }), ms: 320 },
+      { p: S({ x: 158, ...DIP, an: [95, 100], af: [98, 103] }), ms: 320, hold: 1000 },
+      { p: S({ x: 158 }), ms: 450, hold: 300 }
+    ], key: 3
+  },
+  hex: {
+    frames: [
+      { p: S({ x: 106, t: 55, ln: [110, 200], lf: [110, 200] }), ms: 1000, hold: 400 },
+      { p: S({ x: 106 }), ms: 900, hold: 500 }
+    ],
+    front: j => P.plate(j.hn, 20), key: 0
+  },
+  rfess: {
+    frames: [
+      { p: S({ x: 140, t: 8, ln: [165, 185], lf: [200, 259], ftf: 270, an: [182, 180], af: [178, 180] }), ms: 900, hold: 300 },
+      { p: S({ x: 140, t: 12, ln: [105, 195], lf: [180, 310], ftf: 270, an: [182, 180], af: [178, 180] }), ms: 1200, hold: 300 }
+    ],
+    back: () => P.bench(36, 132, 62), front: j => P.db(j.hn), farFront: j => P.db(j.hf), key: 1
+  },
+  invrow: {
+    frames: [
+      { p: { v: 'foot', x: 211, y: 150, t: 284, ln: [104, 104], lf: [104, 104], anT: [127, 85], anB: 1, afT: [127, 85], afB: 1, ftn: 14, ftf: 14 }, ms: 900, hold: 300 },
+      { p: { v: 'foot', x: 211, y: 150, t: 304, ln: [124, 124], lf: [124, 124], anT: [127, 85], anB: 1, afT: [127, 85], afB: 1, ftn: 34, ftf: 34 }, ms: 800, hold: 500 }
+    ],
+    back: () => P.post(134, 70), front: () => `<circle cx="127" cy="85" r="4.5" fill="${EQ}"/>`, key: 1
+  },
+  nordic: {
+    frames: [
+      { p: S({ x: 60, y: 152, ln: [180, 270], lf: [180, 270], an: [160, 20], af: [162, 22], ftn: 180, ftf: 180 }), ms: 900, hold: 400 },
+      { p: S({ x: 60, y: 152, t: 55, ln: [235, 270], lf: [235, 270], an: [150, 30], af: [152, 32], ftn: 180, ftf: 180 }), ms: 1700 },
+      { p: S({ x: 60, y: 152, t: 68, ln: [248, 270], lf: [248, 270], an: [130, 146], af: [132, 148], ftn: 180, ftf: 180 }), ms: 450, hold: 400 }
+    ],
+    front: () => `<rect x="44" y="140" width="22" height="13" rx="4" fill="${EQ}"/>`, key: 1
+  },
+  copen: {
+    frames: [
+      { p: { v: 'hip', x: 130, y: 134, t: 278, ln: [58.8, 90], lf: [120, 90], an: [180, 270], af: [182, 272], ftn: 90, ftf: 90 }, ms: 900, hold: 300 },
+      { p: { v: 'hip', x: 126, y: 121, t: 259.4, ln: [79.3, 90], lf: [96, 94], an: [180, 270], af: [182, 272], ftn: 90, ftf: 90 }, ms: 900, hold: 1500 }
+    ],
+    back: () => P.bench(150, 118, 72), key: 1
+  },
+  slrdl: {
+    frames: [
+      { p: S({ lf: [185, 200], ftf: 110 }), ms: 1000, hold: 300 },
+      { p: S({ t: 80, ln: [170, 185], lf: [260, 262], ftf: 180, af: [182, 182] }), ms: 1400, hold: 300 }
+    ],
+    front: j => P.db(j.hn), key: 1
+  },
+  calf: {
+    frames: [
+      { p: S({ lf: [175, 235], ftf: 150, an: [100, 92], af: [104, 95] }), ms: 600, hold: 200 },
+      { p: S({ x: 112, y: 146, lf: [175, 235], ftf: 150, an: [106, 98], af: [110, 100], ftn: 125 }), ms: 600, hold: 500 }
+    ],
+    back: () => P.post(161, 22), key: 1
+  },
+  sprint: {
+    frames: (() => {
+      const A = x => ({ p: { v: 'hip', x, y: 92, t: 42, ln: [100, 155], lf: [212, 212], an: [225, 165], af: [75, 15], ftn: 120, ftf: 140 } });
+      const B = x => ({ p: { v: 'hip', x, y: 92, t: 42, ln: [212, 212], lf: [100, 155], an: [75, 15], af: [225, 165], ftn: 140, ftf: 120 } });
+      return [
+        Object.assign(A(30), { ms: 1, hold: 350 }), Object.assign(B(65), { ms: 240 }),
+        Object.assign(A(100), { ms: 240 }), Object.assign(B(135), { ms: 240 }), Object.assign(A(170), { ms: 240, hold: 450 })
+      ];
+    })(),
+    back: () => P.cone(14) + P.cone(226), key: 2
+  },
+  latbound: {
+    frames: [
+      { p: { v: 'foot', x: 60, y: GY, t: 12, ln: [160, 200], lf: [175, 235], an: [200, 200], af: [160, 160], ftf: 150 }, ms: 450, hold: 700 },
+      { p: { v: 'hip', x: 115, y: 84, t: 20, ln: [220, 215], lf: [150, 160], an: [60, 50], af: [40, 30], ftf: 150 }, ms: 300 },
+      { p: { v: 'footF', x: 170, y: GY, t: -12, lf: [200, 160], ln: [185, 125], an: [160, 160], af: [200, 200], ftn: 210, ftf: 90 }, ms: 300, hold: 900 },
+      { p: { v: 'hip', x: 115, y: 84, t: -20, ln: [210, 200], lf: [140, 145], an: [300, 310], af: [320, 330], ftn: 210, ftf: 150 }, ms: 300 }
+    ], key: 2
+  },
+  hop: {
+    frames: [
+      { p: S({ x: 50, lf: [175, 240], ftf: 150 }), ms: 1, hold: 400 },
+      { p: S({ x: 50, ...DIP, lf: [165, 250], ftf: 150, an: [225, 225], af: [228, 228] }), ms: 450, hold: 80 },
+      { p: S({ x: 98, y: 138, t: 30, ln: [150, 190], lf: [165, 250], an: [60, 70], af: [64, 74], ftn: 130, ftf: 150 }), ms: 300 },
+      { p: S({ x: 146, ...DIP, lf: [165, 250], ftf: 150, an: [95, 100], af: [98, 103] }), ms: 300, hold: 1000 },
+      { p: S({ x: 146, lf: [175, 240], ftf: 150 }), ms: 450, hold: 300 }
+    ], key: 3
+  },
+  wallthrow: {
+    frames: [
+      { p: S({ x: 118, t: -18, ln: [170, 185], lfT: [84, 154], lfB: -1, an: [340, 215], af: [344, 218], ftf: 120 }), ms: 800, hold: 450 },
+      { p: S({ x: 118, t: 28, ln: [160, 195], lfT: [84, 154], lfB: -1, an: [70, 75], af: [74, 80], ftf: 120, bf: 0.05 }), ms: 240 },
+      { p: S({ x: 118, t: 32, ln: [160, 195], lfT: [84, 154], lfB: -1, an: [110, 110], af: [114, 114], ftf: 120, bf: 1 }), ms: 320, hold: 350 }
+    ],
+    ball: [210, 70], back: () => P.wall(220), key: 0
+  },
+  hkthrow: {
+    frames: [
+      { p: { v: 'foot', x: 76, y: 152, ln: [180, 270], lfT: [156, 154], lfB: -1, t: -15, an: [340, 215], af: [344, 218], ftn: 180 }, ms: 800, hold: 450 },
+      { p: { v: 'foot', x: 76, y: 152, ln: [180, 270], lfT: [156, 154], lfB: -1, t: 22, an: [70, 75], af: [74, 80], ftn: 180, bf: 0.05 }, ms: 240 },
+      { p: { v: 'foot', x: 76, y: 152, ln: [180, 270], lfT: [156, 154], lfB: -1, t: 28, an: [110, 110], af: [114, 114], ftn: 180, bf: 1 }, ms: 320, hold: 350 }
+    ],
+    ball: [210, 84], back: () => P.wall(220), key: 0
+  },
+  goblet: {
+    frames: [
+      { p: S({ an: [165, 50], af: [168, 53] }), ms: 1000, hold: 300 },
+      { p: S({ t: 25, ln: [95, 205], lf: [95, 205], an: [155, 45], af: [158, 48] }), ms: 1200, hold: 300 }
+    ],
+    front: j => P.db(mid(j.hn, j.hf), 8), key: 1
+  },
+  backsquat: {
+    frames: [
+      { p: S({ anT: backBar, anB: -1, afT: backBar, afB: -1 }), ms: 1000, hold: 300 },
+      { p: S({ t: 40, ln: [95, 205], lf: [95, 205], anT: backBar, anB: -1, afT: backBar, afB: -1 }), ms: 1200, hold: 300 }
+    ],
+    front: j => { const b = backBar(j.neck, j.t); return `<circle cx="${f1(b[0])}" cy="${f1(b[1])}" r="7" fill="none" stroke="${LOAD}" stroke-width="3"/><circle cx="${f1(b[0])}" cy="${f1(b[1])}" r="3" fill="${LOAD}"/>`; }, key: 1
+  },
+  dbbench: {
+    frames: [
+      { p: { v: 'hip', x: 140, y: 118, t: 270, ln: [92, 182], lf: [95, 180], an: [165, 0], af: [168, 3] }, ms: 900, hold: 200 },
+      { p: { v: 'hip', x: 140, y: 118, t: 270, ln: [92, 182], lf: [95, 180], an: [0, 0], af: [3, 3] }, ms: 800, hold: 300 }
+    ],
+    back: () => P.bench(40, 124, 110), front: j => P.db(j.hn), farFront: j => P.db(j.hf), key: 1
+  },
+  pullover: {
+    frames: [
+      { p: { v: 'hip', x: 140, y: 118, t: 270, ln: [92, 182], lf: [95, 180], an: [8, 10], af: [10, 12] }, ms: 900, hold: 200 },
+      { p: { v: 'hip', x: 140, y: 118, t: 270, ln: [92, 182], lf: [95, 180], an: [280, 282], af: [282, 284] }, ms: 1300, hold: 300 }
+    ],
+    back: () => P.bench(40, 124, 110), front: j => P.db(mid(j.hn, j.hf), 8), key: 1
+  },
+  slsit: {
+    frames: [
+      { p: S({ x: 112, lf: [150, 150], ftf: 60, an: [100, 90], af: [104, 94] }), ms: 1200, hold: 200 },
+      { p: S({ x: 112, t: 35, ln: [85, 205], lf: [95, 100], ftf: 20, an: [80, 85], af: [84, 88] }), ms: 1600, hold: 400 }
+    ],
+    back: () => P.bench(36, 132, 60), key: 1
+  },
+  hollow: {
+    frames: [
+      { p: { v: 'hip', x: 118, y: 148, t: 270, ln: [90, 90], lf: [90, 90], an: [270, 270], af: [270, 270], ftn: 0, ftf: 0 }, ms: 800, hold: 400 },
+      { p: { v: 'hip', x: 118, y: 148, t: 282, ln: [78, 80], lf: [78, 80], an: [284, 286], af: [284, 286], ftn: 350, ftf: 350 }, ms: 900, hold: 1800 }
+    ], key: 1
+  },
+  yraise: {
+    frames: [
+      { p: { v: 'foot', x: 200, y: GY, t: 305, ln: [125, 125], lf: [125, 125], an: [180, 180], af: [178, 178] }, ms: 900, hold: 200 },
+      { p: { v: 'foot', x: 200, y: GY, t: 305, ln: [125, 125], lf: [125, 125], an: [305, 305], af: [300, 300] }, ms: 900, hold: 600 }
+    ],
+    back: () => `<path d="M138 123L108 102" stroke="${EQ}" stroke-width="9" stroke-linecap="round"/><path d="M124 113L130 ${GY}M112 ${GY}H148" stroke="${EQ}" stroke-width="3"/>`,
+    front: j => P.db(j.hn, 5), farFront: j => P.db(j.hf, 5), key: 1
+  }
+};
+for (const f of Object.values(FIG)) {
+  f.frames.forEach(fr => { fr.n = norm(fr.p); });
+  f.total = f.frames.reduce((s, fr) => s + (fr.ms || 1) + (fr.hold || 0), 0);
+}
+const ease = u => 0.5 - 0.5 * Math.cos(Math.PI * u);
+function poseAt(f, time) {
+  let tm = time % f.total;
+  const fr = f.frames, N = fr.length;
+  for (let i = 0; i < N; i++) {
+    const ms = fr[i].ms || 1, hold = fr[i].hold || 0;
+    const prev = fr[(i - 1 + N) % N].n;
+    if (tm < ms) return mixPose(prev, fr[i].n, ease(tm / ms));
+    tm -= ms;
+    if (tm < hold) return fr[i].n;
+    tm -= hold;
+  }
+  return fr[0].n;
+}
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function figFrame(id, time) {
+  const f = FIG[id];
+  if (!f) return '';
+  if (REDUCED) return P.ground + drawPose(f, f.frames[0].n, 0.3) + drawPose(f, f.frames[f.key || 1].n);
+  return P.ground + drawPose(f, poseAt(f, time));
+}
+function figTag(id, label) {
+  if (!FIG[id]) return '';
+  return `<svg class="fig" viewBox="0 -36 240 206" data-fig="${id}" role="img" aria-label="${esc(label)} demonstration">${figFrame(id, 0)}</svg>`;
+}
+// One animation loop drives every visible figure.
+let rafOn = false;
+function animate(ts) {
+  const figs = document.querySelectorAll('svg[data-fig]');
+  let any = false;
+  figs.forEach(svg => {
+    const d = svg.closest('details');
+    if (d && !d.open) return;
+    if (svg.closest('[hidden]')) return;
+    any = true;
+    svg.innerHTML = figFrame(svg.dataset.fig, ts);
+  });
+  if (any && !REDUCED) requestAnimationFrame(animate); else rafOn = false;
+}
+function kickAnim() { if (!rafOn && !REDUCED) { rafOn = true; requestAnimationFrame(animate); } }
+window.GymPlanFig = { FIG, figFrame };
+
+/* =====================================================================
+   Plan data
+   ===================================================================== */
+const PHASES = [
+  { name: 'Learn', from: 1, to: 4 },
+  { name: 'Build', from: 5, to: 8 },
+  { name: 'Convert', from: 9, to: 12 }
+];
+const TEST_WEEKS = [4, 8, 12];
+const JUMPS = new Set(['cmj', 'broad', 'latbound', 'hop']);
+
+const WARMUP = [
+  'Get warm, 2 minutes: jumping jacks, skips, side shuffles',
+  "World's greatest stretch, 3 per side",
+  'Glute bridge x10, then side plank 20 seconds per side',
+  'Balance board, 3 minutes',
+  'Landing prep: 5 snap-downs, then 10 pogo hops',
+  'Wall drives, 2 x 5 quick knee drives per leg'
+];
+const BALANCE_LEVELS = [
+  'Level 1: two feet, eyes forward',
+  'Level 2: two feet, half squats or ball tosses',
+  'Level 3: one foot on the floor, eyes closed',
+  'Level 4: one foot on the board, hand near rack',
+  'Level 5: one foot on the board, catching a ball'
+];
+
+// Arrays hold [Phase 1, Phase 2, Phase 3] values.
+const DAYS = {
+  A: {
+    title: 'Day A',
+    sub: 'Jumps, lower-body strength, knee armor',
+    ex: [
+      { id: 'cmj', num: '1', name: 'Countermovement jump and stick', type: 'reps', sets: [3, 3, 3], reps: [4, 4, 4], rest: 60,
+        tip: 'Jump as high as possible, land quietly, hold 2 seconds. Reset between reps.' },
+      { id: 'broad', num: '2', name: ['Broad jump and stick', 'Triple broad jump', 'Triple broad jump'], type: 'reps', sets: [3, 3, 4], reps: [3, 3, 3], rest: 60,
+        side: ['', 'jumps linked', 'jumps linked'],
+        tip: ['Jump for distance, land in an athletic stance, knees over toes.',
+              'Three broad jumps in a row without pausing. Stick the last landing.',
+              'Three broad jumps in a row without pausing. Stick the last landing.'] },
+      { id: 'hex', num: '3', name: 'Hex bar deadlift', type: 'load', startW: 55, sets: [3, 3, 4], reps: [5, 5, 3], rest: 120,
+        tip: 'Main strength lift. Weight is the total, bar included (empty bar = 55 lb). If 55 is too heavy, start with two dumbbells. Push the floor away, stand tall.' },
+      { id: 'rfess', num: '4a', name: 'Rear-foot-elevated split squat', type: 'load', startW: 10, sets: [2, 3, 3], reps: [6, 6, 5], side: 'per leg', rest: 0,
+        tip: 'Back foot on the bench, dumbbells at sides. Weight is each dumbbell. Front knee tracks over the middle toes.' },
+      { id: 'invrow', num: '4b', name: 'Inverted row', type: 'reps', sets: [2, 3, 3], reps: [8, 8, 10], rest: 90,
+        tip: 'Barbell in the rack at waist height, body straight like a plank. Raise the bar to make it easier.' },
+      { id: 'nordic', num: '5a', name: 'Nordic hamstring lower', type: 'reps', sets: [2, 2, 3], reps: [3, 4, 4], rest: 0,
+        tip: 'Kneel, partner holds ankles, lower as slowly as possible, catch with hands, push back up.' },
+      { id: 'copen', num: '5b', name: 'Copenhagen plank, short lever', type: 'time', sets: [2, 2, 3], reps: [15, 20, 20], side: 'per side', rest: 60,
+        tip: 'Side plank with the top knee on the bench, then lift the bottom leg up to meet it. Inner-thigh strength for cutting and kicking.' },
+      { id: 'slrdl', num: '6a', name: 'Single-leg Romanian deadlift', type: 'load', startW: 10, sets: [2, 2, 3], reps: [6, 6, 6], side: 'per leg', rest: 0,
+        tip: 'One dumbbell, hips square, slow and balanced. The back leg and torso move as one straight line.' },
+      { id: 'calf', num: '6b', name: 'Single-leg calf raise', type: 'load', optionalLoad: true, sets: [2, 2, 2], reps: [12, 12, 12], side: 'per leg', rest: 60,
+        tip: 'Hold the rack. Do half the reps with a bent knee. Add a dumbbell once 12 is easy.' }
+    ]
+  },
+  B: {
+    title: 'Day B',
+    sub: 'Speed, squat, throw-in power',
+    ex: [
+      { id: 'sprint', num: '1', name: 'Acceleration sprints', type: 'check', sets: [6, 8, 8], reps: ['10 to 20 m'], rest: 90,
+        tip: 'On a field or turf before the gym part. Falling or half-kneeling start, full effort, walk back. No space: 3 x 5 wall drives instead.' },
+      { id: 'latbound', num: '2', name: ['Lateral bound and stick', 'Lateral bound and stick', 'Continuous lateral bounds'], type: 'reps', sets: [3, 3, 3], reps: [3, 3, 6],
+        side: ['per side', 'per side', 'total, no pause'], rest: 60,
+        tip: ['Push sideways off one leg, land on the other, hold 2 seconds. Knee stays over the foot.',
+              'Push sideways off one leg, land on the other, hold 2 seconds. Knee stays over the foot.',
+              'Bound side to side without pausing, 3 per side. End the set if landings get sloppy.'] },
+      { id: 'hop', num: '3', name: ['Single-leg hop and stick', 'Single-leg hop and stick', 'Continuous single-leg hops'], type: 'reps', sets: [2, 3, 3], reps: [3, 3, 3],
+        side: 'per leg', rest: 60,
+        tip: ['Short forward hop, perfect landing. Distance comes later.',
+              'Short forward hop, perfect landing. Add a little distance if landings stay clean.',
+              'Three hops in a row on one leg without pausing. Stick the last one.'] },
+      { id: 'wallthrow', num: '4', name: ['Soccer-ball overhead wall throw', 'Soccer-ball overhead wall throw', 'Med ball overhead wall throw'], type: 'reps', sets: [3, 3, 3], reps: [5, 5, 5], rest: 60,
+        tip: ['Staggered stance, throw-in grip, full arch, throw as hard as possible into a wall.',
+              'Staggered stance, throw-in grip, full arch, throw as hard as possible into a wall.',
+              'Same throw with an optional 4 lb medicine ball. No med ball: keep using the soccer ball.'] },
+      { id: 'hkthrow', num: '5', name: 'Half-kneeling overhead throw', type: 'reps', sets: [2, 2, 3], reps: [5, 5, 5], rest: 45,
+        tip: 'One knee down, so the power has to come from the trunk and arms.' },
+      { id: 'squat', num: '6', type: 'load', sets: [3, 3, 3], reps: [6, 6, 5], rest: 90,
+        variants: {
+          goblet: { label: 'Goblet', name: 'Goblet squat', fig: 'goblet', startW: 20,
+            tip: 'One dumbbell held at the chest, elbows inside the knees at the bottom. Sit between the hips, chest up. Weight is the dumbbell.' },
+          back: { label: 'Back squat', name: 'Barbell back squat', fig: 'backsquat', startW: 45,
+            tip: 'Empty 45 lb bar on the upper back, hands just outside the shoulders, safety pins set just below the bottom position. Sit down until thighs are level with the floor, then drive up. Weight is the total, bar included. Switch from goblet squats once 3 x 6 with a 35 lb dumbbell looks clean.' }
+        } },
+      { id: 'dbbench', num: '7a', name: 'Dumbbell bench press', type: 'load', startW: 10, sets: [2, 3, 3], reps: [8, 8, 6], rest: 0,
+        tip: 'Weight is each dumbbell. Pressing strength for the last push of the throw-in.' },
+      { id: 'pullover', num: '7b', name: 'Dumbbell pullover', type: 'load', startW: 10, sets: [2, 3, 3], reps: [10, 10, 10], rest: 90,
+        tip: 'Lying on the bench, one dumbbell in both hands, arc it back behind the head and return. Trains the lats that whip the arms forward.' },
+      { id: 'slsit', num: '8a', name: 'Single-leg sit to bench', type: 'load', optionalLoad: true, sets: [2, 3, 3], reps: [6, 6, 6], side: 'per leg', rest: 0,
+        tip: 'Stand on one leg, sit back slowly to the bench, stand up on the same leg. Knee tracks over the toes.' },
+      { id: 'hollow', num: '8b', name: 'Hollow-body hold', type: 'time', sets: [3, 3, 3], reps: [20, 25, 30], rest: 60,
+        tip: 'Lower back pressed into the floor, arms overhead, legs and shoulders just off the floor.' },
+      { id: 'yraise', num: '9', name: 'Prone Y-raise', type: 'load', startW: 5, sets: [2, 2, 2], reps: [10, 10, 10], rest: 60,
+        tip: 'Chest down on an incline bench, thumbs up, raise arms into a Y. Weight is each dumbbell.' }
+    ]
+  }
+};
+const ALL_EX = [...DAYS.A.ex, ...DAYS.B.ex];
+const exById = id => ALL_EX.find(x => x.id === id);
+const TESTS = [
+  { id: 'broad', label: 'Broad jump', unit: 'in', better: 'up' },
+  { id: 'sprint', label: '10 m sprint', unit: 'sec', better: 'down' },
+  { id: 'throw', label: 'Throw-in', unit: 'ft', better: 'up' }
+];
+// Storage keys of the main lifts and the day each lives on.
+const LIFTS = [
+  { sid: 'hex', day: 'A', label: 'Hex' },
+  { sid: 'backsquat', day: 'B', label: 'Back sq' },
+  { sid: 'goblet', day: 'B', label: 'Goblet' },
+  { sid: 'rfess', day: 'A', label: 'Split sq' },
+  { sid: 'dbbench', day: 'B', label: 'Bench' }
+];
+
+/* ---------- Helpers ---------- */
+const phaseIdx = w => (w <= 4 ? 0 : w <= 8 ? 1 : 2);
+const isTest = w => TEST_WEEKS.includes(w);
+const pick = (v, p) => (Array.isArray(v) ? v[Math.min(p, v.length - 1)] : v);
+const sideOf = (ex, w) => pick(ex.side || '', phaseIdx(w));
+const repsOf = (ex, w) => pick(ex.reps, phaseIdx(w));
+const setsOf = (ex, w) => {
+  const n = pick(ex.sets, phaseIdx(w));
+  if (!isTest(w)) return n;
+  return ex.id === 'sprint' ? 4 : Math.min(n, 2);
+};
+const key = (w, d) => 'w' + w + d;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const painClass = p => (p == null ? '' : p <= 2 ? 'g' : p <= 5 ? 'y' : 'r');
+const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+const fmtSec = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+const restLabel = r => (r >= 120 ? r / 60 + ' min' : r + ' sec');
+
+const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const ICON_PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+const ICON_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
+
+/* ---------- State ---------- */
+const STORE = 'gymplan.v1';
+let state = load();
+
+function blank() {
+  return { v: 1, week: 1, view: 'A', sessions: {}, tests: {} };
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && s.v === 1) return Object.assign(blank(), s);
+    }
+  } catch (e) { /* storage unavailable */ }
+  return blank();
+}
+let saveTimer = null;
+function writeNow() {
+  clearTimeout(saveTimer);
+  try { localStorage.setItem(STORE, JSON.stringify(state)); }
+  catch (e) { toast("Couldn't save on this device. Export a backup from Progress."); }
+}
+// Typing is debounced; everything else saves immediately.
+function save(debounce) {
+  if (debounce) { clearTimeout(saveTimer); saveTimer = setTimeout(writeNow, 300); }
+  else writeNow();
+}
+window.addEventListener('pagehide', writeNow);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') writeNow(); });
+
+function session(w, d, create) {
+  const k = key(w, d);
+  if (!state.sessions[k] && create) {
+    state.sessions[k] = { pain: null, warm: [], balance: null, notes: '', sets: {}, done: false, doneAt: null };
+  }
+  return state.sessions[k] || null;
+}
+
+// Squat variant: chosen per session, carried forward from the last choice.
+function squatVariant(w, d) {
+  const s = session(w, d, false);
+  if (s && s.squat) return s.squat;
+  for (let wk = w - 1; wk >= 1; wk--) {
+    const p = state.sessions[key(wk, 'B')];
+    if (p && p.squat) return p.squat;
+  }
+  return 'goblet';
+}
+// What to show for an exercise this session (handles the squat variants).
+function info(ex, w, d) {
+  const p = phaseIdx(w);
+  if (ex.variants) {
+    const v = squatVariant(w, d);
+    const vv = ex.variants[v];
+    return { name: vv.name, tip: vv.tip, fig: vv.fig, sid: v === 'back' ? 'backsquat' : 'goblet', variant: v, startW: vv.startW };
+  }
+  return { name: pick(ex.name, p), tip: pick(ex.tip, p), fig: ex.id, sid: ex.id, startW: ex.startW };
+}
+function rowsFor(w, d, ex, create) {
+  const s = session(w, d, create);
+  if (!s) return [];
+  const sid = info(ex, w, d).sid;
+  const n = setsOf(ex, w);
+  if (!s.sets[sid]) {
+    if (!create) return [];
+    s.sets[sid] = [];
+  }
+  const rows = s.sets[sid];
+  while (create && rows.length < n) rows.push({ w: '', r: '', d: false });
+  return rows;
+}
+function hasData(row) { return row && (row.d || row.w !== '' || row.r !== ''); }
+
+// Most recent earlier week with logged data for this storage key.
+function lastFor(sid, w, d) {
+  for (let wk = w - 1; wk >= 1; wk--) {
+    const s = state.sessions[key(wk, d)];
+    const rows = s && s.sets[sid];
+    if (rows && rows.some(hasData)) return { week: wk, rows };
+  }
+  return null;
+}
+function lastBalance(w, d) {
+  for (let wk = w; wk >= 1; wk--) {
+    for (const dd of [d, d === 'A' ? 'B' : 'A']) {
+      if (wk === w && dd === d) continue;
+      const s = state.sessions[key(wk, dd)];
+      if (s && s.balance) return s.balance;
+    }
+  }
+  return 1;
+}
+function counts(w, d) {
+  let total = 0, done = 0;
+  for (const ex of DAYS[d].ex) {
+    const n = setsOf(ex, w);
+    total += n;
+    const rows = rowsFor(w, d, ex, false);
+    for (let i = 0; i < n; i++) if (rows[i] && rows[i].d) done++;
+  }
+  return { total, done };
+}
+function lastLine(ex, w, d) {
+  if (ex.type === 'check') return '';
+  const inf = info(ex, w, d);
+  const last = lastFor(inf.sid, w, d);
+  if (!last) return '';
+  const parts = last.rows.filter(hasData).map(r => {
+    if (ex.type === 'load') return (r.w || (ex.optionalLoad ? 'BW' : '?')) + ' x ' + (r.r || '?');
+    return (r.r || '?') + (ex.type === 'time' ? ' sec' : '');
+  });
+  return parts.length ? `Week ${last.week}: ${parts.join(', ')}` : '';
+}
+// Mark a set done, filling blanks from the target and last week's weight.
+function completeSet(ex, w, d, i) {
+  const rows = rowsFor(w, d, ex, true);
+  const r = rows[i];
+  if (ex.type !== 'check' && r.r === '') r.r = String(repsOf(ex, w));
+  if (ex.type === 'load' && r.w === '') {
+    const inf = info(ex, w, d);
+    const last = lastFor(inf.sid, w, d);
+    const lw = last && last.rows[i] && last.rows[i].w;
+    if (lw) r.w = lw; else if (inf.startW) r.w = String(inf.startW);
+  }
+  r.d = true;
+  return r;
+}
+
+/* =====================================================================
+   Log view
+   ===================================================================== */
+const $hd = document.getElementById('hd');
+const $tabs = document.getElementById('tabs');
+const $main = document.getElementById('main');
+
+function render() {
+  renderHeader();
+  renderTabs();
+  if (state.view === 'P') renderProgress(); else renderDay(state.view);
+  kickAnim();
+}
+
+function renderHeader() {
+  const w = state.week;
+  const p = PHASES[phaseIdx(w)];
+  const segs = [];
+  for (let i = 1; i <= 12; i++) {
+    const a = session(i, 'A', false), b = session(i, 'B', false);
+    segs.push(`<button class="seg${i === w ? ' cur' : ''}${isTest(i) ? ' gate' : ''}" data-act="week" data-w="${i}" aria-label="Week ${i}${isTest(i) ? ', test week' : ''}${a && a.done ? ', Day A done' : ''}${b && b.done ? ', Day B done' : ''}"${i === w ? ' aria-current="true"' : ''}>
+      <span class="n">${i}</span><span class="h${a && a.done ? ' on' : ''}"></span><span class="h${b && b.done ? ' on' : ''}"></span></button>`);
+  }
+  $hd.innerHTML = `
+    <div class="hd-row">
+      <button class="nav" data-act="prev" aria-label="Previous week"${w <= 1 ? ' disabled' : ''}>${ICON_PREV}</button>
+      <div class="wk"><span class="wk-label">Week</span><span class="wk-num">${w}</span></div>
+      <button class="nav" data-act="next" aria-label="Next week"${w >= 12 ? ' disabled' : ''}>${ICON_NEXT}</button>
+      <div class="ph">
+        <strong>Phase ${phaseIdx(w) + 1}: ${p.name}</strong>
+        <span>Weeks ${p.from} to ${p.to}</span>
+        ${isTest(w) ? '<span class="badge">Test week</span>' : ''}
+      </div>
+    </div>
+    <div class="strip">${segs.join('')}</div>`;
+}
+
+function renderTabs() {
+  const t = (id, label, sub) => `<button class="tab" role="tab" data-act="view" data-v="${id}" aria-selected="${state.view === id}">${label}<small>${sub}</small></button>`;
+  const status = d => { const s = session(state.week, d, false); const c = counts(state.week, d); return s && s.done ? 'Done' : `${c.done} of ${c.total} sets`; };
+  $tabs.innerHTML = t('A', 'Day A', status('A')) + t('B', 'Day B', status('B')) + t('P', 'Progress', 'Tests and lifts');
+}
+
+function renderDay(d) {
+  const w = state.week;
+  const day = DAYS[d];
+  const s = session(w, d, false);
+  const pain = s ? s.pain : null;
+  const skipJumps = pain != null && pain >= 3;
+  const c = counts(w, d);
+  const pct = c.total ? Math.round(c.done / c.total * 100) : 0;
+  const started = c.done > 0 || (s && s.pain != null);
+  let html = `
+    <div class="sum"><h1>${day.title}: ${esc(day.sub)}</h1><span class="count" id="count"><b>${c.done}</b> / ${c.total}</span></div>
+    <div class="meter" aria-hidden="true"><i id="meter" style="width:${pct}%"></i></div>
+    <div class="run-cta"><button class="btn" data-act="run">${ICON_PLAY}${s && s.done ? 'Run it again' : started ? 'Resume workout' : 'Run workout'}</button></div>`;
+
+  if (isTest(w)) html += testPanel(w);
+  html += kneePanel(pain);
+  html += warmPanel(w, d, s);
+
+  const exs = day.ex;
+  for (let i = 0; i < exs.length; i++) {
+    const ex = exs[i];
+    if (/a$/.test(ex.num) && exs[i + 1] && /b$/.test(exs[i + 1].num)) {
+      const nx = exs[i + 1];
+      html += `<div class="pair"><p class="pair-note">Alternate ${ex.num} and ${nx.num}, then rest.</p>${exCard(ex, w, d, skipJumps)}${exCard(nx, w, d, skipJumps)}</div>`;
+      i++;
+    } else {
+      html += exCard(ex, w, d, skipJumps);
+    }
+  }
+
+  html += `
+    <section class="sec">
+      <h2>Notes</h2>
+      <textarea id="notes" data-act="notes" placeholder="How did it feel? Anything to change next time?" aria-label="Session notes"></textarea>
+    </section>
+    <button class="btn${s && s.done ? ' done' : ''}" data-act="finish">${s && s.done ? 'Session finished (tap to reopen)' : 'Finish session'}</button>
+    <p class="fine" style="text-align:center">Everything saves on this phone as you go.</p>`;
+  $main.innerHTML = html;
+  const notes = document.getElementById('notes');
+  if (notes) notes.value = s ? s.notes || '' : '';
+}
+
+function testPanel(w) {
+  const t = state.tests[w] || {};
+  const prevWeek = TEST_WEEKS[TEST_WEEKS.indexOf(w) - 1];
+  const prev = prevWeek ? state.tests[prevWeek] || {} : {};
+  const fields = TESTS.map(x => `
+    <label>${x.label}
+      <span class="fld"><input inputmode="decimal" data-act="test" data-t="${x.id}" value="${esc(t[x.id] || '')}" aria-label="${x.label} in ${x.unit}"><span>${x.unit}</span></span>
+      <span class="prev">${prevWeek && prev[x.id] ? `Week ${prevWeek}: ${esc(prev[x.id])}` : ''}</span>
+    </label>`).join('');
+  return `
+    <section class="sec">
+      <h2>Test week</h2>
+      <p>2 sets of everything this week. Run the tests while fresh: best of 3 for each.</p>
+      <div class="tests">${fields}</div>
+    </section>`;
+}
+
+function painVerdict(pain) {
+  if (pain == null) return '';
+  const cls = painClass(pain);
+  const msg = cls === 'g' ? 'Train as planned.'
+    : cls === 'y' ? "Skip today's jumps. Keep pain-free strength work, or swap in 4 x 30 to 45 second wall sits."
+    : 'Stop impact work today and see a doctor or physical therapist.';
+  return `<div class="verdict ${cls}">${msg}</div>`;
+}
+function kneePanel(pain, inRun) {
+  const btns = [];
+  for (let i = 0; i <= 10; i++) {
+    btns.push(`<button data-act="pain" data-p="${i}" class="${painClass(i)}" aria-pressed="${pain === i}" aria-label="Knee pain ${i} out of 10">${i}</button>`);
+  }
+  return `
+    <section class="sec">
+      <h2>Knee check</h2>
+      <p>Pain right now or this morning, 0 to 10.</p>
+      <div class="pain" role="group" aria-label="Knee pain">${btns.join('')}</div>
+      <div class="pain-scale"><span>None</span><span>Worst</span></div>
+      ${painVerdict(pain)}
+      ${inRun && pain != null && pain >= 3 ? '<p class="fine">Jumps are left out of today\'s run.</p>' : ''}
+      <p class="fine">Sharp pain, swelling, the knee giving way, or pain at rest: stop and get it checked.</p>
+    </section>`;
+}
+
+function warmPanel(w, d, s) {
+  const warm = s ? s.warm : [];
+  const bal = (s && s.balance) || lastBalance(w, d);
+  const allDone = WARMUP.every((_, i) => warm[i]);
+  const items = WARMUP.map((t, i) => {
+    let extra = '';
+    if (i === 3) {
+      extra = `<div class="bal"><label for="bal-${d}">Balance level today</label>
+        <select id="bal-${d}" data-act="balance">${BALANCE_LEVELS.map((l, j) => `<option value="${j + 1}"${bal === j + 1 ? ' selected' : ''}>${l}</option>`).join('')}</select>
+        <span class="fine" style="margin:0">Move up a level after 30 seconds without the edge touching down.</span></div>`;
+    }
+    return `<li><label class="${warm[i] ? 'done' : ''}"><input type="checkbox" data-act="warm" data-i="${i}"${warm[i] ? ' checked' : ''}><span>${esc(t)}</span></label>${extra}</li>`;
+  }).join('');
+  return `
+    <section class="sec">
+      <h2 data-warm-title>Warm-up${allDone ? ' done' : ''}</h2>
+      <p>About 12 minutes, every session.</p>
+      <ul class="checks">${items}</ul>
+    </section>`;
+}
+
+function variantControl(ex, w, d) {
+  if (!ex.variants) return '';
+  const v = squatVariant(w, d);
+  return `<div class="variant" role="group" aria-label="Squat type">${Object.entries(ex.variants).map(([k, vv]) =>
+    `<button data-act="variant" data-v="${k}" aria-pressed="${v === k}">${vv.label}</button>`).join('')}</div>`;
+}
+
+function exCard(ex, w, d, skipJumps) {
+  const inf = info(ex, w, d);
+  const n = setsOf(ex, w);
+  const rows = rowsFor(w, d, ex, false);
+  const target = repsOf(ex, w);
+  const side = sideOf(ex, w);
+  const skip = skipJumps && JUMPS.has(ex.id);
+  const unit = ex.type === 'time' ? ' sec' : '';
+  const spec = ex.type === 'check' ? `${n} x ${target}` : `${n} x ${target}${unit}${side ? ' ' + side : ''}`;
+  const chips = [`<span class="chip spec">${esc(spec)}</span>`];
+  if (ex.rest) chips.push(`<span class="chip">Rest ${restLabel(ex.rest)}</span>`);
+  if (skip) chips.push('<span class="chip warn">Skip today: knee check</span>');
+  const ll = lastLine(ex, w, d);
+  const last = lastFor(inf.sid, w, d);
+
+  const setHtml = [];
+  let doneCount = 0;
+  for (let i = 0; i < n; i++) {
+    const r = rows[i] || { w: '', r: '', d: false };
+    if (r.d) doneCount++;
+    const lastRow = last && last.rows[i];
+    const phW = lastRow && lastRow.w ? lastRow.w : (inf.startW ? String(inf.startW) : ex.optionalLoad ? 'BW' : 'lb');
+    const one = ex.type !== 'load';
+    let fields = '';
+    if (ex.type === 'load') {
+      fields += `<span class="fld"><input inputmode="decimal" data-f="w" value="${esc(r.w)}" placeholder="${esc(phW)}" aria-label="${esc(inf.name)}, set ${i + 1}, weight in pounds"><span>lb</span></span>`;
+    }
+    if (ex.type === 'check') {
+      fields += `<span class="fld-text">${esc(ex.id === 'sprint' ? 'Sprint ' + (i + 1) : target)}</span>`;
+    } else {
+      fields += `<span class="fld"><input inputmode="numeric" data-f="r" value="${esc(r.r)}" placeholder="${esc(target)}" aria-label="${esc(inf.name)}, set ${i + 1}, ${ex.type === 'time' ? 'seconds' : 'reps'}"><span>${ex.type === 'time' ? 'sec' : 'reps'}</span></span>`;
+    }
+    setHtml.push(`<div class="set${one ? ' one' : ''}${r.d ? ' is-done' : ''}" data-ex="${ex.id}" data-i="${i}">
+      <span class="set-n" aria-hidden="true">${i + 1}</span>${fields}
+      <button class="tick" data-act="tick" aria-pressed="${!!r.d}" aria-label="Set ${i + 1} done">${ICON_CHECK}</button></div>`);
+  }
+  return `
+    <article class="ex${skip ? ' skip' : ''}${doneCount === n ? ' all-done' : ''}" id="ex-${ex.id}">
+      <div class="ex-hd"><span class="ex-num">${ex.num}</span>
+        <div><h3 class="ex-name">${esc(inf.name)}</h3><div class="chips">${chips.join('')}</div>${variantControl(ex, w, d)}</div>
+      </div>
+      <details class="tip"><summary>How to do it</summary><p>${esc(inf.tip)}</p>${figTag(inf.fig, inf.name)}</details>
+      ${ll ? `<p class="last">${esc(ll)}</p>` : ''}
+      <div class="sets">${setHtml.join('')}</div>
+    </article>`;
+}
+
+function renderProgress() {
+  const doneSessions = Object.values(state.sessions).filter(s => s.done).length;
+  const testRows = TESTS.map(t => {
+    const vals = TEST_WEEKS.map(w => num((state.tests[w] || {})[t.id]));
+    const have = vals.filter(v => v != null);
+    let change = '';
+    if (have.length > 1) {
+      const diff = +(have[have.length - 1] - have[0]).toFixed(2);
+      const good = t.better === 'up' ? diff > 0 : diff < 0;
+      change = `<span class="${diff === 0 ? '' : good ? 'up' : 'down'}">${diff > 0 ? '+' : ''}${diff}</span>`;
+    }
+    return `<tr><td>${t.label} <span class="fine">(${t.unit})</span></td>${vals.map(v => `<td class="num">${v == null ? '' : v}</td>`).join('')}<td class="num">${change}</td></tr>`;
+  }).join('');
+
+  const liftRows = [];
+  for (let w = 1; w <= 12; w++) {
+    const cells = LIFTS.map(L => {
+      const s = state.sessions[key(w, L.day)];
+      const rows = s && s.sets[L.sid] ? s.sets[L.sid] : [];
+      const best = rows.filter(r => r.d).map(r => num(r.w)).filter(v => v != null);
+      return best.length ? Math.max(...best) : null;
+    });
+    if (cells.some(v => v != null)) liftRows.push(`<tr><td>Wk ${w}</td>${cells.map(v => `<td class="num">${v == null ? '' : v}</td>`).join('')}</tr>`);
+  }
+
+  const knee = [];
+  for (let w = 1; w <= 12; w++) for (const d of ['A', 'B']) {
+    const s = state.sessions[key(w, d)];
+    if (s && s.pain != null) knee.push(`<tr><td>Week ${w}, Day ${d}</td><td class="num"><span class="dot ${painClass(s.pain)}">${s.pain}</span></td></tr>`);
+  }
+
+  $main.innerHTML = `
+    <section class="sec">
+      <h2>Sessions finished</h2>
+      <div class="big">${doneSessions}<small>of 24</small></div>
+    </section>
+    <section class="sec">
+      <h2>Test results</h2>
+      <p>Logged in test weeks 4, 8 and 12.</p>
+      <table><thead><tr><th>Test</th>${TEST_WEEKS.map(w => `<th class="num">Wk ${w}</th>`).join('')}<th class="num">Change</th></tr></thead><tbody>${testRows}</tbody></table>
+    </section>
+    <section class="sec">
+      <h2>Main lifts</h2>
+      <p>Heaviest completed set each week, in lb.</p>
+      ${liftRows.length
+        ? `<table><thead><tr><th>Week</th>${LIFTS.map(L => `<th class="num">${L.label}</th>`).join('')}</tr></thead><tbody>${liftRows.join('')}</tbody></table>`
+        : '<p>Check off a weighted set and it shows up here.</p>'}
+    </section>
+    <section class="sec">
+      <h2>Knee log</h2>
+      ${knee.length ? `<table><tbody>${knee.join('')}</tbody></table>` : '<p>Knee check scores show up here once logged.</p>'}
+    </section>
+    <section class="sec">
+      <h2>Backup</h2>
+      <p>The log lives in this phone's browser. Export a backup now and then, or to move it to another device.</p>
+      <div class="row-btns">
+        <button class="btn ghost" data-act="export">Export backup</button>
+        <button class="btn ghost" data-act="import">Import backup</button>
+      </div>
+      <button class="btn ghost danger" data-act="reset" style="margin-top:8px">Erase all logs</button>
+    </section>`;
+}
+
+function refreshCounts() {
+  const d = state.view;
+  if (d === 'P') return;
+  const c = counts(state.week, d);
+  const el = document.getElementById('count');
+  if (el) el.innerHTML = `<b>${c.done}</b> / ${c.total}`;
+  const m = document.getElementById('meter');
+  if (m) m.style.width = (c.total ? Math.round(c.done / c.total * 100) : 0) + '%';
+  renderTabs();
+}
+function refreshCard(ex) {
+  const card = document.getElementById('ex-' + ex.id);
+  if (!card) return;
+  const n = setsOf(ex, state.week);
+  const rows = rowsFor(state.week, state.view, ex, false);
+  let done = 0;
+  for (let i = 0; i < n; i++) if (rows[i] && rows[i].d) done++;
+  card.classList.toggle('all-done', done === n);
+}
+
+/* =====================================================================
+   Run workout: one step at a time
+   ===================================================================== */
+const $run = document.getElementById('run');
+let run = null; // { w, d, idx, rest: null | { end, next } }
+
+function buildSteps(w, d) {
+  const s = session(w, d, false);
+  const pain = s ? s.pain : null;
+  const skipJ = pain != null && pain >= 3;
+  const steps = [{ kind: 'knee' }, { kind: 'warm' }];
+  const exs = DAYS[d].ex.filter(ex => !(skipJ && JUMPS.has(ex.id)));
+  const groups = [];
+  for (let i = 0; i < exs.length; i++) {
+    const ex = exs[i];
+    if (/a$/.test(ex.num) && exs[i + 1] && /b$/.test(exs[i + 1].num)) { groups.push([ex, exs[i + 1]]); i++; }
+    else groups.push([ex]);
+  }
+  for (const g of groups) {
+    const maxSets = Math.max(...g.map(ex => setsOf(ex, w)));
+    for (let i = 0; i < maxSets; i++) {
+      for (const ex of g) if (i < setsOf(ex, w)) steps.push({ kind: 'set', ex, i, of: setsOf(ex, w), pair: g.length > 1 });
+    }
+  }
+  steps.push({ kind: 'finish' });
+  return steps;
+}
+function firstOpenStep(w, d) {
+  const steps = buildSteps(w, d);
+  const s = session(w, d, false);
+  const anyDone = steps.some(st => st.kind === 'set' && (rowsFor(w, d, st.ex, false)[st.i] || {}).d);
+  if (!anyDone) return s && s.pain != null ? 1 : 0;
+  const i = steps.findIndex(st => st.kind === 'set' && !(rowsFor(w, d, st.ex, false)[st.i] || {}).d);
+  return i === -1 ? steps.length - 1 : i;
+}
+function openRun() {
+  stopTimer();
+  const w = state.week, d = state.view;
+  run = { w, d, idx: firstOpenStep(w, d), rest: null };
+  $run.hidden = false;
+  document.body.classList.add('locked');
+  renderRun();
+}
+function closeRun() {
+  clearInterval(restInt);
+  run = null;
+  $run.hidden = true;
+  $run.innerHTML = '';
+  document.body.classList.remove('locked');
+  render();
+}
+function stepLabel(st, w, d) {
+  if (!st) return '';
+  if (st.kind === 'set') return `${st.ex.num} ${info(st.ex, w, d).name}, set ${st.i + 1}`;
+  if (st.kind === 'finish') return 'Finish';
+  return st.kind === 'knee' ? 'Knee check' : 'Warm-up';
+}
+
+function stepper(label, field, value, placeholder, step) {
+  return `<div class="stepper"><span class="lab">${label}</span><div class="ctl">
+    <button data-act="step" data-f="${field}" data-by="${-step}" aria-label="${label} down ${step}">&minus;</button>
+    <input inputmode="decimal" data-run="${field}" value="${esc(value)}" placeholder="${esc(placeholder)}" aria-label="${label}">
+    <button data-act="step" data-f="${field}" data-by="${step}" aria-label="${label} up ${step}">+</button></div></div>`;
+}
+
+function renderRun() {
+  if (!run) return;
+  const { w, d } = run;
+  const steps = buildSteps(w, d);
+  run.idx = Math.min(run.idx, steps.length - 1);
+  const st = steps[run.idx];
+  const total = steps.length;
+  const s = session(w, d, false);
+  let body = '', primary = '', primaryAct = 'run-next', primaryDisabled = false;
+
+  if (run.rest) {
+    const nx = steps[run.idx];
+    const nxInf = nx && nx.kind === 'set' ? info(nx.ex, w, d) : null;
+    body = `<div class="rest-view" id="restView"><div class="lbl">Rest</div><div class="clock" id="restClock">${fmtSec(Math.ceil(Math.max(0, run.rest.end - Date.now()) / 1000))}</div>
+      <p class="next">Next: <b>${esc(stepLabel(nx, w, d))}</b></p>
+      ${nxInf ? figTag(nxInf.fig, nxInf.name) : ''}
+      <div class="rest-btns"><button class="btn ghost" data-act="rest-add">+15 sec</button><button class="btn ghost" data-act="rest-skip">Skip rest</button></div></div>`;
+    primary = 'Start next set';
+    primaryAct = 'rest-skip';
+  } else if (st.kind === 'knee') {
+    body = kneePanel(s ? s.pain : null, true);
+    primary = 'Next: warm-up';
+  } else if (st.kind === 'warm') {
+    body = (isTest(w) ? testPanel(w) : '') + warmPanel(w, d, s);
+    primary = 'Start lifting';
+  } else if (st.kind === 'set') {
+    const ex = st.ex, inf = info(ex, w, d);
+    const rows = rowsFor(w, d, ex, false);
+    const r = rows[st.i] || { w: '', r: '', d: false };
+    const target = repsOf(ex, w);
+    const side = sideOf(ex, w);
+    const last = lastFor(inf.sid, w, d);
+    const lastW = last && last.rows[st.i] && last.rows[st.i].w;
+    const ll = lastLine(ex, w, d);
+    const isLast = run.idx === total - 2;
+    const restAfter = !isLast && ex.rest ? ex.rest : 0;
+    let inputs = '';
+    if (ex.type === 'load') {
+      inputs = `<div class="steppers">${stepper('Weight, lb', 'w', r.w || lastW || (inf.startW ? String(inf.startW) : ''), ex.optionalLoad ? 'BW' : '0', 5)}${stepper(ex.type === 'time' ? 'Seconds' : 'Reps', 'r', r.r || String(target), String(target), 1)}</div>`;
+    } else if (ex.type === 'reps' || ex.type === 'time') {
+      inputs = `<div class="steppers single">${stepper(ex.type === 'time' ? 'Seconds held' : 'Reps', 'r', r.r || String(target), String(target), ex.type === 'time' ? 5 : 1)}</div>`;
+    }
+    const spec = ex.type === 'check' ? `${target}` : `${target}${ex.type === 'time' ? ' sec' : ' reps'}${side ? ' ' + side : ''}`;
+    body = `
+      <div class="run-ex"><span class="ex-num">${ex.num}</span><h2>${esc(inf.name)}</h2></div>
+      <p class="run-setof">${ex.id === 'sprint' ? 'Sprint' : 'Set'} <b>${st.i + 1}</b> of ${st.of}: ${esc(spec)}${st.pair ? ', alternating' : ''}</p>
+      ${variantControl(ex, w, d)}
+      ${figTag(inf.fig, inf.name)}
+      <p class="run-tip">${esc(inf.tip)}</p>
+      ${ll ? `<p class="run-last">${esc(ll)}</p>` : ''}
+      ${inputs}
+      ${r.d ? '<p class="fine">Already logged. Change the numbers and log it again, or move on.</p>' : ''}
+      <button class="run-skip" data-act="run-skip">Skip this set</button>`;
+    const verb = ex.type === 'check' ? 'Sprint done' : 'Log set';
+    primary = restAfter ? `${verb}, rest ${restLabel(restAfter)}` : verb;
+    primaryAct = 'run-log';
+  } else {
+    const c = counts(w, d);
+    body = `<div class="run-done"><h2>${c.done} of ${c.total} sets logged</h2>
+      <p class="run-tip">Add a note for next time, then finish the session.</p>
+      <section class="sec"><h2>Notes</h2><textarea data-act="notes" id="runNotes" placeholder="How did it feel? Anything to change next time?" aria-label="Session notes"></textarea></section></div>`;
+    primary = s && s.done ? 'Close' : 'Finish session';
+    primaryAct = s && s.done ? 'run-close' : 'run-finish';
+  }
+
+  const pct = Math.round(run.idx / (total - 1) * 100);
+  $run.innerHTML = `
+    <div class="run-top"><div class="wrap">
+      <button class="run-close" data-act="run-close">Close</button>
+      <div class="run-where">Week ${w}, ${DAYS[d].title}<span>${esc(DAYS[d].sub)}</span></div>
+      <div class="run-step">${run.idx + 1}/${total}</div>
+    </div><div class="wrap barwrap"><div class="run-bar"><i style="width:${pct}%"></i></div></div></div>
+    <div class="run-body"><div class="wrap">${body}</div></div>
+    <div class="run-foot"><div class="wrap">
+      <button class="btn ghost" data-act="run-back"${run.idx === 0 && !run.rest ? ' disabled' : ''}>Back</button>
+      <button class="btn" data-act="${primaryAct}"${primaryDisabled ? ' disabled' : ''}>${primary}</button>
+    </div></div>`;
+  const notes = document.getElementById('runNotes');
+  if (notes) notes.value = s ? s.notes || '' : '';
+  const body$ = $run.querySelector('.run-body');
+  if (body$) body$.scrollTop = 0;
+  kickAnim();
+}
+
+let restInt = null;
+function startRest(sec) {
+  run.rest = { end: Date.now() + sec * 1000 };
+  clearInterval(restInt);
+  restInt = setInterval(tickRest, 250);
+  renderRun();
+}
+function tickRest() {
+  if (!run || !run.rest) { clearInterval(restInt); return; }
+  const left = Math.max(0, (run.rest.end - Date.now()) / 1000);
+  const c = document.getElementById('restClock');
+  if (c) c.textContent = left > 0 ? fmtSec(Math.ceil(left)) : 'Go';
+  if (left <= 0 && !run.rest.buzzed) {
+    run.rest.buzzed = true;
+    const v = document.getElementById('restView');
+    if (v) v.classList.add('go');
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { /* not supported */ }
+    setTimeout(() => { if (run && run.rest && run.rest.buzzed) endRest(); }, 1500);
+  }
+}
+function endRest() {
+  clearInterval(restInt);
+  if (run) { run.rest = null; renderRun(); }
+}
+function runField(f) { const el = $run.querySelector(`[data-run="${f}"]`); return el ? el.value.trim() : ''; }
+
+function runAction(act, t) {
+  const { w, d } = run;
+  const steps = buildSteps(w, d);
+  const st = steps[run.idx];
+  if (act === 'run-close') closeRun();
+  else if (act === 'run-next') { run.idx = Math.min(run.idx + 1, steps.length - 1); renderRun(); }
+  else if (act === 'run-back') {
+    if (run.rest) { clearInterval(restInt); run.rest = null; run.idx = Math.max(0, run.idx - 1); }
+    else run.idx = Math.max(0, run.idx - 1);
+    renderRun();
+  }
+  else if (act === 'run-skip') { run.idx = Math.min(run.idx + 1, steps.length - 1); renderRun(); }
+  else if (act === 'run-log' && st && st.kind === 'set') {
+    const rows = rowsFor(w, d, st.ex, true);
+    const r = rows[st.i];
+    if (st.ex.type === 'load') r.w = runField('w');
+    if (st.ex.type !== 'check') r.r = runField('r');
+    completeSet(st.ex, w, d, st.i);
+    save();
+    const isLast = run.idx === steps.length - 2;
+    run.idx = Math.min(run.idx + 1, steps.length - 1);
+    if (!isLast && st.ex.rest) startRest(st.ex.rest); else renderRun();
+  }
+  else if (act === 'run-finish') {
+    const s = session(w, d, true);
+    s.done = true; s.doneAt = new Date().toISOString();
+    save();
+    toast(`Week ${w}, ${DAYS[d].title} finished`);
+    closeRun();
+  }
+  else if (act === 'rest-add' && run.rest) { run.rest.end += 15000; run.rest.buzzed = false; tickRest(); }
+  else if (act === 'rest-skip') endRest();
+  else if (act === 'step') {
+    const f = t.dataset.f, by = +t.dataset.by;
+    const el = $run.querySelector(`[data-run="${f}"]`);
+    if (!el) return;
+    const cur = num(el.value) != null ? num(el.value) : (num(el.placeholder) || 0);
+    el.value = String(Math.max(0, +(cur + by).toFixed(1)));
+  }
+}
+
+/* =====================================================================
+   Events
+   ===================================================================== */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]');
+  if (!t) return;
+  const act = t.dataset.act;
+  const inRun = run && $run.contains(t);
+  const w = inRun ? run.w : state.week, d = inRun ? run.d : state.view;
+
+  if (inRun && (act.startsWith('run-') || act.startsWith('rest-') || act === 'step')) { runAction(act, t); return; }
+
+  if (act === 'pain') {
+    const s = session(w, d, true);
+    const p = +t.dataset.p;
+    s.pain = s.pain === p ? null : p;
+    save();
+    if (inRun) renderRun();
+    else {
+      renderDay(d);
+      const k = document.querySelector('.pain');
+      if (k) k.closest('.sec').scrollIntoView({ block: 'nearest' });
+    }
+    return;
+  }
+  if (act === 'variant') {
+    const s = session(w, d, true);
+    s.squat = t.dataset.v;
+    save();
+    if (inRun) renderRun(); else { renderDay(d); renderTabs(); }
+    kickAnim();
+    return;
+  }
+
+  if (act === 'run') openRun();
+  else if (act === 'prev' && w > 1) { state.week--; save(); render(); }
+  else if (act === 'next' && w < 12) { state.week++; save(); render(); }
+  else if (act === 'week') { state.week = +t.dataset.w; save(); render(); }
+  else if (act === 'view') { state.view = t.dataset.v; save(); render(); window.scrollTo(0, 0); }
+  else if (act === 'tick') {
+    const row = t.closest('.set');
+    const ex = exById(row.dataset.ex);
+    const i = +row.dataset.i;
+    const rows = rowsFor(w, d, ex, true);
+    const r = rows[i];
+    if (r.d) r.d = false;
+    else { completeSet(ex, w, d, i); if (ex.rest) startTimer(ex.rest); }
+    row.classList.toggle('is-done', r.d);
+    t.setAttribute('aria-pressed', String(r.d));
+    const wi = row.querySelector('[data-f="w"]'), ri = row.querySelector('[data-f="r"]');
+    if (wi) wi.value = r.w;
+    if (ri) ri.value = r.r;
+    save(); refreshCard(ex); refreshCounts();
+  }
+  else if (act === 'finish') {
+    const s = session(w, d, true);
+    s.done = !s.done;
+    s.doneAt = s.done ? new Date().toISOString() : null;
+    save();
+    toast(s.done ? `Week ${w}, ${DAYS[d].title} finished` : 'Session reopened');
+    render();
+  }
+  else if (act === 'export') exportData();
+  else if (act === 'import') document.getElementById('importFile').click();
+  else if (act === 'reset') {
+    if (confirm('Erase every logged set, test and note on this device? This cannot be undone.')) {
+      state = blank(); save(); render(); toast('All logs erased');
+    }
+  }
+  else if (act === 'timer-add') { timerEnd += 15000; tickTimer(); }
+  else if (act === 'timer-stop') stopTimer();
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  const inRun = run && $run.contains(t);
+  const w = inRun ? run.w : state.week, d = inRun ? run.d : state.view;
+  if (t.dataset.f && !inRun) {
+    const row = t.closest('.set');
+    const ex = exById(row.dataset.ex);
+    const rows = rowsFor(w, d, ex, true);
+    rows[+row.dataset.i][t.dataset.f] = t.value.trim();
+    save(true);
+  } else if (t.dataset.act === 'notes') {
+    session(w, d, true).notes = t.value; save(true);
+  } else if (t.dataset.act === 'test') {
+    state.tests[w] = state.tests[w] || {};
+    state.tests[w][t.dataset.t] = t.value.trim(); save(true);
+  }
+});
+
+document.addEventListener('change', e => {
+  const t = e.target;
+  const inRun = run && $run.contains(t);
+  const w = inRun ? run.w : state.week, d = inRun ? run.d : state.view;
+  if (t.dataset.act === 'warm') {
+    const s = session(w, d, true);
+    s.warm[+t.dataset.i] = t.checked;
+    t.closest('label').classList.toggle('done', t.checked);
+    const h = t.closest('.sec').querySelector('[data-warm-title]');
+    if (h) h.textContent = WARMUP.every((_, i) => s.warm[i]) ? 'Warm-up done' : 'Warm-up';
+    save();
+  } else if (t.dataset.act === 'balance') {
+    session(w, d, true).balance = +t.value; save();
+  }
+});
+
+document.addEventListener('toggle', e => { if (e.target.tagName === 'DETAILS' && e.target.open) kickAnim(); }, true);
+
+/* ---------- Rest timer bar (log view) ---------- */
+const $timer = document.getElementById('timer');
+let timerEnd = 0, timerInt = null, goTimeout = null;
+function startTimer(sec) {
+  clearTimeout(goTimeout);
+  timerEnd = Date.now() + sec * 1000;
+  $timer.hidden = false;
+  $timer.classList.remove('go');
+  $timer.innerHTML = `<div class="wrap"><span class="lbl">Rest</span><span class="clock" id="clock"></span>
+    <button data-act="timer-add">+15 sec</button><button data-act="timer-stop">Done</button></div>`;
+  clearInterval(timerInt);
+  timerInt = setInterval(tickTimer, 250);
+  tickTimer();
+}
+function tickTimer() {
+  const left = Math.max(0, (timerEnd - Date.now()) / 1000);
+  const c = document.getElementById('clock');
+  if (c) c.textContent = fmtSec(Math.ceil(left));
+  if (left <= 0) {
+    clearInterval(timerInt);
+    $timer.classList.add('go');
+    if (c) c.textContent = 'Go';
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { /* not supported */ }
+    goTimeout = setTimeout(stopTimer, 4000);
+  }
+}
+function stopTimer() {
+  clearInterval(timerInt); clearTimeout(goTimeout);
+  $timer.hidden = true; $timer.innerHTML = '';
+}
+
+/* ---------- Backup ---------- */
+function exportData() {
+  writeNow();
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'gym-plan-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Backup exported');
+}
+document.getElementById('importFile').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const s = JSON.parse(reader.result);
+      if (!s || s.v !== 1 || typeof s.sessions !== 'object') throw new Error('bad file');
+      if (!confirm('Replace the logs on this device with this backup?')) return;
+      state = Object.assign(blank(), s); save(); render(); toast('Backup imported');
+    } catch (err) {
+      toast("That file isn't a Gym Plan backup.");
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(f);
+});
+
+/* ---------- Toast ---------- */
+const $toast = document.getElementById('toast');
+let toastT = null;
+function toast(msg) {
+  $toast.textContent = msg;
+  $toast.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => $toast.classList.remove('show'), 2600);
+}
+
+render();
+})();
+</script>
+</body>
+</html>
