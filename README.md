@@ -19,7 +19,7 @@ Open it on a phone, pick the week and Day A or Day B, then tap **Run workout** t
 
 Every exercise shows a blue **On the pitch** box. It has a headline payoff and a one-line explanation of how the exercise helps in a game. A few examples:
 
-- Countermovement jumps: "Win more headers".
+- Countermovement jumps: "Explosive legs".
 - Hex bar deadlift: "Harder to knock off the ball".
 - Pullovers: "Longer throw-ins".
 - Shuttles: "Cut and go".
