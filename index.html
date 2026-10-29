@@ -299,6 +299,69 @@ td.num, th.num { text-align: right; }
 .hold-btn { background: var(--turf); margin: 0 0 10px; height: 56px; font-size: 22px; }
 .btn.stop { background: var(--ink); color: var(--card); }
 @media (prefers-reduced-motion: reduce) { .rest-bar i { transition: none; } }
+/* PRs and PR Challenges */
+.ex.challenge { border: 2px solid var(--cone); box-shadow: 0 0 0 4px var(--cone-soft); }
+.ex.challenge.flash { animation: cardflash .9s ease-in-out 2; }
+@keyframes cardflash { 50% { box-shadow: 0 0 0 10px var(--cone-soft); } }
+.chal-ribbon { display: flex; align-items: center; gap: 8px; margin: -12px -12px 10px; padding: 8px 12px; border-radius: 8px 8px 0 0; background: var(--cone); color: #fff; font: 600 18px/1.1 "Barlow Condensed", sans-serif; }
+.chal-ribbon svg { width: 20px; height: 20px; flex: none; color: #F5C518; }
+.chal-rule { margin: 8px 0 0 50px; font-size: 14px; color: var(--ink); }
+.chal-rule b { color: var(--cone); }
+.set.chal-set .set-n { color: var(--cone); }
+.set.chal-set .set-n svg { width: 20px; height: 20px; }
+.set.chal-set input { border-color: var(--cone); border-width: 2px; }
+.set-n.pr { font: 700 13px/1 Barlow, sans-serif; color: #11233A; background: #F5C518; border-radius: 6px; padding: 5px 0; }
+.last.rec, .run-last.rec { color: var(--turf); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.last.rec svg, .run-last.rec svg { width: 16px; height: 16px; flex: none; color: #C99A00; }
+.chal-callout { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; margin: 0 0 14px; padding: 12px; border-radius: var(--radius); border: 2px solid var(--cone); background: var(--cone-soft); color: var(--ink); font-size: 15px; animation: glow 1.8s ease-in-out infinite; }
+.chal-callout svg { width: 28px; height: 28px; color: var(--cone); flex: none; }
+.chal-callout b { display: block; font: 700 21px/1.1 "Barlow Condensed", sans-serif; color: var(--cone); margin-bottom: 2px; }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 0 0 var(--cone-soft); } 50% { box-shadow: 0 0 0 7px var(--cone-soft); } }
+.chal-banner { margin: 0 0 12px; padding: 12px 14px; border-radius: var(--radius); background: var(--cone); color: #fff; font-size: 15px; animation: glow 1.4s ease-in-out infinite; }
+.chal-banner b { display: flex; align-items: center; gap: 8px; font: 700 30px/1 "Barlow Condensed", sans-serif; margin-bottom: 6px; }
+.chal-banner b svg { width: 28px; height: 28px; color: #F5C518; }
+.chal-strip { display: flex; gap: 6px; align-items: center; justify-content: center; margin: 0 0 10px; color: var(--cone); font-weight: 600; font-size: 15px; }
+.run-body .chal-strip { justify-content: flex-start; }
+.rest-view .chal-strip { justify-content: center; }
+.chal-strip svg { width: 18px; height: 18px; }
+.btn.chal { background: linear-gradient(90deg, var(--cone), #F59A1B); }
+.hold-btn.chal { background: var(--cone); }
+.splash { position: relative; overflow: hidden; display: grid; place-items: center; min-height: calc(100vh - 210px); text-align: center; border-radius: 16px; background: var(--band); color: var(--band-ink); padding: 28px 18px; }
+.splash-rays { position: absolute; inset: -60%; background: repeating-conic-gradient(from 0deg, rgba(232, 98, 26, .22) 0 10deg, transparent 10deg 20deg); animation: spin 16s linear infinite; }
+.splash-in { position: relative; animation: pop .6s cubic-bezier(.2, 1.4, .4, 1) both; }
+.splash-trophy svg { width: 80px; height: 80px; color: #F5C518; filter: drop-shadow(0 0 14px rgba(245, 197, 24, .65)); }
+.splash-kicker { margin: 4px 0 0; font: 600 20px/1 "Barlow Condensed", sans-serif; color: var(--band-muted); }
+.splash-title { margin: 6px 0 10px; font: 700 68px/0.95 "Barlow Condensed", sans-serif; color: #fff; text-shadow: 0 0 18px rgba(232, 98, 26, .9), 0 2px 0 #B8480E; animation: flashy 1s ease-in-out 3; }
+.splash-ex { margin: 0 0 12px; font: 600 26px/1.1 "Barlow Condensed", sans-serif; }
+.splash-beat { display: inline-block; margin: 0 0 14px; padding: 8px 16px; border-radius: 999px; background: #F5C518; color: #11233A; font-weight: 700; font-size: 17px; }
+.splash-rule, .splash-when { max-width: 420px; margin: 0 auto 8px; font-size: 15px; color: var(--band-muted); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes flashy { 50% { opacity: .3; } }
+.pr-pop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: rgba(8, 17, 26, .6); }
+.pr-pop[hidden] { display: none; }
+.pr-card { width: min(360px, 100%); background: var(--card); border: 3px solid #F5C518; border-radius: 16px; padding: 22px 18px 16px; text-align: center; animation: pop .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+.pr-card.chal { border-color: var(--cone); }
+.pr-card.soft { border-color: var(--line); }
+.pr-trophy svg { width: 68px; height: 68px; color: #F5C518; }
+.pr-title { margin: 6px 0 4px; font: 700 36px/1 "Barlow Condensed", sans-serif; color: var(--cone); }
+.pr-card.soft .pr-title { color: var(--ink); }
+.pr-name { margin: 0; font-weight: 600; }
+.pr-value { margin: 8px 0; font: 700 46px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+.pr-gain { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 90; pointer-events: none; }
+#confetti[hidden] { display: none; }
+.pr-board h3 { margin: 14px 0 4px; font: 600 18px/1.1 "Barlow Condensed", sans-serif; }
+.pr-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.pr-stats div { background: var(--field); border-radius: 8px; padding: 10px; }
+.pr-stats small { display: block; color: var(--muted); font-size: 13px; }
+.prlist { list-style: none; margin: 4px 0 0; padding: 0; }
+.prlist li { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.prlist li svg { width: 20px; height: 20px; flex: none; color: #C99A00; margin-top: 2px; }
+.prlist li span { display: block; color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: reduce) {
+  .splash-rays, .splash-in, .splash-title, .pr-card, .chal-callout, .chal-banner, .ex.challenge.flash { animation: none; }
+}
 .toast {
   position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%);
   background: var(--ink); color: var(--card); padding: 10px 16px; border-radius: 8px; font-weight: 500; z-index: 60;
@@ -315,6 +378,8 @@ td.num, th.num { text-align: right; }
 <div class="timer" id="timer" hidden></div>
 <section class="run" id="run" hidden role="dialog" aria-modal="true" aria-label="Run workout"></section>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="pr-pop" id="pr" hidden></div>
+<canvas id="confetti" hidden aria-hidden="true"></canvas>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 
 <script>
@@ -1134,6 +1199,10 @@ function lastLine(ex, w, d) {
 }
 function startWeight(ex, w, d, i) {
   const inf = info(ex, w, d);
+  const ch = isChallengeSet(slotOfEx(ex, w, d), w, d, i);
+  if (ch && ch.mode === 'weight' && ch.suggest) return fmtN(ch.suggest);
+  const cur = rowsFor(w, d, ex, false);
+  for (let k = i - 1; k >= 0; k--) if (cur[k] && cur[k].w) return cur[k].w;
   const last = lastFor(inf.sid, w);
   const lw = last && last.rows[i] && last.rows[i].w;
   if (lw) return lw;
@@ -1147,6 +1216,8 @@ function completeSet(ex, w, d, i) {
   const r = rows[i];
   if (ex.type !== 'check' && r.r === '') r.r = String(repsOf(ex, w));
   if (ex.type === 'load' && r.w === '') r.w = startWeight(ex, w, d, i);
+  const ch = isChallengeSet(slotOfEx(ex, w, d), w, d, i);
+  if (ch) r.c = ch.mode; else delete r.c;
   r.d = true;
   return r;
 }
@@ -1154,6 +1225,262 @@ function guardHtml(ex) {
   const g = ex.guard && GUARD[ex.guard];
   return g ? `<p class="guard"><b>${g.m}</b> ${g.why}</p>` : '';
 }
+
+/* =====================================================================
+   Personal records and PR Challenges. PRs come only from real logged
+   numbers: heavier weight, a stronger set (more reps at a weight),
+   more bodyweight reps, longer holds, better test scores. The first
+   session of an exercise sets the baseline.
+   ===================================================================== */
+const PR_KIND = {
+  hex: 'load', squat: 'load', lunge: 'load', rfess: 'load', stepup: 'load', dbrow: 'load', soleus: 'load',
+  dbbench: 'load', hkpress: 'load', pullover: 'load', yraise: 'load', slrdl: 'load',
+  calf: 'load', sideabd: 'load', slsit: 'load', stepdown: 'load',
+  pushup: 'reps', invrow: 'reps', copen: 'hold', hollow: 'hold', isosplit: 'hold'
+};
+const sidEx = sid => LIB[sid] || (sid === 'goblet' || sid === 'backsquat' ? LIB.squat : null);
+const sidName = (sid, w) => (sid === 'goblet' ? 'Goblet squat' : sid === 'backsquat' ? 'Barbell back squat' : pick3(LIB[sid].name, w || 1));
+const BAR_LIFTS = new Set(['hex', 'backsquat']);
+const loadStep = sid => (BAR_LIFTS.has(sid) ? 5 : 2.5);
+const e1 = (wt, r) => wt * (1 + Math.min(r, 12) / 30);
+const fmtN = v => String(+(+v).toFixed(1));
+const ICON_TROPHY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3a1 1 0 011 1v2a5 5 0 01-4.6 5A6 6 0 0113 15.9V18h3v2H8v-2h3v-2.1A6 6 0 017.6 13 5 5 0 013 8V6a1 1 0 011-1h3zm10 4v3.9A3 3 0 0019 8V7zM7 7H5v1a3 3 0 002 2.9z"/></svg>';
+
+function metricOf(kind, row) {
+  if (kind === 'load') {
+    const wt = num(row.w), r = num(row.r);
+    return wt > 0 && r > 0 ? { w: wt, r, e: e1(wt, r) } : null;
+  }
+  const r = num(row.r);
+  return r > 0 ? { r } : null;
+}
+function recOf(m, wk) {
+  return m.w != null ? { w: m.w, wr: m.r, wk, e: m.e, ew: m.w, er: m.r, ek: wk } : { r: m.r, rk: wk };
+}
+function mergeRec(a, b) {
+  if (!a) return b ? { ...b } : null;
+  if (!b) return { ...a };
+  const o = { ...a };
+  if (b.w != null && (a.w == null || b.w > a.w || (b.w === a.w && b.wr > a.wr))) { o.w = b.w; o.wr = b.wr; o.wk = b.wk; }
+  if (b.e != null && (a.e == null || b.e > a.e)) { o.e = b.e; o.ew = b.ew; o.er = b.er; o.ek = b.ek; }
+  if (b.r != null && (a.r == null || b.r > a.r)) { o.r = b.r; o.rk = b.rk; }
+  return o;
+}
+function judgePR(kind, m, ref) {
+  if (kind === 'load') {
+    if (ref.w != null && m.w > ref.w) return { type: 'weight', text: `${fmtN(m.w)} lb x ${m.r}`, gain: `${fmtN(m.w - ref.w)} lb heavier than your best (${fmtN(ref.w)} lb x ${ref.wr})` };
+    if (ref.e != null && m.e > ref.e * 1.005) return { type: 'strength', text: `${fmtN(m.w)} lb x ${m.r}`, gain: `Beats your best set of ${fmtN(ref.ew)} lb x ${ref.er}` };
+    return null;
+  }
+  if (ref.r != null && m.r > ref.r) {
+    return kind === 'hold'
+      ? { type: 'hold', text: `${m.r} sec`, gain: `${m.r - ref.r} sec longer than your best (${ref.r} sec)` }
+      : { type: 'reps', text: `${m.r} reps`, gain: `${m.r - ref.r} more than your best (${ref.r})` };
+  }
+  return null;
+}
+// Walk the log in program order (Day A before Day B) and find every PR.
+function computePRs() {
+  const best = {}, events = [], at = {};
+  for (let w = 1; w <= WEEKS; w++) for (const d of ['A', 'B']) {
+    const s = state.sessions[key(w, d)];
+    if (!s) continue;
+    const live = {};
+    for (const [sid, rows] of Object.entries(s.sets)) {
+      const ex = sidEx(sid), kind = ex && PR_KIND[ex.id];
+      if (!kind) continue;
+      rows.forEach((row, i) => {
+        if (!row.d) return;
+        const m = metricOf(kind, row);
+        if (!m) return;
+        if (best[sid]) {
+          const ev = judgePR(kind, m, mergeRec(best[sid], live[sid]));
+          if (ev) { Object.assign(ev, { w, d, sid, i, chal: !!row.c }); events.push(ev); at[`${w}${d}:${sid}:${i}`] = ev; }
+        }
+        live[sid] = mergeRec(live[sid], recOf(m, w));
+      });
+    }
+    for (const sid in live) best[sid] = mergeRec(best[sid], live[sid]);
+  }
+  const tbest = {};
+  for (const tw of TEST_WEEKS) {
+    const t = state.tests[tw];
+    if (!t) continue;
+    for (const x of TESTS) {
+      const v = num(t[x.id]);
+      if (v == null || v <= 0) continue;
+      const b = tbest[x.id];
+      const better = !!b && (x.better === 'up' ? v > b.v : v < b.v);
+      if (better) {
+        const ev = { type: 'test', w: tw, test: x, text: `${fmtN(v)} ${x.unit}`,
+          gain: `${x.better === 'up' ? '+' : '-'}${fmtN(Math.abs(v - b.v))} ${x.unit} vs your best (${fmtN(b.v)} ${x.unit})` };
+        events.push(ev); at[`t${tw}:${x.id}`] = ev;
+      }
+      if (!b || better) tbest[x.id] = { v, wk: tw };
+    }
+  }
+  return { events, at, best, tbest };
+}
+// Best record from sessions before this one.
+function recordBefore(sid, w, d) {
+  const ex = sidEx(sid), kind = ex && PR_KIND[ex.id];
+  if (!kind) return null;
+  let rec = null;
+  for (let wk = 1; wk <= w; wk++) for (const dd of ['A', 'B']) {
+    if (wk === w && (dd === d || d === 'A')) continue;
+    const s = state.sessions[key(wk, dd)];
+    const rows = s && s.sets[sid];
+    if (rows) rows.forEach(row => { if (row.d) { const m = metricOf(kind, row); if (m) rec = mergeRec(rec, recOf(m, wk)); } });
+  }
+  return rec;
+}
+function recordText(kind, rec) {
+  if (!rec) return '';
+  if (kind === 'load') return rec.w != null ? `${fmtN(rec.w)} lb x ${rec.wr} (week ${rec.wk})` : '';
+  return rec.r != null ? `${rec.r}${kind === 'hold' ? ' sec' : ' reps'} (week ${rec.rk})` : '';
+}
+function bestTestBefore(id, w) {
+  const x = TESTS.find(t => t.id === id);
+  let b = null;
+  for (const tw of TEST_WEEKS) {
+    if (tw >= w) break;
+    const v = num((state.tests[tw] || {})[id]);
+    if (v != null && v > 0 && (b == null || (x.better === 'up' ? v > b : v < b))) b = v;
+  }
+  return b;
+}
+
+// One PR Challenge per session, rotating through the block:
+// Day A: Copenhagen hold, hex bar weight, single-leg lift weight, hex bar rep max (test week).
+// Day B: push, squat weight, push, squat rep max (test week).
+const CHALLENGE_SLOT = { A: ['5b', '3', '4a', '3'], B: ['7a', '6', '7a', '6'] };
+function challengeOf(slot, w, d) {
+  if (!slot || CHALLENGE_SLOT[d][wib(w)] !== slot.num) return null;
+  const ex = exAt(slot, w), kind = PR_KIND[ex.id];
+  if (!kind) return null;
+  const sid = info(ex, w, d).sid;
+  const target = repsOf(ex, w);
+  const rec = recordBefore(sid, w, d);
+  const ch = { kind, sid, set: setsOf(ex, w) - 1, rec };
+  if (kind === 'load' && isTest(w)) {
+    ch.mode = 'repmax'; ch.cap = 12; ch.title = 'Rep max challenge';
+    ch.rule = `Last set: same weight as your other sets, as many clean reps as you can. Stop at ${ch.cap}, or as soon as form slips.`;
+    ch.beat = rec && rec.e != null ? `Beat your best set: ${fmtN(rec.ew)} lb x ${rec.er}` : 'Set your first record';
+  } else if (kind === 'load') {
+    const up = rec && rec.w != null ? (rec.wr >= target ? rec.w + loadStep(sid) : rec.w) : null;
+    ch.mode = 'weight'; ch.suggest = up; ch.title = 'Weight PR challenge';
+    ch.rule = up
+      ? `Last set: ${fmtN(up)} lb for ${target} clean reps. Only go up if every rep so far looked clean; otherwise match your best.`
+      : `Last set: your heaviest clean set of ${target}.`;
+    ch.beat = rec && rec.w != null ? `Record to beat: ${fmtN(rec.w)} lb x ${rec.wr}` : 'Set your first record';
+  } else if (kind === 'reps') {
+    ch.mode = 'reps'; ch.cap = 25; ch.title = 'Max reps challenge';
+    ch.rule = `Last set: as many clean reps as you can. Stop at ${ch.cap}, or when form slips.`;
+    ch.beat = rec && rec.r != null ? `Record to beat: ${rec.r} reps` : 'Set your first record';
+  } else {
+    ch.mode = 'hold'; ch.cap = Math.max(30, target * 2); ch.title = 'Longest hold challenge';
+    ch.rule = `Last set: hold as long as you can with good form, up to ${ch.cap} seconds${perSide(ex, w) ? ' each side' : ''}.`;
+    ch.beat = rec && rec.r != null ? `Record to beat: ${rec.r} sec` : 'Set your first record';
+  }
+  return ch;
+}
+function dayChallenge(w, d) {
+  for (const slot of DAYS[d].slots) { const ch = challengeOf(slot, w, d); if (ch) return { slot, ch, ex: exAt(slot, w) }; }
+  return null;
+}
+const slotOfEx = (ex, w, d) => DAYS[d].slots.find(s => exAt(s, w) === ex);
+function isChallengeSet(slot, w, d, i) { const ch = challengeOf(slot, w, d); return ch && ch.set === i ? ch : null; }
+
+/* ---------- Celebrations ---------- */
+const PR_TITLE = { weight: 'New weight PR', strength: 'New strength PR', reps: 'New rep PR', hold: 'Longest hold yet', test: 'New test PR', first: 'First record set' };
+let prTimer = null;
+function celebrate(ev, name, challenge) {
+  const $pr = document.getElementById('pr');
+  const title = challenge && ev.type !== 'first' ? 'PR Challenge won!' : PR_TITLE[ev.type] || 'New PR';
+  $pr.innerHTML = `<div class="pr-card${challenge ? ' chal' : ''}" role="alertdialog" aria-label="${esc(title)}">
+    <div class="pr-trophy">${ICON_TROPHY}</div>
+    <p class="pr-title">${esc(title)}</p>
+    <p class="pr-name">${esc(name)}</p>
+    <p class="pr-value">${esc(ev.text)}</p>
+    ${ev.gain ? `<p class="pr-gain">${esc(ev.gain)}</p>` : ''}
+    <button class="btn" data-act="pr-close">Nice!</button></div>`;
+  $pr.hidden = false;
+  confetti(challenge ? 220 : 140);
+  fanfare(); buzz();
+  clearTimeout(prTimer);
+  prTimer = setTimeout(closePR, challenge ? 6000 : 4500);
+}
+function softCard(title, name, msg) {
+  const $pr = document.getElementById('pr');
+  $pr.innerHTML = `<div class="pr-card soft" role="status"><p class="pr-title">${esc(title)}</p><p class="pr-name">${esc(name)}</p>
+    <p class="pr-gain">${esc(msg)}</p><button class="btn" data-act="pr-close">OK</button></div>`;
+  $pr.hidden = false;
+  clearTimeout(prTimer);
+  prTimer = setTimeout(closePR, 4000);
+}
+function closePR() { clearTimeout(prTimer); const $pr = document.getElementById('pr'); $pr.hidden = true; $pr.innerHTML = ''; }
+// After a set is logged: celebrate a PR, a won challenge, or a first record.
+function checkPR(w, d, ex, i, slot) {
+  const inf = info(ex, w, d);
+  const ch = isChallengeSet(slot || slotOfEx(ex, w, d), w, d, i);
+  const P = computePRs();
+  const ev = P.at[`${w}${d}:${inf.sid}:${i}`];
+  if (ev) { celebrate(ev, inf.name, !!ch); return true; }
+  if (!ch) return false;
+  const row = rowsFor(w, d, ex, false)[i];
+  const m = row && metricOf(ch.kind, row);
+  if (!ch.rec && m) {
+    celebrate({ type: 'first', text: ch.kind === 'load' ? `${fmtN(m.w)} lb x ${m.r}` : `${m.r}${ch.kind === 'hold' ? ' sec' : ' reps'}`, gain: 'Now there is a record to beat next time.' }, inf.name, true);
+    return true;
+  }
+  if (P.events.some(e => e.w === w && e.d === d && e.sid === inf.sid)) {
+    softCard('PR already won today', inf.name, 'You beat the record on an earlier set. The challenge counts.');
+    return true;
+  }
+  softCard('Challenge done', inf.name, `The record stays at ${recordText(ch.kind, ch.rec)}. Good effort. Another shot comes later in the block.`);
+  return false;
+}
+function tone(freq, at, dur) {
+  try {
+    const t0 = actx.currentTime + at;
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'triangle'; o.frequency.value = freq;
+    o.connect(g); g.connect(actx.destination);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.3, t0 + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  } catch (e) { /* audio not available */ }
+}
+function fanfare() {
+  if (state.sound === false || !actx) return;
+  [[523, 0, 0.14], [659, 0.12, 0.14], [784, 0.24, 0.14], [1047, 0.36, 0.4]].forEach(([f, t, dur]) => tone(f, t, dur));
+}
+function confetti(n) {
+  const c = document.getElementById('confetti');
+  if (REDUCED || !c || !c.getContext) return;
+  const ctx = c.getContext('2d'), dpr = window.devicePixelRatio || 1, W = window.innerWidth, H = window.innerHeight;
+  c.width = W * dpr; c.height = H * dpr; c.hidden = false;
+  const css = getComputedStyle(document.documentElement);
+  const cols = ['--cone', '--turf', '--cone-soft'].map(v => css.getPropertyValue(v).trim()).concat(['#F5C518', '#4F8FE0']);
+  const ps = Array.from({ length: n }, () => ({
+    x: W / 2 + (Math.random() - 0.5) * 80, y: H * 0.4, vx: (Math.random() - 0.5) * 14, vy: -Math.random() * 14 - 4,
+    s: Math.random() * 6 + 5, a: Math.random() * 6, va: (Math.random() - 0.5) * 0.3, c: cols[Math.floor(Math.random() * cols.length)]
+  }));
+  const t0 = performance.now();
+  (function frame(t) {
+    const el = t - t0;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalAlpha = Math.max(0, 1 - el / 2400);
+    for (const p of ps) {
+      p.vy += 0.32; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore();
+    }
+    if (el < 2400) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, W, H); c.hidden = true; }
+  })(t0);
+}
+let PRS = { events: [], at: {}, best: {}, tbest: {} };
 
 /* =====================================================================
    Log view
@@ -1219,6 +1546,7 @@ function layout(d) {
 
 function renderDay(d) {
   const w = state.week;
+  PRS = computePRs();
   const day = DAYS[d];
   const s = session(w, d, false);
   const c = counts(w, d);
@@ -1227,7 +1555,8 @@ function renderDay(d) {
     <div class="sum"><h1>${day.title}: ${esc(day.sub)}</h1><span class="count" id="count"><b>${c.done}</b> / ${c.total}</span></div>
     <p class="weekhint"><b>Week ${wib(w) + 1} of the block.</b> ${WEEK_HINT[wib(w)](w)}</p>
     <div class="meter" aria-hidden="true"><i id="meter" style="width:${pct}%"></i></div>
-    <div class="run-cta"><button class="btn" data-act="run">${ICON_PLAY}${s && s.done ? 'Run it again' : c.done > 0 ? 'Resume workout' : 'Run workout'}</button></div>`;
+    <div class="run-cta"><button class="btn" data-act="run">${ICON_PLAY}${s && s.done ? 'Run it again' : c.done > 0 ? 'Resume workout' : 'Run workout'}</button></div>
+    ${challengeCallout(w, d, true)}`;
 
   if (isTest(w)) html += testPanel(w);
   html += warmPanel(w, d, s);
@@ -1259,17 +1588,15 @@ function renderDay(d) {
 
 function testPanel(w) {
   const t = state.tests[w] || {};
-  const prevWeek = TEST_WEEKS[TEST_WEEKS.indexOf(w) - 1];
-  const prev = prevWeek ? state.tests[prevWeek] || {} : {};
-  const fields = TESTS.map(x => `
+  const fields = TESTS.map(x => { const b = bestTestBefore(x.id, w); return `
     <label>${x.label}
       <span class="fld"><input inputmode="decimal" data-act="test" data-t="${x.id}" value="${esc(t[x.id] || '')}" aria-label="${x.label} in ${x.unit}"><span>${x.unit}</span></span>
-      <span class="prev">${prevWeek && prev[x.id] ? `Week ${prevWeek}: ${esc(prev[x.id])}` : ''}</span>
-    </label>`).join('');
+      <span class="prev">${b != null ? `Record to beat: ${fmtN(b)}` : 'First test sets the record'}</span>
+    </label>`; }).join('');
   return `
     <section class="sec">
-      <h2>Test week</h2>
-      <p>Run the tests while fresh: best of 3 for each.</p>
+      <h2>Test week: PR challenges</h2>
+      <p>Run the tests while fresh: best of 3 for each. Beat a record and it counts as a PR.</p>
       <div class="tests">${fields}</div>
     </section>`;
 }
@@ -1322,6 +1649,11 @@ function exCard(slot, w, d, restText) {
   if (restText) chips.push(`<span class="chip">${restText}</span>`);
   if (isNew(slot, w)) chips.push('<span class="chip new">New this block</span>');
   const ll = lastLine(ex, w, d);
+  const ch = challengeOf(slot, w, d);
+  const kind = PR_KIND[ex.id];
+  const rec = kind ? recordText(kind, PRS.best[inf.sid]) : '';
+  const chRow = ch && rows[ch.set];
+  const chState = !chRow || !chRow.d ? '' : PRS.events.some(e => e.w === w && e.d === d && e.sid === inf.sid) || !ch.rec ? 'won' : 'done';
 
   const setHtml = [];
   let doneCount = 0;
@@ -1336,24 +1668,51 @@ function exCard(slot, w, d, restText) {
     if (ex.type === 'check') {
       fields += `<span class="fld-text">${esc((ex.id === 'shuttle' ? 'Run ' : 'Sprint ') + (i + 1))}</span>`;
     } else {
-      fields += `<span class="fld"><input inputmode="numeric" data-f="r" value="${esc(r.r)}" placeholder="${esc(target)}" aria-label="${esc(inf.name)}, set ${i + 1}, ${ex.type === 'time' ? 'seconds' : 'reps'}"><span>${ex.type === 'time' ? 'sec' : 'reps'}</span></span>`;
+      const phR = ch && ch.set === i && ch.mode !== 'weight' ? 'max' : target;
+      fields += `<span class="fld"><input inputmode="numeric" data-f="r" value="${esc(r.r)}" placeholder="${esc(phR)}" aria-label="${esc(inf.name)}, set ${i + 1}, ${ex.type === 'time' ? 'seconds' : 'reps'}"><span>${ex.type === 'time' ? 'sec' : 'reps'}</span></span>`;
     }
-    setHtml.push(`<div class="set${ex.type !== 'load' ? ' one' : ''}${r.d ? ' is-done' : ''}" data-ex="${ex.id}" data-slot="${slot.num}" data-i="${i}">
-      <span class="set-n" aria-hidden="true">${i + 1}</span>${fields}
+    const isPR = !!PRS.at[`${w}${d}:${inf.sid}:${i}`];
+    const isChSet = ch && ch.set === i;
+    setHtml.push(`<div class="set${ex.type !== 'load' ? ' one' : ''}${r.d ? ' is-done' : ''}${isChSet ? ' chal-set' : ''}" data-ex="${ex.id}" data-slot="${slot.num}" data-i="${i}">
+      ${isPR ? '<span class="set-n pr" title="PR">PR</span>' : isChSet ? `<span class="set-n" title="PR Challenge set">${ICON_TROPHY}</span>` : `<span class="set-n" aria-hidden="true">${i + 1}</span>`}${fields}
       <button class="tick" data-act="tick" aria-pressed="${!!r.d}" aria-label="Set ${i + 1} done">${ICON_CHECK}</button></div>`);
   }
   return `
-    <article class="ex${doneCount === n ? ' all-done' : ''}" id="ex-${slot.num}">
+    <article class="ex${doneCount === n ? ' all-done' : ''}${ch ? ' challenge' : ''}" id="ex-${slot.num}">
+      ${ch ? `<div class="chal-ribbon">${ICON_TROPHY}<span>${chState === 'won' ? 'PR Challenge won' : chState === 'done' ? 'PR Challenge done' : 'PR Challenge: ' + esc(ch.title)}</span></div>` : ''}
       <div class="ex-hd"><span class="ex-num">${slot.num}</span>
         <div><h3 class="ex-name">${esc(inf.name)}</h3><div class="chips">${chips.join('')}</div>${variantControl(ex, w, d)}${guardHtml(ex)}</div>
       </div>
       <details class="tip"><summary>How to do it</summary><p>${esc(inf.tip)}</p>${figTag(inf.fig, inf.name)}</details>
+      ${ch ? `<p class="chal-rule"><b>${esc(ch.beat)}.</b> ${esc(ch.rule)}</p>` : ''}
+      ${rec ? `<p class="last rec">${ICON_TROPHY}Record: ${esc(rec)}</p>` : ''}
       ${ll ? `<p class="last">${esc(ll)}</p>` : ''}
       <div class="sets">${setHtml.join('')}</div>
     </article>`;
 }
 
 function renderProgress() {
+  const P = computePRs();
+  let attempts = 0;
+  for (const s of Object.values(state.sessions)) for (const rows of Object.values(s.sets)) rows.forEach(r => { if (r.d && r.c) attempts++; });
+  const won = P.events.filter(e => e.chal).length;
+  const recs = Object.entries(P.best).map(([sid, rec]) => {
+    const ex = sidEx(sid), t = recordText(PR_KIND[ex.id], rec);
+    return t ? { name: sidName(sid, rec.wk || rec.rk), t } : null;
+  }).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name))
+    .concat(TESTS.filter(x => P.tbest[x.id]).map(x => ({ name: x.label + ' test', t: `${fmtN(P.tbest[x.id].v)} ${x.unit} (week ${P.tbest[x.id].wk})` })));
+  const recent = P.events.slice().sort((a, b) => (b.w - a.w) || ((b.d || 'C') < (a.d || 'C') ? -1 : 1)).slice(0, 8);
+  const evName = e => (e.type === 'test' ? e.test.label + ' test' : sidName(e.sid, e.w));
+  const prBoard = `
+    <section class="sec pr-board">
+      <h2>PR board</h2>
+      <div class="pr-stats">
+        <div><span class="big">${P.events.length}</span><small>PRs set</small></div>
+        <div><span class="big">${won}</span><small>of ${attempts} PR challenges won</small></div>
+      </div>
+      ${recs.length ? `<h3>Records</h3><table><tbody>${recs.map(r => `<tr><td>${esc(r.name)}</td><td class="num">${esc(r.t)}</td></tr>`).join('')}</tbody></table>` : '<p>Records appear after an exercise is logged twice: the first time sets the baseline.</p>'}
+      ${recent.length ? `<h3>Recent PRs</h3><ul class="prlist">${recent.map(e => `<li>${ICON_TROPHY}<div><b>${esc(evName(e))}: ${esc(e.text)}</b><span>Week ${e.w}${e.d ? `, Day ${e.d}` : ''}${e.chal ? ', PR Challenge' : ''}. ${esc(e.gain)}</span></div></li>`).join('')}</ul>` : ''}
+    </section>`;
   const doneSessions = Object.values(state.sessions).filter(s => s.done).length;
   const tw = TEST_WEEKS.filter(w => { const t = state.tests[w]; return t && TESTS.some(x => num(t[x.id]) != null); });
   const testRows = tw.map(w => `<tr><td>Week ${w}</td>${TESTS.map(x => { const v = num((state.tests[w] || {})[x.id]); return `<td class="num">${v == null ? '' : v}</td>`; }).join('')}</tr>`).join('');
@@ -1376,7 +1735,7 @@ function renderProgress() {
     if (cells.some(v => v != null)) liftRows.push(`<tr><td>Wk ${w}</td>${cells.map(v => `<td class="num">${v == null ? '' : v}</td>`).join('')}</tr>`);
   }
 
-  $main.innerHTML = `
+  $main.innerHTML = prBoard + `
     <section class="sec">
       <h2>Sessions finished</h2>
       <div class="big">${doneSessions}<small>of ${WEEKS * 2}</small></div>
@@ -1551,7 +1910,7 @@ function openRun() {
   const s = session(w, d, true);
   if (!s.done && (!s.startedAt || Date.now() - s.startedAt > 4 * 3600e3)) s.startedAt = Date.now();
   save();
-  run = { w, d, idx: firstOpenStep(w, d), rest: null, hold: null };
+  run = { w, d, idx: firstOpenStep(w, d), rest: null, hold: null, splashed: {}, fanfared: {} };
   $run.hidden = false;
   document.body.classList.add('locked');
   keepAwake(true);
@@ -1578,6 +1937,16 @@ function stepper(label, field, value, placeholder, step) {
 }
 const perSide = (ex, w) => /per (side|leg|arm)/.test(sideOf(ex, w));
 
+function challengeCallout(w, d, asButton) {
+  const dc = dayChallenge(w, d);
+  if (!dc) return '';
+  const name = info(dc.ex, w, d).name;
+  const inner = `${ICON_TROPHY}<span><b>Today's PR Challenge</b>${esc(dc.slot.num)} ${esc(name)}, set ${dc.ch.set + 1}. ${esc(dc.ch.beat)}.</span>`;
+  return asButton
+    ? `<button class="chal-callout" data-act="goto-ch" data-slot="${dc.slot.num}">${inner}</button>`
+    : `<div class="chal-callout">${inner}</div>`;
+}
+
 function renderRun() {
   if (!run) return;
   const { w, d } = run;
@@ -1586,12 +1955,14 @@ function renderRun() {
   const st = steps[run.idx];
   const total = steps.length;
   const s = session(w, d, false);
-  let body = '', primary = '', primaryAct = 'run-next';
+  let body = '', primary = '', primaryAct = 'run-next', primaryClass = '';
+  const ch = st && st.kind === 'set' && !run.rest ? challengeOf(st.slot, w, d) : null;
 
   if (run.rest) {
     const R = run.rest;
     const nx = steps[run.idx];
     const nxInf = nx && nx.kind === 'set' ? info(nx.ex, w, d) : null;
+    const nxCh = nx && nx.kind === 'set' ? challengeOf(nx.slot, w, d) : null;
     const left = Math.max(0, R.end - Date.now());
     body = `<div class="rest-view" id="restView">
       <div class="lbl">${R.tag === 'Switch' ? 'Switch' : esc(R.tag) + ' rest'}</div>
@@ -1599,14 +1970,34 @@ function renderRun() {
       <div class="rest-bar" aria-hidden="true"><i id="restBar" style="width:${Math.round(100 * (1 - left / R.total))}%"></i></div>
       <p class="rest-why">${esc(R.why)}</p>
       <div class="rest-btns"><button class="btn ghost" data-act="rest-sub">&minus;15 sec</button><button class="btn ghost" data-act="rest-add">+15 sec</button></div>
+      ${nxCh && nxCh.set === nx.i ? `<p class="chal-strip">${ICON_TROPHY}Next up is the PR Challenge set</p>` : ''}
       <p class="next">Next: <b>${esc(stepLabel(nx, w, d))}</b></p>
       ${nxInf ? figTag(nxInf.fig, nxInf.name) : ''}
       ${R.tag === 'Switch' ? '' : `<p class="fine">${KID_NOTE}</p>`}</div>`;
     primary = R.tag === 'Switch' ? 'Start now' : 'Skip rest';
     primaryAct = 'rest-skip';
   } else if (st.kind === 'warm') {
-    body = `<p class="weekhint"><b>Week ${wib(w) + 1} of the block.</b> ${WEEK_HINT[wib(w)](w)}</p>` + (isTest(w) ? testPanel(w) : '') + warmPanel(w, d, s);
+    body = challengeCallout(w, d, false)
+      + `<p class="weekhint"><b>Week ${wib(w) + 1} of the block.</b> ${WEEK_HINT[wib(w)](w)}</p>`
+      + (isTest(w) ? testPanel(w) : '') + warmPanel(w, d, s);
     primary = 'Start training';
+  } else if (st.kind === 'set' && ch && !run.splashed[st.slot.num]) {
+    // The flash callout as the athlete moves into the challenge exercise.
+    const inf = info(st.ex, w, d);
+    body = `<div class="splash" role="alert">
+      <div class="splash-rays" aria-hidden="true"></div>
+      <div class="splash-in">
+        <div class="splash-trophy">${ICON_TROPHY}</div>
+        <p class="splash-kicker">${esc(ch.title)}</p>
+        <h2 class="splash-title">PR Challenge</h2>
+        <p class="splash-ex">${st.slot.num} ${esc(inf.name)}</p>
+        <p class="splash-beat">${esc(ch.beat)}</p>
+        <p class="splash-rule">${esc(ch.rule)}</p>
+        <p class="splash-when">${ch.set === st.i ? 'The challenge is this set.' : `The challenge is set ${ch.set + 1} of ${st.of}. The sets before it build up to it.`}</p>
+      </div></div>`;
+    primary = 'Let\'s go';
+    primaryAct = 'splash-go';
+    if (!run.fanfared[st.slot.num]) { run.fanfared[st.slot.num] = true; setTimeout(() => { fanfare(); buzz(); }, 120); }
   } else if (st.kind === 'set') {
     const ex = st.ex, inf = info(ex, w, d);
     const rows = rowsFor(w, d, ex, false);
@@ -1615,50 +2006,67 @@ function renderRun() {
     const side = sideOf(ex, w);
     const ll = lastLine(ex, w, d);
     const sec = SECTIONS[st.slot.sec];
+    const isCh = ch && ch.set === st.i;
+    const kind = PR_KIND[ex.id];
+    const rec = kind ? recordText(kind, computePRs().best[inf.sid]) : '';
     const unitWord = ex.type === 'check' ? (ex.id === 'shuttle' ? 'Run' : 'Sprint') : 'Set';
-    const spec = ex.type === 'check' ? `${target}` : `${target}${ex.type === 'time' ? ' sec' : ' reps'}${side ? ' ' + side : ''}`;
+    const spec = isCh && ch.mode !== 'weight'
+      ? (ch.mode === 'hold' ? `as long as you can, up to ${ch.cap} sec` : `max reps, up to ${ch.cap}`)
+      : ex.type === 'check' ? `${target}` : `${target}${ex.type === 'time' ? ' sec' : ' reps'}${side ? ' ' + side : ''}`;
     const head = `
       <p class="run-grp${sec.knee ? ' knee' : ''}">${sec.title}</p>
       <div class="run-ex"><span class="ex-num">${st.slot.num}</span><h2>${esc(inf.name)}</h2></div>
-      <p class="run-setof">${unitWord} <b>${st.i + 1}</b> of ${st.of}: ${esc(spec)}${st.pair ? ', alternating' : ''}</p>`;
+      <p class="run-setof">${unitWord} <b>${st.i + 1}</b> of ${st.of}: ${esc(spec)}${st.pair ? ', alternating' : ''}</p>
+      ${isCh ? `<div class="chal-banner"><b>${ICON_TROPHY}PR set!</b>${esc(ch.beat)}. ${esc(ch.rule)}</div>`
+        : ch ? `<p class="chal-strip">${ICON_TROPHY}PR Challenge on set ${ch.set + 1}</p>` : ''}`;
     if (run.hold) {
       body = `${head}
         <div class="hold-view" id="holdView" data-phase="${run.hold.phase}">
           <div class="lbl" id="holdLbl">${holdLabel(run.hold)}</div>
-          <div class="clock" id="holdClock">${fmtSec(Math.ceil(Math.max(0, run.hold.end - Date.now()) / 1000))}</div>
+          <div class="clock" id="holdClock">${holdClockText(run.hold)}</div>
         </div>
         ${figTag(inf.fig, inf.name)}`;
-      primary = 'Stop hold';
+      primary = holdStopLabel(run.hold);
       primaryAct = 'hold-stop';
+      primaryClass = ' stop';
     } else {
+      const repLabel = isCh && ch.mode !== 'weight' ? 'Reps done' : 'Reps';
       let inputs = '';
       if (ex.type === 'load') {
-        inputs = `<div class="steppers">${stepper('Weight, lb', 'w', r.w || startWeight(ex, w, d, st.i), ex.optionalLoad ? 'BW' : '0', 5)}${stepper('Reps', 'r', r.r || String(target), String(target), 1)}</div>`;
+        inputs = `<div class="steppers">${stepper('Weight, lb', 'w', r.w || startWeight(ex, w, d, st.i), ex.optionalLoad ? 'BW' : '0', loadStep(inf.sid))}${stepper(repLabel, 'r', r.r || String(target), String(target), 1)}</div>`;
       } else if (ex.type === 'reps' || ex.type === 'time') {
-        inputs = `<div class="steppers single">${stepper(ex.type === 'time' ? 'Seconds held' : 'Reps', 'r', r.r || String(target), String(target), ex.type === 'time' ? 5 : 1)}</div>`;
+        inputs = `<div class="steppers single">${stepper(ex.type === 'time' ? 'Seconds held' : repLabel, 'r', r.r || String(target), String(target), ex.type === 'time' ? 5 : 1)}</div>`;
       }
-      const holdBtn = ex.type === 'time'
-        ? `<button class="btn hold-btn" data-act="hold-start">Start ${target} sec timer${perSide(ex, w) ? ', each side' : ''}</button>` : '';
+      let holdBtn = '';
+      if (ex.type === 'time') {
+        holdBtn = isCh && ch.mode === 'hold'
+          ? `<button class="btn hold-btn chal" data-act="hold-start">Start max hold${perSide(ex, w) ? ', each side' : ''}</button>`
+          : `<button class="btn hold-btn" data-act="hold-start">Start ${target} sec timer${perSide(ex, w) ? ', each side' : ''}</button>`;
+      }
       body = `${head}
         ${variantControl(ex, w, d)}
         ${figTag(inf.fig, inf.name)}
         ${guardHtml(ex)}
         <p class="run-tip">${esc(inf.tip)}</p>
+        ${rec ? `<p class="run-last rec">${ICON_TROPHY}Record: ${esc(rec)}</p>` : ''}
         ${ll ? `<p class="run-last">${esc(ll)}</p>` : ''}
         ${holdBtn}
         ${inputs}
         ${r.d ? '<p class="fine">Already logged. Change the numbers and log it again, or move on.</p>' : ''}
         <button class="run-skip" data-act="run-skip">Skip this set</button>`;
-      const verb = ex.type === 'check' ? `${unitWord} done` : 'Log set';
+      const verb = isCh ? 'Log PR attempt' : ex.type === 'check' ? `${unitWord} done` : 'Log set';
       const rr = restAfter(steps, run.idx, w, d);
-      primary = !rr ? verb : rr.tag === 'Switch' ? `${verb}, then ${steps[run.idx + 1].slot.num}` : `${verb}, rest ${restLabel(rr.sec)}`;
+      primary = isCh || !rr ? verb : rr.tag === 'Switch' ? `${verb}, then ${steps[run.idx + 1].slot.num}` : `${verb}, rest ${restLabel(rr.sec)}`;
       primaryAct = 'run-log';
+      if (isCh) primaryClass = ' chal';
     }
   } else {
     const c = counts(w, d);
     const mins = s && s.startedAt ? Math.round(((s.done && s.doneAt ? Date.parse(s.doneAt) : Date.now()) - s.startedAt) / 60000) : null;
+    const todays = computePRs().events.filter(e => e.w === w && e.d === d);
     body = `<div class="run-done"><h2>${c.done} of ${c.total} sets logged</h2>
       ${mins != null ? `<p class="run-tip">Session time: ${mins} min.</p>` : ''}
+      ${todays.length ? `<div class="chal-callout">${ICON_TROPHY}<span><b>${todays.length} PR${todays.length > 1 ? 's' : ''} today</b>${todays.map(e => esc(sidName(e.sid, w) + ' ' + e.text)).join(', ')}</span></div>` : ''}
       <p class="run-tip">Add a note for next time, then finish the session.</p>
       <section class="sec"><h2>Notes</h2><textarea data-act="notes" id="runNotes" placeholder="How did it feel? Anything to change next time?" aria-label="Session notes"></textarea></section></div>`;
     primary = s && s.done ? 'Close' : 'Finish session';
@@ -1679,7 +2087,7 @@ function renderRun() {
     <div class="run-body"><div class="wrap">${body}</div></div>
     <div class="run-foot"><div class="wrap">
       <button class="btn ghost" data-act="run-back"${run.idx === 0 && !run.rest ? ' disabled' : ''}>Back</button>
-      <button class="btn${run.hold ? ' stop' : ''}" data-act="${primaryAct}">${primary}</button>
+      <button class="btn${primaryClass}" data-act="${primaryAct}">${primary}</button>
     </div></div>`;
   const notes = document.getElementById('runNotes');
   if (notes) notes.value = s ? s.notes || '' : '';
@@ -1702,6 +2110,7 @@ function logRunSet(repsOverride) {
   if (st.ex.type !== 'check') r.r = repsOverride != null ? String(repsOverride) : runField('r');
   completeSet(st.ex, w, d, st.i);
   save();
+  checkPR(w, d, st.ex, st.i, st.slot);
   const rest = restAfter(steps, run.idx, w, d);
   run.hold = null;
   run.idx = Math.min(run.idx + 1, steps.length - 1);
@@ -1735,36 +2144,61 @@ function tickRest() {
 function endRest() { if (run) { run.rest = null; renderRun(); } }
 
 /* ---------- Hold timer (timed exercises) ---------- */
+// Counts down to the target, or in a hold challenge counts up until the
+// athlete stops or hits the cap. Per-side holds switch sides in between.
 function holdLabel(H) {
   if (H.phase === 'ready') return 'Get set';
   if (H.phase === 'switch') return 'Switch sides';
-  return H.sides === 2 ? (H.side === 1 ? 'Hold, first side' : 'Hold, second side') : 'Hold';
+  const side = H.sides === 2 ? (H.side === 1 ? ', first side' : ', second side') : '';
+  return (H.max ? 'Hold as long as you can' : 'Hold') + side;
 }
-function startHold(secs, sides) {
-  run.hold = { phase: 'ready', side: 1, sides, secs, end: Date.now() + 3000, work: [0, 0], beeped: {} };
+function holdClockText(H) {
+  const now = Date.now();
+  if (H.phase === 'work' && H.max) return fmtSec(Math.floor((now - H.start) / 1000));
+  return fmtSec(Math.ceil(Math.max(0, H.end - now) / 1000));
+}
+function holdStopLabel(H) {
+  if (H.max && H.phase === 'work') return H.sides === 2 && H.side === 1 ? 'End first side' : 'End hold';
+  return 'Stop';
+}
+function startHold(secs, sides, max) {
+  run.hold = { phase: 'ready', side: 1, sides, secs, max: !!max, end: Date.now() + 3000, start: 0, work: [0, 0], beeped: {} };
   beep(660, 90);
   renderRun();
 }
-function tickHold() {
-  if (!run || !run.hold) return;
-  const H = run.hold, now = Date.now();
-  let left = Math.max(0, (H.end - now) / 1000);
-  if (H.phase === 'work') H.work[H.side - 1] = Math.min(H.secs, H.secs - left);
-  const sLeft = Math.ceil(left), bk = H.phase + H.side + ':' + sLeft;
-  if (sLeft > 0 && sLeft <= 3 && H.phase !== 'switch' && !H.beeped[bk]) { H.beeped[bk] = 1; beep(660, 80); }
-  if (left <= 0) {
-    if (H.phase === 'ready') { H.phase = 'work'; H.end = now + H.secs * 1000; beep(990, 200); }
-    else if (H.phase === 'work' && H.sides === 2 && H.side === 1) { H.work[0] = H.secs; H.phase = 'switch'; H.end = now + 5000; beep(880, 160, 2); buzz(); }
-    else if (H.phase === 'switch') { H.phase = 'work'; H.side = 2; H.end = now + H.secs * 1000; beep(990, 200); }
-    else { H.work[H.side - 1] = H.secs; beep(990, 220, 2); buzz(); finishHold(); return; }
-    left = Math.max(0, (H.end - now) / 1000);
-  }
+function renderHoldBits() {
+  const H = run && run.hold;
+  if (!H) return;
   const c = document.getElementById('holdClock');
-  if (c) c.textContent = fmtSec(Math.ceil(left));
+  if (c) c.textContent = holdClockText(H);
   const l = document.getElementById('holdLbl');
   if (l) l.textContent = holdLabel(H);
   const v = document.getElementById('holdView');
   if (v) v.dataset.phase = H.phase;
+  const b = $run.querySelector('[data-act="hold-stop"]');
+  if (b) b.textContent = holdStopLabel(H);
+}
+function endSide() {
+  const H = run.hold;
+  if (H.sides === 2 && H.side === 1) { H.phase = 'switch'; H.end = Date.now() + 5000; beep(880, 160, 2); buzz(); renderHoldBits(); }
+  else { beep(990, 220, 2); buzz(); finishHold(); }
+}
+function tickHold() {
+  if (!run || !run.hold) return;
+  const H = run.hold, now = Date.now();
+  if (H.phase === 'work') {
+    H.work[H.side - 1] = Math.min(H.secs, (now - H.start) / 1000);
+    if (!H.max) {
+      const sLeft = Math.ceil((H.end - now) / 1000), bk = 'w' + H.side + ':' + sLeft;
+      if (sLeft > 0 && sLeft <= 3 && !H.beeped[bk]) { H.beeped[bk] = 1; beep(660, 80); }
+    }
+    if (now >= H.end) { H.work[H.side - 1] = H.secs; endSide(); return; }
+  } else if (now >= H.end) {
+    if (H.phase === 'switch') H.side = 2;
+    H.phase = 'work'; H.start = now; H.end = now + H.secs * 1000;
+    beep(990, 200);
+  }
+  renderHoldBits();
 }
 function finishHold() {
   const H = run.hold;
@@ -1893,10 +2327,14 @@ function runAction(act, t) {
   }
   else if (act === 'rest-skip') endRest();
   else if (act === 'hold-start' && st && st.kind === 'set') {
-    const secs = num(runField('r')) || repsOf(st.ex, w);
-    startHold(secs, perSide(st.ex, w) ? 2 : 1);
+    const ch = isChallengeSet(st.slot, w, d, st.i);
+    if (ch && ch.mode === 'hold') startHold(ch.cap, perSide(st.ex, w) ? 2 : 1, true);
+    else startHold(num(runField('r')) || repsOf(st.ex, w), perSide(st.ex, w) ? 2 : 1, false);
   }
-  else if (act === 'hold-stop') finishHold();
+  else if (act === 'hold-stop') {
+    if (run.hold && run.hold.max && run.hold.phase === 'work') endSide(); else finishHold();
+  }
+  else if (act === 'splash-go' && st && st.kind === 'set') { run.splashed[st.slot.num] = true; renderRun(); }
   else if (act === 'sound') { state.sound = state.sound === false; save(); renderRun(); }
   else if (act === 'step') {
     const f = t.dataset.f, step = +t.dataset.by;
@@ -1915,7 +2353,13 @@ document.addEventListener('click', e => {
   const inRun = run && $run.contains(t);
   const w = inRun ? run.w : state.week, d = inRun ? run.d : state.view;
 
-  if (inRun && (act.startsWith('run-') || act.startsWith('rest-') || act.startsWith('hold-') || act === 'step' || act === 'sound')) { runAction(act, t); return; }
+  if (act === 'pr-close') { closePR(); return; }
+  if (inRun && (act.startsWith('run-') || act.startsWith('rest-') || act.startsWith('hold-') || act === 'step' || act === 'sound' || act === 'splash-go')) { runAction(act, t); return; }
+  if (act === 'goto-ch') {
+    const card = document.getElementById('ex-' + t.dataset.slot);
+    if (card) { card.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash'); }
+    return;
+  }
 
   if (act === 'variant') {
     const s = session(w, d, true);
@@ -1944,12 +2388,24 @@ document.addEventListener('click', e => {
     const i = +row.dataset.i;
     const rows = rowsFor(w, d, ex, true);
     const r = rows[i];
+    const slot = DAYS[d].slots.find(s => s.num === row.dataset.slot);
+    let pr = false;
     if (r.d) r.d = false;
     else {
+      const ch = isChallengeSet(slot, w, d, i);
+      if (ch && ch.mode !== 'weight' && r.r === '') {
+        toast('Type the reps or seconds you hit, then check it off.');
+        const ri = row.querySelector('[data-f="r"]');
+        if (ri) ri.focus();
+        return;
+      }
       completeSet(ex, w, d, i);
       const rest = restForSet(w, d, row.dataset.slot, i);
       if (rest && rest.sec > 0) startTimer(rest);
+      save();
+      pr = checkPR(w, d, ex, i, slot);
     }
+    if (pr) { save(); renderDay(d); renderTabs(); return; }
     row.classList.toggle('is-done', r.d);
     t.setAttribute('aria-pressed', String(r.d));
     const wi = row.querySelector('[data-f="w"]'), ri = row.querySelector('[data-f="r"]');
@@ -2007,6 +2463,10 @@ document.addEventListener('change', e => {
     save();
   } else if (t.dataset.act === 'balance') {
     session(w, d, true).balance = +t.value; save();
+  } else if (t.dataset.act === 'test') {
+    writeNow();
+    const ev = computePRs().at[`t${w}:${t.dataset.t}`];
+    if (ev) celebrate(ev, ev.test.label + ' test', true);
   }
 });
 

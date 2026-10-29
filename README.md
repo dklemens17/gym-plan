@@ -46,6 +46,30 @@ Every session ends with deliberate work for the muscles that protect the knee li
 - **Session clock** in Run workout, plus timers on the timed warm-up items.
 - Beeps on the last 3 seconds (sound can be turned off). The phone vibrates where supported, and the screen stays awake during a workout.
 
+## PRs and PR Challenges
+
+- **PRs are logged automatically** from real numbers, and each one gets a celebration with confetti and a sound:
+  - A heavier weight than ever.
+  - A stronger set: more reps at a given weight, compared using estimated strength.
+  - More push-up or inverted-row reps.
+  - A longer Copenhagen, hollow or split-squat hold.
+  - A better broad jump, sprint or throw-in test.
+- The first session of an exercise sets the baseline.
+- **One PR Challenge per session**, rotating through each block:
+
+  | Week of block | Day A | Day B |
+  | --- | --- | --- |
+  | 1 | Copenhagen longest hold | Push weight or max reps |
+  | 2 | Hex bar weight PR | Squat weight PR |
+  | 3 | Single-leg lift weight PR | Push weight or max reps |
+  | 4 (test week) | Hex bar rep max | Squat rep max |
+
+  - When Run workout reaches the challenge exercise, a full-screen flash calls it out with the record to beat.
+  - The challenge is the last set. Weight challenges suggest 5 lb more on bars and 2.5 lb more on dumbbells, and only if every rep so far looked clean.
+  - Rep max challenges stop at 12 reps, or as soon as form slips.
+  - In test week, the three tests are PR challenges too.
+- **The Progress tab has a PR board:** total PRs, challenges won, records for every exercise, and recent PRs.
+
 ## Where the data lives
 
 Logs are saved in the phone's browser (localStorage). Nothing is sent anywhere. Use **Progress > Export backup** now and then, and **Import backup** to move the log to another device.
