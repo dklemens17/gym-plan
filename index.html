@@ -228,7 +228,8 @@ td.num, th.num { text-align: right; }
 .timer .lbl { font-size: 14px; color: var(--band-muted); }
 .timer .clock { font: 700 38px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; min-width: 86px; }
 .timer.go .clock { color: var(--cone); }
-.timer button { margin-left: auto; height: 42px; padding: 0 14px; border-radius: 8px; border: 1px solid #34495F; background: transparent; color: var(--band-ink); font-weight: 600; }
+.timer button { margin-left: auto; height: 42px; padding: 0 12px; border-radius: 8px; border: 1px solid #34495F; background: transparent; color: var(--band-ink); font-weight: 600; white-space: nowrap; }
+.timer .lbl { line-height: 1.2; max-width: 34%; }
 .timer button + button { margin-left: 0; }
 
 /* Run workout overlay */
@@ -277,6 +278,27 @@ td.num, th.num { text-align: right; }
 .rest-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 360px; margin: 14px auto 0; }
 .run-done h2 { font: 700 40px/1 "Barlow Condensed", sans-serif; margin: 6px 0 6px; }
 
+.checks li { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 10px; }
+.checks li > label { flex: 1; min-width: 0; }
+.checks .bal { flex-basis: 100%; }
+.mini-timer { margin-top: 6px; height: 34px; min-width: 64px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); font: 600 17px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; color: var(--ink); }
+.mini-timer.on { background: var(--cone); border-color: var(--cone); color: #fff; }
+.run-meta { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.run-clock { font: 600 20px/1 "Barlow Condensed", sans-serif; color: var(--band-muted); font-variant-numeric: tabular-nums; }
+.snd { width: 38px; height: 38px; border-radius: 8px; border: 1px solid #34495F; background: transparent; color: var(--band-ink); display: grid; place-items: center; padding: 0; }
+.snd svg { width: 20px; height: 20px; }
+.snd[aria-pressed="false"] { color: var(--band-muted); }
+.rest-bar { height: 8px; max-width: 360px; margin: 6px auto 12px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.rest-bar i { display: block; height: 100%; background: var(--cone); transition: width .25s linear; }
+.rest-why { max-width: 460px; margin: 0 auto 12px; font-size: 15px; color: var(--ink); text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.hold-view { text-align: center; margin: 4px 0 10px; padding: 10px 0; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); }
+.hold-view .lbl { font: 600 24px/1 "Barlow Condensed", sans-serif; color: var(--muted); }
+.hold-view .clock { font: 700 110px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+.hold-view[data-phase="work"] .clock, .hold-view[data-phase="work"] .lbl { color: var(--turf); }
+.hold-view[data-phase="switch"] .clock, .hold-view[data-phase="switch"] .lbl { color: var(--cone); }
+.hold-btn { background: var(--turf); margin: 0 0 10px; height: 56px; font-size: 22px; }
+.btn.stop { background: var(--ink); color: var(--card); }
+@media (prefers-reduced-motion: reduce) { .rest-bar i { transition: none; } }
 .toast {
   position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%);
   background: var(--ink); color: var(--card); padding: 10px 16px; border-radius: 8px; font-weight: 500; z-index: 60;
@@ -781,106 +803,106 @@ const GUARD = {
 // Exercise library. Arrays of three hold [Foundation, Strength, Power] values.
 // dose = [sets, reps or seconds] per stage.
 const LIB = {
-  cmj: { name: 'Countermovement jump and stick', type: 'reps', dose: [[3, 4], [3, 4], [4, 3]], rest: 60,
+  cmj: { name: 'Countermovement jump and stick', type: 'reps', dose: [[3, 4], [3, 4], [4, 3]],
     tip: 'Dip fast, jump as high as possible, land quietly and hold 2 seconds. Reset between reps.' },
-  sqjump: { name: 'Pause squat jump and stick', type: 'reps', dose: [[3, 4], [3, 4], [4, 3]], rest: 60,
+  sqjump: { name: 'Pause squat jump and stick', type: 'reps', dose: [[3, 4], [3, 4], [4, 3]],
     tip: 'Sit into a quarter squat and hold 2 seconds, then jump as high as possible without dipping first. Land and hold 2 seconds.' },
-  contvert: { name: 'Continuous vertical jumps', type: 'reps', side: 'jumps linked', dose: [[3, 3], [3, 4], [4, 5]], rest: 75,
+  contvert: { name: 'Continuous vertical jumps', type: 'reps', side: 'jumps linked', dose: [[3, 3], [3, 4], [4, 5]],
     tip: 'Jump, land, and rebound straight back up without pausing. Stick the last one. End the set if landings get loud or knees cave.' },
-  broad: { name: 'Broad jump and stick', type: 'reps', dose: [[3, 3], [3, 3], [4, 3]], rest: 60,
+  broad: { name: 'Broad jump and stick', type: 'reps', dose: [[3, 3], [3, 3], [4, 3]],
     tip: 'Swing the arms and jump for distance. Land in an athletic stance, knees over toes, and hold 2 seconds.' },
-  tbroad: { name: 'Triple broad jump', fig: 'broad', type: 'reps', side: 'jumps linked', dose: [[3, 3], [3, 3], [4, 3]], rest: 75,
+  tbroad: { name: 'Triple broad jump', fig: 'broad', type: 'reps', side: 'jumps linked', dose: [[3, 3], [3, 3], [4, 3]],
     tip: 'Three broad jumps in a row without pausing. Stick the last landing.' },
-  depthdrop: { name: 'Depth drop and stick', type: 'reps', dose: [[3, 4], [3, 4], [3, 4]], rest: 60,
+  depthdrop: { name: 'Depth drop and stick', type: 'reps', dose: [[3, 4], [3, 4], [3, 4]],
     tip: 'Step (don\'t jump) off the bench, land on both feet and freeze in an athletic stance, knees over toes. Quiet landings only.' },
-  depthjump: { name: 'Depth jump', type: 'reps', dose: [[3, 3], [3, 4], [4, 3]], rest: 90,
+  depthjump: { name: 'Depth jump', type: 'reps', dose: [[3, 3], [3, 4], [4, 3]],
     tip: 'Step off the bench, land, and jump straight up as fast as possible. Short ground contact, then stick the second landing.' },
-  hex: { name: 'Hex bar deadlift', type: 'load', startW: 55, dose: [[3, 6], [3, 5], [4, 3]], rest: 120,
+  hex: { name: 'Hex bar deadlift', type: 'load', startW: 55, dose: [[3, 6], [3, 5], [4, 3]],
     tip: 'Main strength lift. Weight is the total, bar included (empty bar = 55 lb). Push the floor away and stand tall.' },
-  lunge: { name: 'Reverse lunge', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]], rest: 0,
+  lunge: { name: 'Reverse lunge', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]],
     tip: 'Dumbbells at sides. Step back, lower the back knee toward the floor, drive up through the front heel. Weight is each dumbbell.' },
-  rfess: { name: 'Rear-foot-elevated split squat', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]], rest: 0,
+  rfess: { name: 'Rear-foot-elevated split squat', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]],
     tip: 'Back foot on the bench, dumbbells at sides. Front knee tracks over the middle toes. Weight is each dumbbell.' },
-  stepup: { name: 'Step-up', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]], rest: 0,
+  stepup: { name: 'Step-up', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]],
     tip: 'Whole foot on the bench, push up through that leg only, drive the other knee up at the top. Lower slowly. Weight is each dumbbell.' },
-  invrow: { name: 'Inverted row', type: 'reps', dose: [[2, 8], [3, 8], [3, 10]], rest: 90,
+  invrow: { name: 'Inverted row', type: 'reps', dose: [[2, 8], [3, 8], [3, 10]],
     tip: 'Barbell in the rack at waist height, body straight like a plank. Raise the bar to make it easier.' },
-  dbrow: { name: 'One-arm dumbbell row', type: 'load', startW: 15, side: 'per arm', dose: [[2, 10], [3, 8], [3, 8]], rest: 90,
+  dbrow: { name: 'One-arm dumbbell row', type: 'load', startW: 15, side: 'per arm', dose: [[2, 10], [3, 8], [3, 8]],
     tip: 'One knee and hand on the bench, back flat. Pull the dumbbell to the hip, elbow close to the body.' },
-  nordic: { name: 'Nordic hamstring lower', type: 'reps', dose: [[2, 3], [2, 5], [3, 5]], rest: 0, guard: 'ham',
+  nordic: { name: 'Nordic hamstring lower', type: 'reps', dose: [[2, 3], [2, 5], [3, 5]], guard: 'ham',
     tip: 'Kneel, partner holds the ankles. Lower as slowly as possible, catch with the hands, push back up.' },
   copen: { name: ['Copenhagen plank, short lever', 'Copenhagen plank, short lever', 'Copenhagen plank with leg lift'], type: 'time', side: 'per side',
-    dose: [[2, 15], [2, 20], [3, 20]], rest: 60, guard: 'adductor',
+    dose: [[2, 15], [2, 20], [3, 20]], guard: 'adductor',
     tip: ['Side plank with the top knee on the bench. Body straight, hips up.',
           'Side plank with the top knee on the bench, then lift the bottom leg up to touch the bench.',
           'Side plank with the top knee on the bench. Lift the bottom leg to the bench and hold it there.'] },
-  calf: { name: 'Single-leg calf raise', type: 'load', optionalLoad: true, side: 'per leg', dose: [[2, 12], [2, 15], [3, 12]], rest: 60, guard: 'calf',
+  calf: { name: 'Single-leg calf raise', type: 'load', optionalLoad: true, side: 'per leg', dose: [[2, 12], [2, 15], [3, 12]], guard: 'calf',
     tip: 'Hold the rack. Rise all the way up, lower slowly. Add a dumbbell once 15 is easy.' },
-  soleus: { name: 'Seated soleus raise', type: 'load', startW: 20, dose: [[2, 15], [2, 15], [3, 12]], rest: 60, guard: 'soleus',
+  soleus: { name: 'Seated soleus raise', type: 'load', startW: 20, dose: [[2, 15], [2, 15], [3, 12]], guard: 'soleus',
     tip: 'Sit on the bench end, feet flat, dumbbell resting on the knees. Raise the heels as high as possible, pause, lower slowly. Weight is the dumbbell.' },
-  sprint: { name: 'Acceleration sprints, falling start', fig: 'sprint', type: 'check', label: '10 to 20 m', dose: [[6], [8], [8]], rest: 90,
+  sprint: { name: 'Acceleration sprints, falling start', fig: 'sprint', type: 'check', label: '10 to 20 m', dose: [[6], [8], [8]],
     tip: 'On a field or turf before the gym part. Lean forward until you have to step, then sprint. Walk back between reps.' },
-  sprintk: { name: 'Acceleration sprints, half-kneeling start', fig: 'sprint', type: 'check', label: '10 to 20 m', dose: [[6], [8], [8]], rest: 90,
+  sprintk: { name: 'Acceleration sprints, half-kneeling start', fig: 'sprint', type: 'check', label: '10 to 20 m', dose: [[6], [8], [8]],
     tip: 'Start with one knee down. Drive out low and push the ground back for the first five steps. Walk back between reps.' },
-  shuttle: { name: '5-10-5 shuttle', fig: 'sprint', type: 'check', label: 'one run', dose: [[4], [5], [6]], rest: 90,
+  shuttle: { name: '5-10-5 shuttle', fig: 'sprint', type: 'check', label: 'one run', dose: [[4], [5], [6]],
     tip: 'Sprint 5 yards, plant and cut back 10 yards, cut again and finish 5 yards. Sink the hips and keep the knee over the toes on every cut.' },
-  latbound: { name: 'Lateral bound and stick', type: 'reps', side: 'per side', dose: [[3, 3], [3, 3], [3, 4]], rest: 60,
+  latbound: { name: 'Lateral bound and stick', type: 'reps', side: 'per side', dose: [[3, 3], [3, 3], [3, 4]],
     tip: 'Push sideways off one leg, land on the other and hold 2 seconds. Knee stays over the foot.' },
-  latboundc: { name: 'Continuous lateral bounds', fig: 'latbound', type: 'reps', side: 'total, no pause', dose: [[3, 6], [3, 6], [3, 8]], rest: 75,
+  latboundc: { name: 'Continuous lateral bounds', fig: 'latbound', type: 'reps', side: 'total, no pause', dose: [[3, 6], [3, 6], [3, 8]],
     tip: 'Bound side to side without pausing. Stick the last one. End the set if landings get sloppy.' },
-  hop: { name: 'Single-leg hop and stick', type: 'reps', side: 'per leg', dose: [[2, 3], [3, 3], [3, 4]], rest: 60,
+  hop: { name: 'Single-leg hop and stick', type: 'reps', side: 'per leg', dose: [[2, 3], [3, 3], [3, 4]],
     tip: 'Short forward hop on one leg, perfect landing, hold 2 seconds. Distance comes later.' },
-  hopc: { name: 'Continuous single-leg hops', fig: 'hop', type: 'reps', side: 'per leg', dose: [[2, 3], [3, 3], [3, 3]], rest: 75,
+  hopc: { name: 'Continuous single-leg hops', fig: 'hop', type: 'reps', side: 'per leg', dose: [[2, 3], [3, 3], [3, 3]],
     tip: 'Three hops in a row on one leg without pausing. Stick the last one.' },
-  wallthrow: { name: 'Overhead wall throw', type: 'reps', dose: [[3, 5], [3, 5], [3, 5]], rest: 60,
+  wallthrow: { name: 'Overhead wall throw', type: 'reps', dose: [[3, 5], [3, 5], [3, 5]],
     tip: 'Staggered stance, throw-in grip on a soccer ball, full arch, throw as hard as possible into a wall.' },
-  stepthrow: { name: 'Step-in overhead wall throw', fig: 'wallthrow', type: 'reps', dose: [[3, 5], [3, 5], [3, 6]], rest: 60,
+  stepthrow: { name: 'Step-in overhead wall throw', fig: 'wallthrow', type: 'reps', dose: [[3, 5], [3, 5], [3, 6]],
     tip: 'Two quick steps, plant, and throw like a throw-in into the wall. Both feet stay on the ground at release.' },
-  medthrow: { name: 'Med ball overhead wall throw', fig: 'wallthrow', type: 'reps', dose: [[3, 5], [3, 5], [3, 5]], rest: 60,
+  medthrow: { name: 'Med ball overhead wall throw', fig: 'wallthrow', type: 'reps', dose: [[3, 5], [3, 5], [3, 5]],
     tip: 'Same throw with an optional 4 lb medicine ball. No med ball: use the soccer ball and throw harder.' },
-  hkthrow: { name: 'Half-kneeling overhead throw', type: 'reps', dose: [[2, 5], [3, 5], [3, 5]], rest: 45,
+  hkthrow: { name: 'Half-kneeling overhead throw', type: 'reps', dose: [[2, 5], [3, 5], [3, 5]],
     tip: 'One knee down, so the power has to come from the trunk and arms.' },
-  squat: { type: 'load', dose: [[3, 6], [3, 5], [4, 4]], rest: 90,
+  squat: { type: 'load', dose: [[3, 6], [3, 5], [4, 4]],
     variants: {
       goblet: { label: 'Goblet', name: 'Goblet squat', fig: 'goblet', sid: 'goblet', startW: 20,
         tip: 'One dumbbell held at the chest, elbows inside the knees at the bottom. Sit between the hips, chest up. Weight is the dumbbell.' },
       back: { label: 'Back squat', name: 'Barbell back squat', fig: 'backsquat', sid: 'backsquat', startW: 45,
         tip: 'Bar on the upper back, hands just outside the shoulders, safety pins set just below the bottom. Sit until the thighs are level with the floor, then drive up. Weight is the total, bar included. Switch from goblet squats once 3 x 6 with a 35 lb dumbbell looks clean.' }
     } },
-  dbbench: { name: 'Dumbbell bench press', type: 'load', startW: 10, dose: [[2, 10], [3, 8], [3, 6]], rest: 0,
+  dbbench: { name: 'Dumbbell bench press', type: 'load', startW: 10, dose: [[2, 10], [3, 8], [3, 6]],
     tip: 'Weight is each dumbbell. Pressing strength for the last push of the throw-in.' },
-  pushup: { name: 'Push-up', type: 'reps', dose: [[2, 8], [3, 10], [3, 12]], rest: 0,
+  pushup: { name: 'Push-up', type: 'reps', dose: [[2, 8], [3, 10], [3, 12]],
     tip: 'Body straight from head to heels, chest to a fist height off the floor. Hands on the bench to make it easier.' },
-  hkpress: { name: 'Half-kneeling one-arm press', type: 'load', startW: 10, side: 'per arm', dose: [[2, 8], [3, 8], [3, 6]], rest: 0,
+  hkpress: { name: 'Half-kneeling one-arm press', type: 'load', startW: 10, side: 'per arm', dose: [[2, 8], [3, 8], [3, 6]],
     tip: 'Back knee down, squeeze that glute, press the dumbbell straight overhead without leaning. Weight is the dumbbell.' },
-  pullover: { name: 'Dumbbell pullover', type: 'load', startW: 10, dose: [[2, 10], [3, 10], [3, 10]], rest: 90,
+  pullover: { name: 'Dumbbell pullover', type: 'load', startW: 10, dose: [[2, 10], [3, 10], [3, 10]],
     tip: 'Lying on the bench, one dumbbell in both hands, arc it back behind the head and return. Trains the lats that whip the arms forward.' },
-  sideabd: { name: 'Side-lying hip abduction', type: 'load', optionalLoad: true, side: 'per side', dose: [[2, 12], [2, 15], [3, 15]], rest: 0, guard: 'hip',
+  sideabd: { name: 'Side-lying hip abduction', type: 'load', optionalLoad: true, side: 'per side', dose: [[2, 12], [2, 15], [3, 15]], guard: 'hip',
     tip: 'Lie on your side, top leg straight. Lift it with the toes pointing forward, not up, and lower slowly. Rest a dumbbell on the thigh once 15 is easy.' },
-  spabd: { name: 'Side plank with leg raise', type: 'reps', side: 'per side', dose: [[2, 6], [2, 8], [3, 8]], rest: 0, guard: 'hip',
+  spabd: { name: 'Side plank with leg raise', type: 'reps', side: 'per side', dose: [[2, 6], [2, 8], [3, 8]], guard: 'hip',
     tip: 'Forearm side plank, hips high. Raise the top leg, pause, lower. Drop to the bottom knee to make it easier.' },
-  slbridge: { name: 'Single-leg glute bridge', type: 'reps', side: 'per leg', dose: [[2, 10], [2, 12], [3, 10]], rest: 0, guard: 'glute',
+  slbridge: { name: 'Single-leg glute bridge', type: 'reps', side: 'per leg', dose: [[2, 10], [2, 12], [3, 10]], guard: 'glute',
     tip: 'Lie on your back, one foot planted, other leg straight. Drive the hips up until the body is a straight line, hold 1 second.' },
-  slsit: { name: 'Single-leg sit to bench', type: 'load', optionalLoad: true, side: 'per leg', dose: [[2, 6], [3, 6], [3, 8]], rest: 60, guard: 'quad',
+  slsit: { name: 'Single-leg sit to bench', type: 'load', optionalLoad: true, side: 'per leg', dose: [[2, 6], [3, 6], [3, 8]], guard: 'quad',
     tip: 'Stand on one leg, sit back slowly to the bench, stand up on the same leg. Knee tracks over the toes.' },
-  stepdown: { name: 'Forward step-down', type: 'load', optionalLoad: true, side: 'per leg', dose: [[2, 6], [3, 6], [3, 8]], rest: 60, guard: 'quad',
+  stepdown: { name: 'Forward step-down', type: 'load', optionalLoad: true, side: 'per leg', dose: [[2, 6], [3, 6], [3, 8]], guard: 'quad',
     tip: 'Stand on a 6 to 8 inch step on one leg. Lower slowly until the other heel taps the floor in front, knee tracking over the middle toes. Stand back up.' },
-  isosplit: { name: 'Split-squat hold', type: 'time', side: 'per leg', dose: [[2, 20], [2, 30], [3, 30]], rest: 60, guard: 'quad',
+  isosplit: { name: 'Split-squat hold', type: 'time', side: 'per leg', dose: [[2, 20], [2, 30], [3, 30]], guard: 'quad',
     tip: 'Lower into a split squat with the back knee just off the floor and hold. Front knee stays over the middle toes.' },
-  slrdl: { name: 'Single-leg Romanian deadlift', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 6]], rest: 60, guard: 'ham',
+  slrdl: { name: 'Single-leg Romanian deadlift', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 6]], guard: 'ham',
     tip: 'One dumbbell, hips square, slow and balanced. The back leg and torso move as one straight line.' },
   hambridge: { name: ['Hamstring bridge, heels on bench', 'Single-leg hamstring bridge', 'Single-leg hamstring bridge'], type: 'reps',
-    side: ['', 'per leg', 'per leg'], dose: [[2, 10], [2, 8], [3, 8]], rest: 60, guard: 'ham',
+    side: ['', 'per leg', 'per leg'], dose: [[2, 10], [2, 8], [3, 8]], guard: 'ham',
     tip: ['Lie on your back, heels on the bench, knees slightly bent. Push the heels down and lift the hips, hold 1 second.',
           'Same bridge with one heel on the bench and the other leg in the air.',
           'Same bridge with one heel on the bench and the other leg in the air. Lower slowly over 3 seconds.'] },
-  slidecurl: { name: 'Sliding leg curl', type: 'reps', dose: [[2, 6], [2, 8], [3, 8]], rest: 60, guard: 'ham',
+  slidecurl: { name: 'Sliding leg curl', type: 'reps', dose: [[2, 6], [2, 8], [3, 8]], guard: 'ham',
     tip: 'Lie on your back, heels on a towel on a smooth floor. Lift the hips, slide the heels in, then slowly slide them out without letting the hips drop.' },
-  yraise: { name: 'Prone Y-raise', type: 'load', startW: 5, dose: [[2, 10], [2, 10], [2, 12]], rest: 45,
+  yraise: { name: 'Prone Y-raise', type: 'load', startW: 5, dose: [[2, 10], [2, 10], [2, 12]],
     tip: 'Chest down on an incline bench, thumbs up, raise the arms into a Y. Keeps shoulders healthy for throw-ins. Weight is each dumbbell.' },
-  hollow: { name: 'Hollow-body hold', type: 'time', dose: [[3, 20], [3, 25], [3, 30]], rest: 45,
+  hollow: { name: 'Hollow-body hold', type: 'time', dose: [[3, 20], [3, 25], [3, 30]],
     tip: 'Lower back pressed into the floor, arms overhead, legs and shoulders just off the floor.' },
-  deadbug: { name: 'Dead bug', type: 'reps', side: 'per side', dose: [[2, 6], [3, 8], [3, 8]], rest: 45,
+  deadbug: { name: 'Dead bug', type: 'reps', side: 'per side', dose: [[2, 6], [3, 8], [3, 8]],
     tip: 'Lower back pressed down. Slowly reach one arm overhead and the opposite leg out, return, switch sides.' }
 };
 for (const [id, ex] of Object.entries(LIB)) ex.id = id;
@@ -936,12 +958,12 @@ const exAt = (slot, w) => LIB[slot.pick(blockOf(w))];
 const isNew = (slot, w) => blockOf(w) > 0 && wib(w) === 0 && slot.pick(blockOf(w)) !== slot.pick(blockOf(w) - 1);
 
 const WARMUP = [
-  'Get warm, 2 minutes: jumping jacks, skips, side shuffles',
-  "World's greatest stretch, 3 per side",
-  'Glute bridge x10, then side plank 20 seconds per side',
-  'Balance board, 3 minutes',
-  'Landing prep: 5 snap-downs, then 10 pogo hops',
-  'Wall drives, 2 x 5 quick knee drives per leg'
+  { t: 'Get warm, 2 minutes: jumping jacks, skips, side shuffles', sec: 120 },
+  { t: "World's greatest stretch, 3 per side" },
+  { t: 'Glute bridge x10, then side plank 20 seconds per side', sec: 20, label: '0:20' },
+  { t: 'Balance board, 3 minutes', sec: 180 },
+  { t: 'Landing prep: 5 snap-downs, then 10 pogo hops' },
+  { t: 'Wall drives, 2 x 5 quick knee drives per leg' }
 ];
 const BALANCE_LEVELS = [
   'Level 1: two feet, eyes forward',
@@ -982,11 +1004,13 @@ const key = (w, d) => 'w' + w + d;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
 const fmtSec = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-const restLabel = r => (r >= 120 ? r / 60 + ' min' : r + ' sec');
+const restLabel = r => (r < 60 ? r + ' sec' : (r % 60 ? Math.floor(r / 60) + ':' + String(r % 60).padStart(2, '0') : r / 60) + ' min');
 
 const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const ICON_PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
 const ICON_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+const ICON_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 010 6M18 6.5a7.5 7.5 0 010 11"/></svg>';
+const ICON_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
 const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
 
 /* ---------- State ---------- */
@@ -1215,8 +1239,10 @@ function renderDay(d) {
       const S_ = SECTIONS[sec];
       html += `<div class="grp${S_.knee ? ' knee' : ''}"><h2>${S_.title}</h2><p>${S_.note}</p></div>`;
     }
-    if (g.length === 2) html += `<div class="pair"><p class="pair-note">Alternate ${g[0].num} and ${g[1].num}, then rest.</p>${exCard(g[0], w, d)}${exCard(g[1], w, d)}</div>`;
-    else html += exCard(g[0], w, d);
+    if (g.length === 2) {
+      const pr = pairRest(exAt(g[0], w), exAt(g[1], w), w);
+      html += `<div class="pair"><p class="pair-note">Alternate ${g[0].num} and ${g[1].num}, then rest ${restLabel(pr)}.</p>${exCard(g[0], w, d, `Then ${g[1].num}`)}${exCard(g[1], w, d, `Rest ${restLabel(pr)}`)}</div>`;
+    } else html += exCard(g[0], w, d, `Rest ${restLabel(baseRest(exAt(g[0], w), w))}`);
   }
 
   html += `
@@ -1252,14 +1278,18 @@ function warmPanel(w, d, s) {
   const warm = s ? s.warm : [];
   const bal = (s && s.balance) || lastBalance(w, d);
   const allDone = WARMUP.every((_, i) => warm[i]);
-  const items = WARMUP.map((t, i) => {
+  const items = WARMUP.map((item, i) => {
     let extra = '';
+    if (item.sec) {
+      const lab = item.label || fmtSec(item.sec);
+      extra += `<button class="mini-timer" data-act="mini" data-mini="${w}${d}-${i}" data-sec="${item.sec}" data-label="${lab}" aria-label="Start ${lab} timer">${lab}</button>`;
+    }
     if (i === 3) {
-      extra = `<div class="bal"><label for="bal-${d}">Balance level today</label>
+      extra += `<div class="bal"><label for="bal-${d}">Balance level today</label>
         <select id="bal-${d}" data-act="balance">${BALANCE_LEVELS.map((l, j) => `<option value="${j + 1}"${bal === j + 1 ? ' selected' : ''}>${l}</option>`).join('')}</select>
         <span class="fine" style="margin:0">Move up a level after 30 seconds without the edge touching down.</span></div>`;
     }
-    return `<li><label class="${warm[i] ? 'done' : ''}"><input type="checkbox" data-act="warm" data-i="${i}"${warm[i] ? ' checked' : ''}><span>${esc(t)}</span></label>${extra}</li>`;
+    return `<li><label class="${warm[i] ? 'done' : ''}"><input type="checkbox" data-act="warm" data-i="${i}"${warm[i] ? ' checked' : ''}><span>${esc(item.t)}</span></label>${extra}</li>`;
   }).join('');
   return `
     <section class="sec">
@@ -1282,14 +1312,14 @@ function specText(ex, w) {
   return `${n} x ${target}${ex.type === 'time' ? ' sec' : ''}${side ? ' ' + side : ''}`;
 }
 
-function exCard(slot, w, d) {
+function exCard(slot, w, d, restText) {
   const ex = exAt(slot, w);
   const inf = info(ex, w, d);
   const n = setsOf(ex, w);
   const rows = rowsFor(w, d, ex, false);
   const target = repsOf(ex, w);
   const chips = [`<span class="chip spec">${esc(specText(ex, w))}</span>`];
-  if (ex.rest) chips.push(`<span class="chip">Rest ${restLabel(ex.rest)}</span>`);
+  if (restText) chips.push(`<span class="chip">${restText}</span>`);
   if (isNew(slot, w)) chips.push('<span class="chip new">New this block</span>');
   const ll = lastLine(ex, w, d);
 
@@ -1400,23 +1430,113 @@ function refreshCard(slotNum) {
 }
 
 /* =====================================================================
+   Rest model. Base rest comes from the kind of work and the stage,
+   following youth guidelines (about 1 min for beginners, 1 to 2 min
+   for intermediate, 2 to 3 min for advanced and heavy or power work).
+   Then each step adjusts it: paired sets, setup time between
+   exercises, and extra rest when reps fall short.
+   ===================================================================== */
+const KIND = {
+  cmj: 'plyo', sqjump: 'plyo', broad: 'plyo', depthdrop: 'plyo', latbound: 'plyo', hop: 'plyo',
+  contvert: 'reactive', tbroad: 'reactive', depthjump: 'reactive', latboundc: 'reactive', hopc: 'reactive',
+  hex: 'heavy', squat: 'heavy',
+  lunge: 'strength', rfess: 'strength', stepup: 'strength', invrow: 'strength', dbrow: 'strength',
+  dbbench: 'strength', pushup: 'strength', hkpress: 'strength',
+  nordic: 'nordic',
+  copen: 'knee', calf: 'knee', soleus: 'knee', sideabd: 'knee', spabd: 'knee', slbridge: 'knee',
+  slsit: 'knee', stepdown: 'knee', isosplit: 'knee', slrdl: 'knee', hambridge: 'knee', slidecurl: 'knee',
+  sprint: 'sprint', sprintk: 'sprint', shuttle: 'shuttle',
+  wallthrow: 'throw', stepthrow: 'throw', medthrow: 'throw', hkthrow: 'throw',
+  pullover: 'accessory', yraise: 'accessory', hollow: 'core', deadbug: 'core'
+};
+// Seconds per stage [Foundation, Strength, Power].
+const REST = {
+  heavy: { s: [75, 105, 150], tag: 'Heavy lift',
+    why: "Heavy sets drain the muscle's quick energy store (phosphocreatine), which takes a couple of minutes to refill. Youth guidelines start near 1 minute and build to 2 to 3 minutes as loads get heavier." },
+  strength: { s: [60, 90, 120], tag: 'Strength',
+    why: 'Youth strength guidelines: about 1 minute while learning, up to 2 minutes as loads rise.' },
+  plyo: { s: [45, 60, 75], tag: 'Jumps',
+    why: 'In young soccer players, 30, 60 and 120 seconds between jump sets gave the same gains. Rest just long enough that every landing is crisp.' },
+  reactive: { s: [60, 75, 90], tag: 'Reactive jumps',
+    why: 'Linked and depth jumps are the most intense jumps, so they get a little more rest than stick jumps.' },
+  sprint: { s: [90, 90, 105], tag: 'Sprint',
+    why: 'Speed only improves when every sprint is near max. Research on young athletes points to more than 90 seconds between short sprints.' },
+  shuttle: { s: [120, 120, 120], tag: 'Shuttle',
+    why: 'A shuttle takes about 5 seconds. Resting roughly 25 times the effort keeps every run fast.' },
+  throw: { s: [45, 45, 60], tag: 'Throws',
+    why: 'Throws are short, explosive efforts. A short rest keeps the arm fast without cooling down.' },
+  nordic: { s: [60, 75, 90], tag: 'Nordic',
+    why: 'Nordics are near-maximal lowering efforts, so they get more rest than other knee armor work.' },
+  knee: { s: [45, 60, 60], tag: 'Knee armor',
+    why: 'Controlled strength work at moderate effort. About a minute keeps the muscles working without losing form.' },
+  accessory: { s: [45, 45, 60], tag: 'Accessory',
+    why: 'Lighter work that recovers quickly.' },
+  core: { s: [30, 40, 45], tag: 'Core',
+    why: 'Holds and core work recover quickly. Short rests keep the session moving.' }
+};
+const KID_NOTE = 'Kids recover from hard efforts faster than adults, so these rests are shorter than an adult plan would use.';
+const restKind = ex => REST[KIND[ex.id]] || REST.strength;
+const baseRest = (ex, w) => restKind(ex).s[stageOf(w)];
+const pairRest = (a, b, w) => Math.max(30, Math.max(baseRest(a, w), baseRest(b, w)) - 15);
+const fmtClock = sec => {
+  sec = Math.max(0, Math.floor(sec));
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+};
+
+/* =====================================================================
    Run workout: one step at a time
    ===================================================================== */
 const $run = document.getElementById('run');
-let run = null; // { w, d, idx, rest: null | { end } }
+let run = null; // { w, d, idx, rest, hold }
 
 function buildSteps(w, d) {
   const steps = [{ kind: 'warm' }];
-  for (const g of layout(d)) {
+  layout(d).forEach((g, gi) => {
     const exs = g.map(slot => ({ slot, ex: exAt(slot, w) }));
     const maxSets = Math.max(...exs.map(o => setsOf(o.ex, w)));
     for (let i = 0; i < maxSets; i++) {
-      for (const o of exs) if (i < setsOf(o.ex, w)) steps.push({ kind: 'set', slot: o.slot, ex: o.ex, i, of: setsOf(o.ex, w), pair: g.length > 1 });
+      for (const o of exs) {
+        if (i >= setsOf(o.ex, w)) continue;
+        const partner = g.length > 1 ? exs.find(x => x.slot !== o.slot).ex : null;
+        steps.push({ kind: 'set', slot: o.slot, ex: o.ex, i, of: setsOf(o.ex, w), pair: g.length > 1, group: gi, partner });
+      }
     }
-  }
+  });
   steps.push({ kind: 'finish' });
   return steps;
 }
+
+// Rest after a step, with the reason shown on the rest screen.
+function restAfter(steps, idx, w, d) {
+  const st = steps[idx], nx = steps[idx + 1];
+  if (!st || st.kind !== 'set' || !nx || nx.kind !== 'set') return null;
+  if (st.pair && nx.group === st.group && nx.i === st.i && nx.slot !== st.slot) {
+    return { sec: 15, tag: 'Switch', why: `Go straight to ${nx.slot.num}. Working that exercise gives these muscles their rest.` };
+  }
+  let sec, why;
+  const k = restKind(st.ex);
+  if (st.pair) {
+    sec = pairRest(st.ex, st.partner, w);
+    const heavier = baseRest(st.partner, w) > baseRest(st.ex, w) ? restKind(st.partner) : k;
+    why = heavier.why + ' Paired sets: the time spent on the other exercise already counts as rest.';
+  } else {
+    sec = baseRest(st.ex, w);
+    why = k.why;
+  }
+  const row = rowsFor(w, d, st.ex, false)[st.i];
+  if (row && row.d && st.ex.type !== 'check' && num(row.r) != null && num(row.r) < repsOf(st.ex, w)) {
+    sec += 30; why += ' Reps came up short, so 30 seconds extra.';
+  }
+  if (nx.group !== st.group) { sec += 30; why += ' Plus 30 seconds to set up the next exercise.'; }
+  return { sec: Math.min(sec, 210), tag: st.pair ? 'Paired sets' : k.tag, why };
+}
+function restForSet(w, d, slotNum, i) {
+  const steps = buildSteps(w, d);
+  const idx = steps.findIndex(s => s.kind === 'set' && s.slot.num === slotNum && s.i === i);
+  return idx === -1 ? null : restAfter(steps, idx, w, d);
+}
+
 function firstOpenStep(w, d) {
   const steps = buildSteps(w, d);
   const anyDone = steps.some(st => st.kind === 'set' && (rowsFor(w, d, st.ex, false)[st.i] || {}).d);
@@ -1426,18 +1546,23 @@ function firstOpenStep(w, d) {
 }
 function openRun() {
   stopTimer();
+  audioOn();
   const w = state.week, d = state.view;
-  run = { w, d, idx: firstOpenStep(w, d), rest: null };
+  const s = session(w, d, true);
+  if (!s.done && (!s.startedAt || Date.now() - s.startedAt > 4 * 3600e3)) s.startedAt = Date.now();
+  save();
+  run = { w, d, idx: firstOpenStep(w, d), rest: null, hold: null };
   $run.hidden = false;
   document.body.classList.add('locked');
+  keepAwake(true);
   renderRun();
 }
 function closeRun() {
-  clearInterval(restInt);
   run = null;
   $run.hidden = true;
   $run.innerHTML = '';
   document.body.classList.remove('locked');
+  keepAwake(false);
   render();
 }
 function stepLabel(st, w, d) {
@@ -1451,6 +1576,7 @@ function stepper(label, field, value, placeholder, step) {
     <input inputmode="decimal" data-run="${field}" value="${esc(value)}" placeholder="${esc(placeholder)}" aria-label="${label}">
     <button data-act="step" data-f="${field}" data-by="${step}" aria-label="${label} up ${step}">+</button></div></div>`;
 }
+const perSide = (ex, w) => /per (side|leg|arm)/.test(sideOf(ex, w));
 
 function renderRun() {
   if (!run) return;
@@ -1463,13 +1589,20 @@ function renderRun() {
   let body = '', primary = '', primaryAct = 'run-next';
 
   if (run.rest) {
+    const R = run.rest;
     const nx = steps[run.idx];
     const nxInf = nx && nx.kind === 'set' ? info(nx.ex, w, d) : null;
-    body = `<div class="rest-view" id="restView"><div class="lbl">Rest</div><div class="clock" id="restClock">${fmtSec(Math.ceil(Math.max(0, run.rest.end - Date.now()) / 1000))}</div>
+    const left = Math.max(0, R.end - Date.now());
+    body = `<div class="rest-view" id="restView">
+      <div class="lbl">${R.tag === 'Switch' ? 'Switch' : esc(R.tag) + ' rest'}</div>
+      <div class="clock" id="restClock">${fmtSec(Math.ceil(left / 1000))}</div>
+      <div class="rest-bar" aria-hidden="true"><i id="restBar" style="width:${Math.round(100 * (1 - left / R.total))}%"></i></div>
+      <p class="rest-why">${esc(R.why)}</p>
+      <div class="rest-btns"><button class="btn ghost" data-act="rest-sub">&minus;15 sec</button><button class="btn ghost" data-act="rest-add">+15 sec</button></div>
       <p class="next">Next: <b>${esc(stepLabel(nx, w, d))}</b></p>
       ${nxInf ? figTag(nxInf.fig, nxInf.name) : ''}
-      <div class="rest-btns"><button class="btn ghost" data-act="rest-add">+15 sec</button><button class="btn ghost" data-act="rest-skip">Skip rest</button></div></div>`;
-    primary = 'Start next set';
+      ${R.tag === 'Switch' ? '' : `<p class="fine">${KID_NOTE}</p>`}</div>`;
+    primary = R.tag === 'Switch' ? 'Start now' : 'Skip rest';
     primaryAct = 'rest-skip';
   } else if (st.kind === 'warm') {
     body = `<p class="weekhint"><b>Week ${wib(w) + 1} of the block.</b> ${WEEK_HINT[wib(w)](w)}</p>` + (isTest(w) ? testPanel(w) : '') + warmPanel(w, d, s);
@@ -1481,35 +1614,51 @@ function renderRun() {
     const target = repsOf(ex, w);
     const side = sideOf(ex, w);
     const ll = lastLine(ex, w, d);
-    const isLast = run.idx === total - 2;
-    const restAfter = !isLast && ex.rest ? ex.rest : 0;
     const sec = SECTIONS[st.slot.sec];
-    let inputs = '';
-    if (ex.type === 'load') {
-      inputs = `<div class="steppers">${stepper('Weight, lb', 'w', r.w || startWeight(ex, w, d, st.i), ex.optionalLoad ? 'BW' : '0', 5)}${stepper('Reps', 'r', r.r || String(target), String(target), 1)}</div>`;
-    } else if (ex.type === 'reps' || ex.type === 'time') {
-      inputs = `<div class="steppers single">${stepper(ex.type === 'time' ? 'Seconds held' : 'Reps', 'r', r.r || String(target), String(target), ex.type === 'time' ? 5 : 1)}</div>`;
-    }
-    const spec = ex.type === 'check' ? `${target}` : `${target}${ex.type === 'time' ? ' sec' : ' reps'}${side ? ' ' + side : ''}`;
     const unitWord = ex.type === 'check' ? (ex.id === 'shuttle' ? 'Run' : 'Sprint') : 'Set';
-    body = `
+    const spec = ex.type === 'check' ? `${target}` : `${target}${ex.type === 'time' ? ' sec' : ' reps'}${side ? ' ' + side : ''}`;
+    const head = `
       <p class="run-grp${sec.knee ? ' knee' : ''}">${sec.title}</p>
       <div class="run-ex"><span class="ex-num">${st.slot.num}</span><h2>${esc(inf.name)}</h2></div>
-      <p class="run-setof">${unitWord} <b>${st.i + 1}</b> of ${st.of}: ${esc(spec)}${st.pair ? ', alternating' : ''}</p>
-      ${variantControl(ex, w, d)}
-      ${figTag(inf.fig, inf.name)}
-      ${guardHtml(ex)}
-      <p class="run-tip">${esc(inf.tip)}</p>
-      ${ll ? `<p class="run-last">${esc(ll)}</p>` : ''}
-      ${inputs}
-      ${r.d ? '<p class="fine">Already logged. Change the numbers and log it again, or move on.</p>' : ''}
-      <button class="run-skip" data-act="run-skip">Skip this set</button>`;
-    const verb = ex.type === 'check' ? `${unitWord} done` : 'Log set';
-    primary = restAfter ? `${verb}, rest ${restLabel(restAfter)}` : verb;
-    primaryAct = 'run-log';
+      <p class="run-setof">${unitWord} <b>${st.i + 1}</b> of ${st.of}: ${esc(spec)}${st.pair ? ', alternating' : ''}</p>`;
+    if (run.hold) {
+      body = `${head}
+        <div class="hold-view" id="holdView" data-phase="${run.hold.phase}">
+          <div class="lbl" id="holdLbl">${holdLabel(run.hold)}</div>
+          <div class="clock" id="holdClock">${fmtSec(Math.ceil(Math.max(0, run.hold.end - Date.now()) / 1000))}</div>
+        </div>
+        ${figTag(inf.fig, inf.name)}`;
+      primary = 'Stop hold';
+      primaryAct = 'hold-stop';
+    } else {
+      let inputs = '';
+      if (ex.type === 'load') {
+        inputs = `<div class="steppers">${stepper('Weight, lb', 'w', r.w || startWeight(ex, w, d, st.i), ex.optionalLoad ? 'BW' : '0', 5)}${stepper('Reps', 'r', r.r || String(target), String(target), 1)}</div>`;
+      } else if (ex.type === 'reps' || ex.type === 'time') {
+        inputs = `<div class="steppers single">${stepper(ex.type === 'time' ? 'Seconds held' : 'Reps', 'r', r.r || String(target), String(target), ex.type === 'time' ? 5 : 1)}</div>`;
+      }
+      const holdBtn = ex.type === 'time'
+        ? `<button class="btn hold-btn" data-act="hold-start">Start ${target} sec timer${perSide(ex, w) ? ', each side' : ''}</button>` : '';
+      body = `${head}
+        ${variantControl(ex, w, d)}
+        ${figTag(inf.fig, inf.name)}
+        ${guardHtml(ex)}
+        <p class="run-tip">${esc(inf.tip)}</p>
+        ${ll ? `<p class="run-last">${esc(ll)}</p>` : ''}
+        ${holdBtn}
+        ${inputs}
+        ${r.d ? '<p class="fine">Already logged. Change the numbers and log it again, or move on.</p>' : ''}
+        <button class="run-skip" data-act="run-skip">Skip this set</button>`;
+      const verb = ex.type === 'check' ? `${unitWord} done` : 'Log set';
+      const rr = restAfter(steps, run.idx, w, d);
+      primary = !rr ? verb : rr.tag === 'Switch' ? `${verb}, then ${steps[run.idx + 1].slot.num}` : `${verb}, rest ${restLabel(rr.sec)}`;
+      primaryAct = 'run-log';
+    }
   } else {
     const c = counts(w, d);
+    const mins = s && s.startedAt ? Math.round(((s.done && s.doneAt ? Date.parse(s.doneAt) : Date.now()) - s.startedAt) / 60000) : null;
     body = `<div class="run-done"><h2>${c.done} of ${c.total} sets logged</h2>
+      ${mins != null ? `<p class="run-tip">Session time: ${mins} min.</p>` : ''}
       <p class="run-tip">Add a note for next time, then finish the session.</p>
       <section class="sec"><h2>Notes</h2><textarea data-act="notes" id="runNotes" placeholder="How did it feel? Anything to change next time?" aria-label="Session notes"></textarea></section></div>`;
     primary = s && s.done ? 'Close' : 'Finish session';
@@ -1517,50 +1666,205 @@ function renderRun() {
   }
 
   const pct = Math.round(run.idx / (total - 1) * 100);
+  const soundOn = state.sound !== false;
   $run.innerHTML = `
     <div class="run-top"><div class="wrap">
       <button class="run-close" data-act="run-close">Close</button>
-      <div class="run-where">Week ${w}, ${DAYS[d].title}<span>Stage ${stageOf(w) + 1}: ${STAGES[stageOf(w)].name}</span></div>
-      <div class="run-step">${run.idx + 1}/${total}</div>
+      <div class="run-where">Week ${w}, ${DAYS[d].title}<span>Step ${run.idx + 1} of ${total}</span></div>
+      <div class="run-meta">
+        <span class="run-clock" id="sessClock" aria-label="Session time"></span>
+        <button class="snd" data-act="sound" aria-pressed="${soundOn}" aria-label="Timer sounds ${soundOn ? 'on' : 'off'}">${soundOn ? ICON_SOUND : ICON_MUTE}</button>
+      </div>
     </div><div class="wrap barwrap"><div class="run-bar"><i style="width:${pct}%"></i></div></div></div>
     <div class="run-body"><div class="wrap">${body}</div></div>
     <div class="run-foot"><div class="wrap">
       <button class="btn ghost" data-act="run-back"${run.idx === 0 && !run.rest ? ' disabled' : ''}>Back</button>
-      <button class="btn" data-act="${primaryAct}">${primary}</button>
+      <button class="btn${run.hold ? ' stop' : ''}" data-act="${primaryAct}">${primary}</button>
     </div></div>`;
   const notes = document.getElementById('runNotes');
   if (notes) notes.value = s ? s.notes || '' : '';
   const body$ = $run.querySelector('.run-body');
   if (body$) body$.scrollTop = 0;
+  tickSession();
   kickAnim();
 }
 
-let restInt = null;
-function startRest(sec) {
-  run.rest = { end: Date.now() + sec * 1000 };
-  clearInterval(restInt);
-  restInt = setInterval(tickRest, 250);
+function runField(f) { const el = $run.querySelector(`[data-run="${f}"]`); return el ? el.value.trim() : ''; }
+
+function logRunSet(repsOverride) {
+  const { w, d } = run;
+  const steps = buildSteps(w, d);
+  const st = steps[run.idx];
+  if (!st || st.kind !== 'set') return;
+  const rows = rowsFor(w, d, st.ex, true);
+  const r = rows[st.i];
+  if (st.ex.type === 'load') r.w = runField('w');
+  if (st.ex.type !== 'check') r.r = repsOverride != null ? String(repsOverride) : runField('r');
+  completeSet(st.ex, w, d, st.i);
+  save();
+  const rest = restAfter(steps, run.idx, w, d);
+  run.hold = null;
+  run.idx = Math.min(run.idx + 1, steps.length - 1);
+  if (rest && rest.sec > 0) startRest(rest); else renderRun();
+}
+
+/* ---------- Rest countdown (run view) ---------- */
+function startRest(r) {
+  run.rest = { end: Date.now() + r.sec * 1000, total: r.sec * 1000, tag: r.tag, why: r.why, beeped: {} };
   renderRun();
 }
 function tickRest() {
-  if (!run || !run.rest) { clearInterval(restInt); return; }
-  const left = Math.max(0, (run.rest.end - Date.now()) / 1000);
+  if (!run || !run.rest) return;
+  const R = run.rest;
+  const leftMs = R.end - Date.now();
+  const left = Math.max(0, leftMs / 1000);
   const c = document.getElementById('restClock');
   if (c) c.textContent = left > 0 ? fmtSec(Math.ceil(left)) : 'Go';
-  if (left <= 0 && !run.rest.buzzed) {
-    run.rest.buzzed = true;
+  const b = document.getElementById('restBar');
+  if (b) b.style.width = Math.max(0, Math.min(100, 100 * (1 - leftMs / R.total))) + '%';
+  const sLeft = Math.ceil(left);
+  if (sLeft > 0 && sLeft <= 3 && !R.beeped[sLeft]) { R.beeped[sLeft] = 1; beep(660, 90); }
+  if (left <= 0 && !R.goAt) {
+    R.goAt = Date.now();
+    beep(990, 220, 2); buzz();
     const v = document.getElementById('restView');
     if (v) v.classList.add('go');
-    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { /* not supported */ }
-    setTimeout(() => { if (run && run.rest && run.rest.buzzed) endRest(); }, 1500);
   }
+  if (R.goAt && Date.now() - R.goAt > 1500) endRest();
 }
-function endRest() {
-  clearInterval(restInt);
-  if (run) { run.rest = null; renderRun(); }
-}
-function runField(f) { const el = $run.querySelector(`[data-run="${f}"]`); return el ? el.value.trim() : ''; }
+function endRest() { if (run) { run.rest = null; renderRun(); } }
 
+/* ---------- Hold timer (timed exercises) ---------- */
+function holdLabel(H) {
+  if (H.phase === 'ready') return 'Get set';
+  if (H.phase === 'switch') return 'Switch sides';
+  return H.sides === 2 ? (H.side === 1 ? 'Hold, first side' : 'Hold, second side') : 'Hold';
+}
+function startHold(secs, sides) {
+  run.hold = { phase: 'ready', side: 1, sides, secs, end: Date.now() + 3000, work: [0, 0], beeped: {} };
+  beep(660, 90);
+  renderRun();
+}
+function tickHold() {
+  if (!run || !run.hold) return;
+  const H = run.hold, now = Date.now();
+  let left = Math.max(0, (H.end - now) / 1000);
+  if (H.phase === 'work') H.work[H.side - 1] = Math.min(H.secs, H.secs - left);
+  const sLeft = Math.ceil(left), bk = H.phase + H.side + ':' + sLeft;
+  if (sLeft > 0 && sLeft <= 3 && H.phase !== 'switch' && !H.beeped[bk]) { H.beeped[bk] = 1; beep(660, 80); }
+  if (left <= 0) {
+    if (H.phase === 'ready') { H.phase = 'work'; H.end = now + H.secs * 1000; beep(990, 200); }
+    else if (H.phase === 'work' && H.sides === 2 && H.side === 1) { H.work[0] = H.secs; H.phase = 'switch'; H.end = now + 5000; beep(880, 160, 2); buzz(); }
+    else if (H.phase === 'switch') { H.phase = 'work'; H.side = 2; H.end = now + H.secs * 1000; beep(990, 200); }
+    else { H.work[H.side - 1] = H.secs; beep(990, 220, 2); buzz(); finishHold(); return; }
+    left = Math.max(0, (H.end - now) / 1000);
+  }
+  const c = document.getElementById('holdClock');
+  if (c) c.textContent = fmtSec(Math.ceil(left));
+  const l = document.getElementById('holdLbl');
+  if (l) l.textContent = holdLabel(H);
+  const v = document.getElementById('holdView');
+  if (v) v.dataset.phase = H.phase;
+}
+function finishHold() {
+  const H = run.hold;
+  if (!H) return;
+  if (H.phase === 'ready') { run.hold = null; renderRun(); return; }
+  const done = H.sides === 2 && H.side === 2 ? Math.min(H.work[0], H.work[1]) : H.work[0];
+  logRunSet(Math.round(done));
+}
+
+/* ---------- Session clock, sounds, screen wake ---------- */
+function tickSession() {
+  if (!run) return;
+  const el = document.getElementById('sessClock');
+  if (!el) return;
+  const s = session(run.w, run.d, false);
+  if (!s || !s.startedAt) { el.textContent = ''; return; }
+  const end = s.done && s.doneAt ? Date.parse(s.doneAt) : Date.now();
+  el.textContent = fmtClock((end - s.startedAt) / 1000);
+}
+let actx = null;
+function audioOn() {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+  } catch (e) { actx = null; }
+}
+function beep(freq, ms, times) {
+  if (state.sound === false || !actx) return;
+  try {
+    for (let k = 0; k < (times || 1); k++) {
+      const t0 = actx.currentTime + k * (ms + 90) / 1000;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = freq;
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + ms / 1000);
+      o.start(t0); o.stop(t0 + ms / 1000 + 0.02);
+    }
+  } catch (e) { /* audio not available */ }
+}
+function buzz() { try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { /* not supported */ } }
+let wakeLock = null;
+async function keepAwake(on) {
+  try {
+    if (on && 'wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } else if (!on && wakeLock) {
+      await wakeLock.release();
+      wakeLock = null;
+    }
+  } catch (e) { wakeLock = null; }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && run) keepAwake(true); });
+
+/* ---------- Warm-up item timers ---------- */
+const mini = {};
+function tickMini() {
+  const now = Date.now();
+  for (const k of Object.keys(mini)) {
+    const m = mini[k];
+    if (m.end && now >= m.end) { mini[k] = { doneAt: now }; beep(990, 220, 2); buzz(); }
+    else if (m.doneAt && now - m.doneAt > 3000) delete mini[k];
+  }
+  document.querySelectorAll('[data-mini]').forEach(btn => {
+    const m = mini[btn.dataset.mini];
+    btn.classList.toggle('on', !!(m && m.end));
+    btn.textContent = !m ? btn.dataset.label : m.end ? fmtSec(Math.ceil((m.end - now) / 1000)) : 'Done';
+  });
+}
+
+/* ---------- Rest bar (log view) ---------- */
+const $timer = document.getElementById('timer');
+let bar = null;
+function startTimer(r) {
+  bar = { end: Date.now() + r.sec * 1000, beeped: {} };
+  $timer.hidden = false;
+  $timer.classList.remove('go');
+  $timer.innerHTML = `<div class="wrap"><span class="lbl">${r.tag === 'Switch' ? 'Switch' : esc(r.tag) + ' rest'}</span><span class="clock" id="clock"></span>
+    <button data-act="timer-add">+15 sec</button><button data-act="timer-stop">Done</button></div>`;
+  tickTimer();
+}
+function tickTimer() {
+  if (!bar) return;
+  const left = Math.max(0, (bar.end - Date.now()) / 1000);
+  const c = document.getElementById('clock');
+  if (c) c.textContent = left > 0 ? fmtSec(Math.ceil(left)) : 'Go';
+  const sLeft = Math.ceil(left);
+  if (sLeft > 0 && sLeft <= 3 && !bar.beeped[sLeft]) { bar.beeped[sLeft] = 1; beep(660, 90); }
+  if (left <= 0 && !bar.goAt) { bar.goAt = Date.now(); $timer.classList.add('go'); beep(990, 220, 2); buzz(); }
+  if (bar.goAt && Date.now() - bar.goAt > 4000) stopTimer();
+}
+function stopTimer() { bar = null; $timer.hidden = true; $timer.innerHTML = ''; }
+
+setInterval(() => { tickRest(); tickHold(); tickSession(); tickMini(); tickTimer(); }, 250);
+
+/* =====================================================================
+   Events
+   ===================================================================== */
 function runAction(act, t) {
   const { w, d } = run;
   const steps = buildSteps(w, d);
@@ -1568,30 +1872,32 @@ function runAction(act, t) {
   if (act === 'run-close') closeRun();
   else if (act === 'run-next' || act === 'run-skip') { run.idx = Math.min(run.idx + 1, steps.length - 1); renderRun(); }
   else if (act === 'run-back') {
-    if (run.rest) { clearInterval(restInt); run.rest = null; }
+    run.rest = null; run.hold = null;
     run.idx = Math.max(0, run.idx - 1);
     renderRun();
   }
-  else if (act === 'run-log' && st && st.kind === 'set') {
-    const rows = rowsFor(w, d, st.ex, true);
-    const r = rows[st.i];
-    if (st.ex.type === 'load') r.w = runField('w');
-    if (st.ex.type !== 'check') r.r = runField('r');
-    completeSet(st.ex, w, d, st.i);
-    save();
-    const isLast = run.idx === steps.length - 2;
-    run.idx = Math.min(run.idx + 1, steps.length - 1);
-    if (!isLast && st.ex.rest) startRest(st.ex.rest); else renderRun();
-  }
+  else if (act === 'run-log' && st && st.kind === 'set') logRunSet();
   else if (act === 'run-finish') {
     const s = session(w, d, true);
     s.done = true; s.doneAt = new Date().toISOString();
+    if (s.startedAt) s.minutes = Math.round((Date.now() - s.startedAt) / 60000);
     save();
-    toast(`Week ${w}, ${DAYS[d].title} finished`);
+    toast(`Week ${w}, ${DAYS[d].title} finished${s.minutes ? ` in ${s.minutes} min` : ''}`);
     closeRun();
   }
-  else if (act === 'rest-add' && run.rest) { run.rest.end += 15000; run.rest.buzzed = false; tickRest(); }
+  else if (act === 'rest-add' && run.rest) { run.rest.end += 15000; run.rest.total += 15000; run.rest.goAt = null; run.rest.beeped = {}; tickRest(); }
+  else if (act === 'rest-sub' && run.rest) {
+    run.rest.end = Math.max(Date.now() + 1000, run.rest.end - 15000);
+    run.rest.total = Math.max(1000, run.rest.total - 15000);
+    tickRest();
+  }
   else if (act === 'rest-skip') endRest();
+  else if (act === 'hold-start' && st && st.kind === 'set') {
+    const secs = num(runField('r')) || repsOf(st.ex, w);
+    startHold(secs, perSide(st.ex, w) ? 2 : 1);
+  }
+  else if (act === 'hold-stop') finishHold();
+  else if (act === 'sound') { state.sound = state.sound === false; save(); renderRun(); }
   else if (act === 'step') {
     const f = t.dataset.f, step = +t.dataset.by;
     const el = $run.querySelector(`[data-run="${f}"]`);
@@ -1601,17 +1907,15 @@ function runAction(act, t) {
   }
 }
 
-/* =====================================================================
-   Events
-   ===================================================================== */
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]');
   if (!t) return;
+  audioOn();
   const act = t.dataset.act;
   const inRun = run && $run.contains(t);
   const w = inRun ? run.w : state.week, d = inRun ? run.d : state.view;
 
-  if (inRun && (act.startsWith('run-') || act.startsWith('rest-') || act === 'step')) { runAction(act, t); return; }
+  if (inRun && (act.startsWith('run-') || act.startsWith('rest-') || act.startsWith('hold-') || act === 'step' || act === 'sound')) { runAction(act, t); return; }
 
   if (act === 'variant') {
     const s = session(w, d, true);
@@ -1619,6 +1923,13 @@ document.addEventListener('click', e => {
     save();
     if (inRun) renderRun(); else { renderDay(d); renderTabs(); }
     kickAnim();
+    return;
+  }
+  if (act === 'mini') {
+    const k = t.dataset.mini;
+    if (mini[k] && mini[k].end) delete mini[k];
+    else mini[k] = { end: Date.now() + (+t.dataset.sec) * 1000 };
+    tickMini();
     return;
   }
 
@@ -1634,7 +1945,11 @@ document.addEventListener('click', e => {
     const rows = rowsFor(w, d, ex, true);
     const r = rows[i];
     if (r.d) r.d = false;
-    else { completeSet(ex, w, d, i); if (ex.rest) startTimer(ex.rest); }
+    else {
+      completeSet(ex, w, d, i);
+      const rest = restForSet(w, d, row.dataset.slot, i);
+      if (rest && rest.sec > 0) startTimer(rest);
+    }
     row.classList.toggle('is-done', r.d);
     t.setAttribute('aria-pressed', String(r.d));
     const wi = row.querySelector('[data-f="w"]'), ri = row.querySelector('[data-f="r"]');
@@ -1657,7 +1972,7 @@ document.addEventListener('click', e => {
       state = blank(); save(); render(); toast('All logs erased');
     }
   }
-  else if (act === 'timer-add') { timerEnd += 15000; tickTimer(); }
+  else if (act === 'timer-add' && bar) { bar.end += 15000; bar.goAt = null; bar.beeped = {}; tickTimer(); }
   else if (act === 'timer-stop') stopTimer();
 });
 
@@ -1696,37 +2011,6 @@ document.addEventListener('change', e => {
 });
 
 document.addEventListener('toggle', e => { if (e.target.tagName === 'DETAILS' && e.target.open) kickAnim(); }, true);
-
-/* ---------- Rest timer bar (log view) ---------- */
-const $timer = document.getElementById('timer');
-let timerEnd = 0, timerInt = null, goTimeout = null;
-function startTimer(sec) {
-  clearTimeout(goTimeout);
-  timerEnd = Date.now() + sec * 1000;
-  $timer.hidden = false;
-  $timer.classList.remove('go');
-  $timer.innerHTML = `<div class="wrap"><span class="lbl">Rest</span><span class="clock" id="clock"></span>
-    <button data-act="timer-add">+15 sec</button><button data-act="timer-stop">Done</button></div>`;
-  clearInterval(timerInt);
-  timerInt = setInterval(tickTimer, 250);
-  tickTimer();
-}
-function tickTimer() {
-  const left = Math.max(0, (timerEnd - Date.now()) / 1000);
-  const c = document.getElementById('clock');
-  if (c) c.textContent = fmtSec(Math.ceil(left));
-  if (left <= 0) {
-    clearInterval(timerInt);
-    $timer.classList.add('go');
-    if (c) c.textContent = 'Go';
-    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { /* not supported */ }
-    goTimeout = setTimeout(stopTimer, 4000);
-  }
-}
-function stopTimer() {
-  clearInterval(timerInt); clearTimeout(goTimeout);
-  $timer.hidden = true; $timer.innerHTML = '';
-}
 
 /* ---------- Backup ---------- */
 function exportData() {

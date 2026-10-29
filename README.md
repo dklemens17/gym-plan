@@ -27,6 +27,25 @@ Every session ends with deliberate work for the muscles that protect the knee li
 | Quads and control | Knee tracks over the toes under load | Single-leg sit to bench, forward step-down, split-squat hold |
 | Calves and soleus | Absorb landings; soleus helps pull the shin back | Single-leg calf raise, seated soleus raise |
 
+## Built-in timers
+
+- **Rest timer.** Starts on its own when a set is logged, with a suggested time and the reason on screen. Adjust it 15 seconds at a time.
+  - **By kind of work and stage**, following youth strength guidelines: about 1 minute for beginners, 1 to 2 minutes for intermediate, 2 to 3 minutes for heavy or power work.
+    - Heavy lifts: 1:15, then 1:45, then 2:30.
+    - Strength sets: 1:00, then 1:30, then 2:00.
+    - Stick jumps: 45 to 75 sec. In young soccer players, 30, 60 and 120 sec between jump sets gave the same gains.
+    - Reactive and depth jumps: 1:00 to 1:30.
+    - Sprints: 1:30 or more. Shuttles: 2:00.
+    - Throws: 45 to 60 sec. Knee armor: 45 to 60 sec. Nordics: 1:00 to 1:30. Core: 30 to 45 sec.
+  - **By step in the workout:**
+    - Paired exercises switch after 15 seconds and rest after the pair.
+    - Moving to a new exercise adds 30 seconds to set up.
+    - A set that falls short of its target reps adds 30 seconds.
+  - Rests are shorter than an adult plan because kids recover from hard efforts faster than adults.
+- **Hold timer** for timed exercises such as the Copenhagen plank, hollow hold and split-squat hold. It counts down "get set", the hold, "switch sides" and the second side, then logs the set.
+- **Session clock** in Run workout, plus timers on the timed warm-up items.
+- Beeps on the last 3 seconds (sound can be turned off). The phone vibrates where supported, and the screen stays awake during a workout.
+
 ## Where the data lives
 
 Logs are saved in the phone's browser (localStorage). Nothing is sent anywhere. Use **Progress > Export backup** now and then, and **Import backup** to move the log to another device.
