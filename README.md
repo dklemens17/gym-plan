@@ -24,7 +24,7 @@ Every exercise shows a blue **On the pitch** box. It has a headline payoff and a
 - Pullovers: "Longer throw-ins".
 - Shuttles: "Cut and go".
 
-Knee armor exercises show a green box naming the muscle they strengthen and how it protects the knee. Warm-up items carry a one-line reason too. The payoff also shows on the PR Challenge splash and in the "Next" line on rest screens.
+Knee armor exercises show a green box naming the muscle they strengthen and how it protects the knee. Warm-up items carry a one-line reason too, plus a **How to do it** dropdown with step-by-step cues and an animated demo. The payoff also shows on the PR Challenge splash and in the "Next" line on rest screens.
 
 ## Knee armor
 

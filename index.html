@@ -167,6 +167,10 @@ main { padding-top: 16px; }
 .pitch.guard { background: var(--turf-soft); color: var(--turf); }
 .pitch.guard b { color: var(--turf); }
 .checks .why { display: block; margin-top: 2px; font-size: 13px; color: var(--sky); }
+.checks .warm-tip { flex-basis: 100%; margin: -2px 0 10px 34px; }
+.warm-figs { display: grid; gap: 8px; margin-top: 8px; max-width: 320px; }
+.warm-figs.two { grid-template-columns: 1fr 1fr; max-width: 420px; }
+.warm-figs .fig { margin: 0; max-width: none; }
 .checks .done .why { text-decoration: none; }
 .next-why { display: flex; gap: 6px; align-items: center; justify-content: center; margin: -6px 0 12px; font: 600 16px/1.2 "Barlow Condensed", sans-serif; color: var(--sky); }
 .next-why svg { width: 16px; height: 16px; }
@@ -808,6 +812,69 @@ const FIG = {
     front: j => P.db(j.hn, 5), farFront: j => P.db(j.hf, 5), key: 1
   }
 };
+// Warm-up demos.
+Object.assign(FIG, {
+  jacks: {
+    frames: [
+      { p: { v: 'hip', x: 120, y: 82, t: 0, ln: [181, 181], lf: [179, 179], an: [185, 182], af: [175, 178] }, ms: 230, hold: 60 },
+      { p: { v: 'hip', x: 120, y: 78, t: 0, ln: [204, 204], lf: [156, 156], an: [318, 330], af: [42, 30] }, ms: 230, hold: 60 }
+    ], key: 1
+  },
+  wgs: {
+    frames: [
+      { p: S({ x: 110 }), ms: 700, hold: 300 },
+      { p: { v: 'hip', x: 94, y: 122, t: 72, lnT: [140, 156], lnB: 1, lfT: [22, 152], lfB: -1, ftf: 120, anT: [128, 154], anB: 1, afT: [125, 154], afB: 1 }, ms: 900, hold: 400 },
+      { p: { v: 'hip', x: 94, y: 122, t: 72, lnT: [140, 156], lnB: 1, lfT: [22, 152], lfB: -1, ftf: 120, an: [355, 355], afT: [125, 154], afB: 1 }, ms: 800, hold: 1000 },
+      { p: { v: 'hip', x: 94, y: 122, t: 72, lnT: [140, 156], lnB: 1, lfT: [22, 152], lfB: -1, ftf: 120, anT: [128, 154], anB: 1, afT: [125, 154], afB: 1 }, ms: 600, hold: 200 }
+    ], key: 2
+  },
+  bridge2: {
+    frames: [
+      { p: { v: 'hip', x: 130, y: 148, t: 270, lnT: [166, 156], lnB: -1, lfT: [169, 156], lfB: -1, an: [90, 90], af: [92, 92], ftn: 90, ftf: 90 }, ms: 700, hold: 300 },
+      { p: { v: 'hip', x: 125, y: 124, t: 236, lnT: [166, 156], lnB: -1, lfT: [169, 156], lfB: -1, an: [100, 92], af: [102, 94], ftn: 90, ftf: 90 }, ms: 700, hold: 800 }
+    ], key: 1
+  },
+  sideplank: {
+    frames: [
+      { p: { v: 'footF', x: 204, y: 150, t: 280.7, lf: [100.7, 100.7], ln: [99.5, 100.5], an: [97, 97], af: [180, 270], ftn: 10.7, ftf: 10.7 }, ms: 1200, hold: 1500 },
+      { p: { v: 'footF', x: 204, y: 150, t: 282, lf: [101.5, 101], ln: [100.3, 101], an: [97, 97], af: [180, 270], ftn: 10.7, ftf: 10.7 }, ms: 1200, hold: 300 }
+    ], key: 0
+  },
+  balboard: {
+    frames: [
+      { p: { v: 'hip', x: 110, y: 74, t: 0, ln: [190, 190], lf: [170, 170], an: [232, 225], af: [128, 135] }, ms: 900, hold: 200 },
+      { p: { v: 'hip', x: 108, y: 74, t: -5, ln: [193, 193], lf: [174, 174], an: [226, 220], af: [124, 132] }, ms: 900, hold: 100 },
+      { p: { v: 'hip', x: 110, y: 74, t: 0, ln: [190, 190], lf: [170, 170], an: [232, 225], af: [128, 135] }, ms: 900, hold: 200 },
+      { p: { v: 'hip', x: 112, y: 74, t: 5, ln: [186, 186], lf: [167, 167], an: [236, 230], af: [132, 140] }, ms: 900, hold: 100 }
+    ],
+    back: j => {
+      const a = [j.ankN[0], j.ankN[1] + 4], b = [j.ankF[0] + 3, j.ankF[1] + 4];
+      const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+      const m = mid(a, b);
+      return `<circle cx="110" cy="${GY - 3}" r="6" fill="${EQ}"/><line x1="${f1(a[0] - ux * 16)}" y1="${f1(a[1] - uy * 16)}" x2="${f1(b[0] + ux * 16)}" y2="${f1(b[1] + uy * 16)}" stroke="${EQ}" stroke-width="5" stroke-linecap="round"/><line x1="${f1(m[0])}" y1="${f1(m[1])}" x2="110" y2="${GY - 3}" stroke="${EQ}" stroke-width="3"/>`;
+    }, key: 1
+  },
+  landprep: {
+    frames: [
+      { p: S({ y: 150, an: [2, 2], af: [358, 358], ftn: 130, ftf: 130 }), ms: 500, hold: 300 },
+      { p: S({ t: 35, ln: [145, 205], lf: [145, 205], an: [205, 200], af: [208, 203] }), ms: 220, hold: 900 },
+      { p: S({}), ms: 500, hold: 200 },
+      { p: S({ y: 144, ln: [181, 181], lf: [181, 181], ftn: 150, ftf: 150, an: [175, 175], af: [178, 178] }), ms: 160 },
+      { p: S({ ln: [172, 188], lf: [172, 188], ftn: 115, ftf: 115, an: [178, 178], af: [180, 180] }), ms: 150 },
+      { p: S({ y: 144, ln: [181, 181], lf: [181, 181], ftn: 150, ftf: 150, an: [175, 175], af: [178, 178] }), ms: 160 },
+      { p: S({ ln: [172, 188], lf: [172, 188], ftn: 115, ftf: 115, an: [178, 178], af: [180, 180] }), ms: 150 },
+      { p: S({ y: 144, ln: [181, 181], lf: [181, 181], ftn: 150, ftf: 150, an: [175, 175], af: [178, 178] }), ms: 160 },
+      { p: S({}), ms: 200, hold: 400 }
+    ], key: 1
+  },
+  walldrive: {
+    frames: [
+      { p: { v: 'hip', x: 120, y: 96, t: 45, ln: [100, 160], lf: [215, 215], anT: [203, 64], anB: -1, afT: [203, 66], afB: -1, ftn: 120, ftf: 100 }, ms: 180, hold: 380 },
+      { p: { v: 'hip', x: 120, y: 96, t: 45, ln: [215, 215], lf: [100, 160], anT: [203, 64], anB: -1, afT: [203, 66], afB: -1, ftn: 100, ftf: 120 }, ms: 180, hold: 380 }
+    ],
+    back: () => P.wall(205), key: 0
+  }
+});
 for (const f of Object.values(FIG)) {
   f.frames.forEach(fr => { fr.n = norm(fr.p); });
   f.total = f.frames.reduce((s, fr) => s + (fr.ms || 1) + (fr.hold || 0), 0);
@@ -1075,12 +1142,18 @@ const exAt = (slot, w) => LIB[slot.pick(blockOf(w))];
 const isNew = (slot, w) => blockOf(w) > 0 && wib(w) === 0 && slot.pick(blockOf(w)) !== slot.pick(blockOf(w) - 1);
 
 const WARMUP = [
-  { t: 'Get warm, 2 minutes: jumping jacks, skips, side shuffles', sec: 120, why: 'Warm muscles are faster, springier and less likely to get hurt.' },
-  { t: "World's greatest stretch, 3 per side", why: 'Opens the hips and upper back for a longer stride and a bigger throw-in arch.' },
-  { t: 'Glute bridge x10, then side plank 20 seconds per side', sec: 20, label: '0:20', why: 'Wakes up the hip muscles that keep your knees safe on landings.' },
-  { t: 'Balance board, 3 minutes', sec: 180, why: 'Better balance keeps you on your feet in challenges and makes landings safer.' },
-  { t: 'Landing prep: 5 snap-downs, then 10 pogo hops', why: 'Rehearses soft, safe landings before the real jumps.' },
-  { t: 'Wall drives, 2 x 5 quick knee drives per leg', why: 'Grooves the forward lean and knee drive of a fast first step.' }
+  { t: 'Get warm, 2 minutes: jumping jacks, skips, side shuffles', sec: 120, figs: ['jacks'],
+    how: '30 seconds of each, then repeat: jumping jacks, skipping in place with high knees and a big arm swing, then side shuffles left and right, staying low on the balls of the feet. Start easy and build the pace.', why: 'Warm muscles are faster, springier and less likely to get hurt.' },
+  { t: "World's greatest stretch, 3 per side", figs: ['wgs'],
+    how: 'Step into a long lunge with the left foot forward and the back leg straight. Put both hands on the floor inside the left foot and sink the hips. Then rotate and reach the left arm to the ceiling, eyes following the hand. Hold 2 seconds, bring the hand back down, and switch sides.', why: 'Opens the hips and upper back for a longer stride and a bigger throw-in arch.' },
+  { t: 'Glute bridge x10, then side plank 20 seconds per side', sec: 20, label: '0:20', figs: ['bridge2', 'sideplank'],
+    how: 'Glute bridge: lie on your back, knees bent, feet flat. Squeeze the glutes and lift the hips until knees, hips and shoulders line up, pause 1 second, lower slowly. Side plank: elbow under the shoulder, body straight from head to feet, hips high. Hold 20 seconds, then switch sides.', why: 'Wakes up the hip muscles that keep your knees safe on landings.' },
+  { t: 'Balance board, 3 minutes', sec: 180, figs: ['balboard'],
+    how: 'Feet on either side of the middle, knees soft, arms out, eyes on a spot ahead. Keep the board level so the edges don\'t touch down, breathing normally. Step off and reset whenever you need to. Pick today\'s level below and move up when it gets easy.', why: 'Better balance keeps you on your feet in challenges and makes landings safer.' },
+  { t: 'Landing prep: 5 snap-downs, then 10 pogo hops', figs: ['landprep'],
+    how: 'Snap-downs: rise onto the toes with the arms high, then snap down fast into an athletic stance, knees over toes and chest up, and freeze for 2 seconds. Pogo hops: small, quick bounces on the balls of the feet with the knees nearly straight, like the ground is hot.', why: 'Rehearses soft, safe landings before the real jumps.' },
+  { t: 'Wall drives, 2 x 5 quick knee drives per leg', figs: ['walldrive'],
+    how: 'Hands on a wall at shoulder height, body leaning in one straight line, heels up. Drive one knee up to hip height, then switch legs fast, like the first steps of a sprint. Keep the body straight; don\'t bend at the hips.', why: 'Grooves the forward lean and knee drive of a fast first step.' }
 ];
 const BALANCE_LEVELS = [
   'Level 1: two feet, eyes forward',
@@ -1671,6 +1744,9 @@ function warmPanel(w, d, s) {
     if (item.sec) {
       const lab = item.label || fmtSec(item.sec);
       extra += `<button class="mini-timer" data-act="mini" data-mini="${w}${d}-${i}" data-sec="${item.sec}" data-label="${lab}" aria-label="Start ${lab} timer">${lab}</button>`;
+    }
+    if (item.how) {
+      extra += `<details class="tip warm-tip"><summary>How to do it</summary><p>${esc(item.how)}</p>${item.figs ? `<div class="warm-figs${item.figs.length > 1 ? ' two' : ''}">${item.figs.map(f => figTag(f, item.t)).join('')}</div>` : ''}</details>`;
     }
     if (i === 3) {
       extra += `<div class="bal"><label for="bal-${d}">Balance level today</label>
