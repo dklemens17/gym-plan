@@ -30,6 +30,8 @@
   --fig-far: #9DAEBB;
   --equip: #7F909C;
   --stage: #F3F7F5;
+  --sky: #1D5EA8;
+  --sky-soft: #E3EEFA;
   --radius: 10px;
 }
 @media (prefers-color-scheme: dark) {
@@ -49,6 +51,8 @@
     --fig-far: #566A7D;
     --equip: #6E8091;
     --stage: #0F1923;
+    --sky: #8DB9F0;
+    --sky-soft: #132538;
   }
 }
 * { box-sizing: border-box; }
@@ -156,7 +160,18 @@ main { padding-top: 16px; }
 .chip { font-size: 13px; padding: 2px 8px; border-radius: 6px; background: var(--field); border: 1px solid var(--line); color: var(--muted); }
 .chip.spec { color: var(--ink); font-weight: 600; }
 .chip.new { background: var(--cone-soft); color: var(--cone); border-color: transparent; font-weight: 600; }
-.guard { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--turf-soft); color: var(--turf); font-size: 14px; }
+.pitch { display: flex; gap: 9px; align-items: flex-start; margin: 8px 0 0; padding: 9px 11px; border-radius: 8px; background: var(--sky-soft); color: var(--sky); }
+.pitch svg { width: 20px; height: 20px; flex: none; margin-top: 2px; }
+.pitch p { margin: 0; font-size: 14px; line-height: 1.4; color: var(--ink); }
+.pitch b { display: block; font: 700 17px/1.15 "Barlow Condensed", sans-serif; color: var(--sky); margin-bottom: 1px; }
+.pitch.guard { background: var(--turf-soft); color: var(--turf); }
+.pitch.guard b { color: var(--turf); }
+.checks .why { display: block; margin-top: 2px; font-size: 13px; color: var(--sky); }
+.checks .done .why { text-decoration: none; }
+.next-why { display: flex; gap: 6px; align-items: center; justify-content: center; margin: -6px 0 12px; font: 600 16px/1.2 "Barlow Condensed", sans-serif; color: var(--sky); }
+.next-why svg { width: 16px; height: 16px; }
+.splash-why { display: flex; gap: 8px; align-items: center; justify-content: center; margin: 12px auto 0; font: 600 18px/1.2 "Barlow Condensed", sans-serif; color: #fff; }
+.splash-why svg { width: 20px; height: 20px; color: #F5C518; }
 .guard b { font-weight: 600; }
 .variant { display: inline-flex; margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .variant button { border: 0; background: var(--field); padding: 6px 12px; font-size: 14px; font-weight: 500; color: var(--muted); }
@@ -256,7 +271,7 @@ td.num, th.num { text-align: right; }
 .run-setof { font: 600 20px/1.2 "Barlow Condensed", sans-serif; color: var(--muted); margin: 4px 0 10px; }
 .run-setof b { color: var(--cone); }
 .run .fig { margin: 0 auto 10px; max-width: 420px; max-height: 38vh; }
-.run .guard { margin: 0 0 10px; }
+.run .pitch { margin: 0 0 10px; }
 .rest-view .fig { max-height: 26vh; }
 .run-tip { font-size: 15px; color: var(--muted); margin: 0 0 8px; }
 .run-last { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
@@ -865,6 +880,43 @@ const GUARD = {
   soleus: { m: 'Soleus', why: 'helps pull the shin back on landings, which eases strain on the ACL.' }
 };
 
+// What each exercise does for the athlete on the pitch (knee armor uses GUARD instead).
+const PITCH = {
+  cmj: { h: 'Win more headers', t: 'A higher two-foot jump gets you to the ball first on corners, goal kicks and 50-50s. Sticking the landing keeps your knees safe coming down.' },
+  sqjump: { h: 'Explode from a standstill', t: 'Jumping without a dip trains pure starting power, the burst you need to rise for a header or react to a loose ball.' },
+  contvert: { h: 'Spring, don\'t sink', t: 'Quick rebounds teach your legs to bounce instead of stall, so you stay sharp through repeated jumps and sprints late in a game.' },
+  broad: { h: 'Faster first step', t: 'Pushing yourself forward is the same force that launches your first steps to a through ball. The stick trains your brakes too.' },
+  tbroad: { h: 'Carry your speed', t: 'Linking jumps trains you to keep power flowing from step to step, like stringing strides together on a breakaway.' },
+  depthdrop: { h: 'Land like a pro', t: 'Soaking up force quietly, knees over toes, is how you come down from headers and stop hard without stressing your knees.' },
+  depthjump: { h: 'React off the ground', t: 'A short, snappy contact with the ground builds the reactive spring for quick cuts and jumping again right after landing.' },
+  hex: { h: 'Harder to knock off the ball', t: 'Strong legs and hips power every sprint, jump and shot, and help you hold your ground when a defender leans on you.' },
+  lunge: { h: 'One-leg power', t: 'Soccer happens one leg at a time. Lunges build the single-leg strength behind sprinting, cutting and striking the ball.' },
+  rfess: { h: 'A rock-solid plant leg', t: 'Loading one leg at a time builds a steady plant leg for shooting and a stronger push-off when you sprint.' },
+  stepup: { h: 'Drive like a sprinter', t: 'Pushing up and driving the other knee copies the sprint stride, building the push that gets you to top speed.' },
+  invrow: { h: 'Win the shoulder battle', t: 'A strong upper back helps you shield the ball, hold your position and stay upright when you get bumped.' },
+  dbrow: { h: 'Shield the ball', t: 'Pulling strength in your back and arms helps you keep defenders off the ball and holds your posture strong late in games.' },
+  squat: { h: 'Power for everything', t: 'Squats build the quads and hips behind jumping, sprinting, tackling and striking long balls.' },
+  dbbench: { h: 'Finish the throw-in', t: 'Chest, shoulder and triceps strength speeds up the last push of a throw-in and helps you hold players off with your arms.' },
+  pushup: { h: 'Strong through contact', t: 'Push-ups build the chest, shoulders and core that help you push through challenges and finish long throw-ins.' },
+  hkpress: { h: 'Overhead strength', t: 'Pressing overhead from a kneel builds strong, stable shoulders and trunk for long throw-ins and aerial duels.' },
+  pullover: { h: 'Longer throw-ins', t: 'Your lats are the big muscles that whip your arms forward on a throw-in. Stronger lats mean a faster release and a longer throw.' },
+  sprint: { h: 'Get there first', t: 'Big moments in a game often come down to a short burst. Training the first 10 to 20 meters helps you win the race to the ball.' },
+  sprintk: { h: 'Quicker off the mark', t: 'Driving out from a low start builds the explosive first steps you use to react to a turnover or a ball played into space.' },
+  shuttle: { h: 'Cut and go', t: 'Plant, turn and sprint again is how you press, defend and lose a marker. Doing it with good form also keeps your knees safe.' },
+  latbound: { h: 'Side-to-side quickness', t: 'Pushing off sideways and sticking the landing builds the power to change direction fast and recover on defense.' },
+  latboundc: { h: 'Quick feet sideways', t: 'Fast, linked bounds train sharp, stable cuts for dribbling past a player or staying with an attacker.' },
+  hop: { h: 'Balanced on one leg', t: 'Most landings and cuts in a game happen on one leg. Hopping and sticking builds the control that keeps you upright and your knees safe.' },
+  hopc: { h: 'One-leg spring', t: 'Repeated hops on one leg build a springier stride, making you faster and more agile with the ball.' },
+  wallthrow: { h: 'A long throw is a weapon', t: 'A throw-in into the box works like a free cross. This drill trains the whole throwing motion for speed.' },
+  stepthrow: { h: 'Use your run-up', t: 'A run-up adds distance to a throw-in. This drill links your steps, plant and arms into one fast throw.' },
+  medthrow: { h: 'Make the match ball feel light', t: 'A slightly heavier ball builds strength in the throwing motion, so the real ball flies farther.' },
+  hkthrow: { h: 'Core snap', t: 'With one knee down, the power has to come from your trunk and arms. That snap is what sends a throw-in long.' },
+  yraise: { h: 'Healthy shoulders', t: 'Strong muscles around the shoulder blades keep your shoulders healthy through hundreds of throw-ins and falls.' },
+  hollow: { h: 'A strong core', t: 'A strong core links your legs and arms, adding power to shots and throws and keeping you balanced in challenges.' },
+  deadbug: { h: 'Stay balanced when bumped', t: 'Keeping your trunk still while your arms and legs move is what keeps you balanced while dribbling or taking contact.' }
+};
+const GUARD_HEAD = { ham: 'Protect your ACL', hip: 'Stop knees caving in', glute: 'Steer your knees', adductor: 'Strong inner thighs', quad: 'Knees over toes', calf: 'Softer landings', soleus: 'Steady shins' };
+
 // Exercise library. Arrays of three hold [Foundation, Strength, Power] values.
 // dose = [sets, reps or seconds] per stage.
 const LIB = {
@@ -1023,12 +1075,12 @@ const exAt = (slot, w) => LIB[slot.pick(blockOf(w))];
 const isNew = (slot, w) => blockOf(w) > 0 && wib(w) === 0 && slot.pick(blockOf(w)) !== slot.pick(blockOf(w) - 1);
 
 const WARMUP = [
-  { t: 'Get warm, 2 minutes: jumping jacks, skips, side shuffles', sec: 120 },
-  { t: "World's greatest stretch, 3 per side" },
-  { t: 'Glute bridge x10, then side plank 20 seconds per side', sec: 20, label: '0:20' },
-  { t: 'Balance board, 3 minutes', sec: 180 },
-  { t: 'Landing prep: 5 snap-downs, then 10 pogo hops' },
-  { t: 'Wall drives, 2 x 5 quick knee drives per leg' }
+  { t: 'Get warm, 2 minutes: jumping jacks, skips, side shuffles', sec: 120, why: 'Warm muscles are faster, springier and less likely to get hurt.' },
+  { t: "World's greatest stretch, 3 per side", why: 'Opens the hips and upper back for a longer stride and a bigger throw-in arch.' },
+  { t: 'Glute bridge x10, then side plank 20 seconds per side', sec: 20, label: '0:20', why: 'Wakes up the hip muscles that keep your knees safe on landings.' },
+  { t: 'Balance board, 3 minutes', sec: 180, why: 'Better balance keeps you on your feet in challenges and makes landings safer.' },
+  { t: 'Landing prep: 5 snap-downs, then 10 pogo hops', why: 'Rehearses soft, safe landings before the real jumps.' },
+  { t: 'Wall drives, 2 x 5 quick knee drives per leg', why: 'Grooves the forward lean and knee drive of a fast first step.' }
 ];
 const BALANCE_LEVELS = [
   'Level 1: two feet, eyes forward',
@@ -1076,6 +1128,8 @@ const ICON_PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const ICON_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 const ICON_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 010 6M18 6.5a7.5 7.5 0 010 11"/></svg>';
 const ICON_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
+const ICON_BALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M12 8.2l3.3 2.4-1.3 3.9h-4l-1.3-3.9z" fill="currentColor"/><path d="M12 8.2V3M15.3 10.6l4.8-1.5M14 14.5l2.9 4.1M10 14.5l-2.9 4.1M8.7 10.6L3.9 9.1"/></svg>';
+const ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke-linecap="round"/></svg>';
 const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
 
 /* ---------- State ---------- */
@@ -1223,8 +1277,15 @@ function completeSet(ex, w, d, i) {
 }
 function guardHtml(ex) {
   const g = ex.guard && GUARD[ex.guard];
-  return g ? `<p class="guard"><b>${g.m}</b> ${g.why}</p>` : '';
+  return g ? `<div class="pitch guard">${ICON_SHIELD}<p><b>${GUARD_HEAD[ex.guard]}</b>${g.m} ${g.why}</p></div>` : '';
 }
+// The payoff box shown with every exercise: knee protection or what it does on the pitch.
+function benefitHtml(ex) {
+  if (ex.guard) return guardHtml(ex);
+  const pp = PITCH[ex.id];
+  return pp ? `<div class="pitch">${ICON_BALL}<p><b>${esc(pp.h)}</b>${esc(pp.t)}</p></div>` : '';
+}
+const benefitHead = ex => (ex.guard ? GUARD_HEAD[ex.guard] : PITCH[ex.id] ? PITCH[ex.id].h : '');
 
 /* =====================================================================
    Personal records and PR Challenges. PRs come only from real logged
@@ -1616,7 +1677,7 @@ function warmPanel(w, d, s) {
         <select id="bal-${d}" data-act="balance">${BALANCE_LEVELS.map((l, j) => `<option value="${j + 1}"${bal === j + 1 ? ' selected' : ''}>${l}</option>`).join('')}</select>
         <span class="fine" style="margin:0">Move up a level after 30 seconds without the edge touching down.</span></div>`;
     }
-    return `<li><label class="${warm[i] ? 'done' : ''}"><input type="checkbox" data-act="warm" data-i="${i}"${warm[i] ? ' checked' : ''}><span>${esc(item.t)}</span></label>${extra}</li>`;
+    return `<li><label class="${warm[i] ? 'done' : ''}"><input type="checkbox" data-act="warm" data-i="${i}"${warm[i] ? ' checked' : ''}><span>${esc(item.t)}${item.why ? `<small class="why">${esc(item.why)}</small>` : ''}</span></label>${extra}</li>`;
   }).join('');
   return `
     <section class="sec">
@@ -1681,7 +1742,7 @@ function exCard(slot, w, d, restText) {
     <article class="ex${doneCount === n ? ' all-done' : ''}${ch ? ' challenge' : ''}" id="ex-${slot.num}">
       ${ch ? `<div class="chal-ribbon">${ICON_TROPHY}<span>${chState === 'won' ? 'PR Challenge won' : chState === 'done' ? 'PR Challenge done' : 'PR Challenge: ' + esc(ch.title)}</span></div>` : ''}
       <div class="ex-hd"><span class="ex-num">${slot.num}</span>
-        <div><h3 class="ex-name">${esc(inf.name)}</h3><div class="chips">${chips.join('')}</div>${variantControl(ex, w, d)}${guardHtml(ex)}</div>
+        <div><h3 class="ex-name">${esc(inf.name)}</h3><div class="chips">${chips.join('')}</div>${variantControl(ex, w, d)}${benefitHtml(ex)}</div>
       </div>
       <details class="tip"><summary>How to do it</summary><p>${esc(inf.tip)}</p>${figTag(inf.fig, inf.name)}</details>
       ${ch ? `<p class="chal-rule"><b>${esc(ch.beat)}.</b> ${esc(ch.rule)}</p>` : ''}
@@ -1972,6 +2033,7 @@ function renderRun() {
       <div class="rest-btns"><button class="btn ghost" data-act="rest-sub">&minus;15 sec</button><button class="btn ghost" data-act="rest-add">+15 sec</button></div>
       ${nxCh && nxCh.set === nx.i ? `<p class="chal-strip">${ICON_TROPHY}Next up is the PR Challenge set</p>` : ''}
       <p class="next">Next: <b>${esc(stepLabel(nx, w, d))}</b></p>
+      ${nx && nx.kind === 'set' && benefitHead(nx.ex) ? `<p class="next-why">${nx.ex.guard ? ICON_SHIELD : ICON_BALL}${esc(benefitHead(nx.ex))}</p>` : ''}
       ${nxInf ? figTag(nxInf.fig, nxInf.name) : ''}
       ${R.tag === 'Switch' ? '' : `<p class="fine">${KID_NOTE}</p>`}</div>`;
     primary = R.tag === 'Switch' ? 'Start now' : 'Skip rest';
@@ -1993,6 +2055,7 @@ function renderRun() {
         <p class="splash-ex">${st.slot.num} ${esc(inf.name)}</p>
         <p class="splash-beat">${esc(ch.beat)}</p>
         <p class="splash-rule">${esc(ch.rule)}</p>
+        ${benefitHead(st.ex) ? `<p class="splash-why">${st.ex.guard ? ICON_SHIELD : ICON_BALL}${esc(benefitHead(st.ex))}</p>` : ''}
         <p class="splash-when">${ch.set === st.i ? 'The challenge is this set.' : `The challenge is set ${ch.set + 1} of ${st.of}. The sets before it build up to it.`}</p>
       </div></div>`;
     primary = 'Let\'s go';
@@ -2046,7 +2109,7 @@ function renderRun() {
       body = `${head}
         ${variantControl(ex, w, d)}
         ${figTag(inf.fig, inf.name)}
-        ${guardHtml(ex)}
+        ${benefitHtml(ex)}
         <p class="run-tip">${esc(inf.tip)}</p>
         ${rec ? `<p class="run-last rec">${ICON_TROPHY}Record: ${esc(rec)}</p>` : ''}
         ${ll ? `<p class="run-last">${esc(ll)}</p>` : ''}

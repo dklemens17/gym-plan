@@ -15,6 +15,17 @@ Open it on a phone, pick the week and Day A or Day B, then tap **Run workout** t
 - **Day A:** jumps, hex bar deadlift, a rotating single-leg lift and pull, then Knee armor.
 - **Day B:** sprints or shuttles, lateral bounds and hops, throw-in power, squat (goblet or back squat), push and pullover, Knee armor, core.
 
+## Why each exercise matters
+
+Every exercise shows a blue **On the pitch** box. It has a headline payoff and a one-line explanation of how the exercise helps in a game. A few examples:
+
+- Countermovement jumps: "Win more headers".
+- Hex bar deadlift: "Harder to knock off the ball".
+- Pullovers: "Longer throw-ins".
+- Shuttles: "Cut and go".
+
+Knee armor exercises show a green box naming the muscle they strengthen and how it protects the knee. Warm-up items carry a one-line reason too. The payoff also shows on the PR Challenge splash and in the "Next" line on rest screens.
+
 ## Knee armor
 
 Every session ends with deliberate work for the muscles that protect the knee ligaments. Each exercise in the app says which muscle it targets and why.
