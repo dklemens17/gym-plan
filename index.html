@@ -97,6 +97,8 @@ button { cursor: pointer; }
 .seg { border: 0; padding: 6px 0 4px; background: transparent; display: flex; flex-direction: column; gap: 2px; position: relative; }
 .seg .h { display: block; height: 6px; border-radius: 1.5px; background: #2B3F55; }
 .seg .h.on { background: var(--cone); }
+.seg .h.f { height: 3px; background: transparent; }
+.seg .h.f.on { background: var(--turf); }
 .seg.test .h:first-child { box-shadow: inset 0 2px 0 #5C7187; }
 .seg.cur::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px; background: var(--band-ink); border-radius: 1px; }
 .stage-name { font: 500 12px/1.1 Barlow, sans-serif; color: var(--band-muted); }
@@ -313,7 +315,12 @@ td.num, th.num { text-align: right; }
 .hold-view { text-align: center; margin: 4px 0 10px; padding: 10px 0; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); }
 .hold-view .lbl { font: 600 24px/1 "Barlow Condensed", sans-serif; color: var(--muted); }
 .hold-view .clock { font: 700 110px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; }
-.hold-view[data-phase="work"] .clock, .hold-view[data-phase="work"] .lbl { color: var(--turf); }
+.hold-view[data-phase="work"] .clock, .hold-view[data-phase="work"] .lbl, .hold-view[data-phase="go"] .clock, .hold-view[data-phase="go"] .lbl { color: var(--turf); }
+.sw-note { margin: -4px 0 10px; }
+.setup ul { margin: 6px 0 0; padding-left: 18px; font-size: 15px; }
+.setup li { margin: 5px 0; }
+.setup li b { font-weight: 600; }
+.field-note { margin-top: -6px; }
 .hold-view[data-phase="switch"] .clock, .hold-view[data-phase="switch"] .lbl { color: var(--cone); }
 .hold-btn { background: var(--turf); margin: 0 0 10px; height: 56px; font-size: 22px; }
 .btn.stop { background: var(--ink); color: var(--card); }
@@ -812,6 +819,165 @@ const FIG = {
     front: j => P.db(j.hn, 5), farFront: j => P.db(j.hf, 5), key: 1
   }
 };
+// Running helpers and field-day demos.
+const RUN_A = x => ({ v: 'hip', x, y: 92, t: 42, ln: [100, 155], lf: [212, 212], an: [225, 165], af: [75, 15], ftn: 120, ftf: 140 });
+const RUN_B = x => ({ v: 'hip', x, y: 92, t: 42, ln: [212, 212], lf: [100, 155], an: [75, 15], af: [225, 165], ftn: 140, ftf: 120 });
+// Mirror a pose so the figure faces left (angles are absolute, so negate them).
+const MIR = p => {
+  const m2 = v => v && [-v[0], -v[1]];
+  const ftn = p.ftn == null ? 90 : p.ftn;
+  return { ...p, t: -(p.t || 0), ln: m2(p.ln), lf: m2(p.lf), an: m2(p.an), af: m2(p.af), ftn: -ftn, ftf: -(p.ftf == null ? ftn : p.ftf) };
+};
+const fr = (p, ms, hold) => ({ p, ms, hold });
+const STANCE = x => S({ x, t: 30, ln: [145, 205], lf: [150, 210], an: [160, 120], af: [165, 125] });
+const WIDE = x => ({ v: 'hip', x, y: 92, t: 0, ln: [215, 195], lf: [145, 165], an: [215, 200], af: [145, 160] });
+const NARROW = x => ({ v: 'hip', x, y: 86, t: 0, ln: [200, 188], lf: [160, 172], an: [215, 200], af: [145, 160] });
+const WALK1 = x => ({ v: 'hip', x, y: 84, t: 0, ln: [165, 182], lf: [195, 188], an: [182, 180], af: [178, 180] });
+const WALK2 = x => ({ v: 'hip', x, y: 84, t: 0, ln: [195, 188], lf: [165, 182], an: [182, 180], af: [178, 180] });
+const NEUTRAL = (x, y) => ({ v: 'hip', x, y: y || 84, t: 0, ln: [188, 180], lf: [172, 180], an: [200, 190], af: [160, 170] });
+const GOBLET_N = n => [n[0] - 1, n[1] + 18], GOBLET_F = n => [n[0] + 1, n[1] + 18];
+const LUNGE = (x, y, t, o) => Object.assign({ v: 'hip', x, y, t, lnT: [60, 156], lnB: 1, lfT: [150, 156], lfB: -1, anT: GOBLET_N, anB: 1, afT: GOBLET_F, afB: -1 }, o);
+Object.assign(FIG, {
+  decel: {
+    frames: [
+      fr(RUN_A(26), 1, 300), fr(RUN_B(62), 220), fr(RUN_A(98), 220), fr(RUN_B(134), 220),
+      fr({ v: 'hip', x: 158, y: 90, t: 18, ln: [150, 190], lf: [205, 170], an: [140, 120], af: [210, 190], ftn: 100, ftf: 100 }, 200),
+      fr(S({ x: 168, t: 25, ln: [140, 205], lf: [150, 210], ...ARMS_FWD }), 220, 1100)
+    ],
+    back: () => P.cone(14) + P.cone(198), key: 5
+  },
+  reactsprint: {
+    frames: [
+      fr(STANCE(46), 1, 1000),
+      fr({ v: 'hip', x: 66, y: 98, t: 50, ln: [120, 170], lf: [215, 215], an: [230, 170], af: [70, 20], ftn: 120, ftf: 140 }, 200),
+      fr(RUN_B(100), 200), fr(RUN_A(136), 200), fr(RUN_B(168), 200, 400)
+    ],
+    back: () => P.cone(216), key: 1
+  },
+  cutdrill: {
+    frames: [
+      fr(RUN_A(30), 1, 250), fr(RUN_B(66), 210), fr(RUN_A(102), 210),
+      fr({ v: 'foot', x: 172, y: GY, t: -22, ln: [140, 160], lf: [215, 190], an: [230, 200], af: [130, 110], ftn: 110, ftf: 120 }, 230, 150),
+      fr(MIR(RUN_B(118)), 210), fr(MIR(RUN_A(82)), 210), fr(MIR(RUN_B(46)), 210, 350)
+    ],
+    back: () => P.cone(14) + P.cone(204), key: 3
+  },
+  shuffle: {
+    frames: [
+      fr(WIDE(80), 1, 200), fr(NARROW(100), 170), fr(WIDE(120), 170), fr(NARROW(140), 170), fr(WIDE(160), 170, 250),
+      fr(NARROW(140), 170), fr(WIDE(120), 170), fr(NARROW(100), 170), fr(WIDE(80), 170, 250)
+    ],
+    back: () => P.cone(46) + P.cone(194), key: 4
+  },
+  feint: {
+    frames: [
+      fr(NEUTRAL(70), 1, 400),
+      fr({ v: 'hip', x: 62, y: 90, t: -22, ln: [215, 195], lf: [150, 195], an: [235, 205], af: [140, 150] }, 260, 350),
+      fr({ v: 'hip', x: 104, y: 95, t: 30, ln: [222, 222], lf: [130, 175], an: [150, 120], af: [250, 230] }, 180),
+      fr({ v: 'hip', x: 150, y: 86, t: 14, ln: [200, 200], lf: [160, 182], an: [140, 120], af: [230, 210] }, 220),
+      fr({ v: 'hip', x: 192, y: 86, t: 10, ln: [165, 182], lf: [200, 200], an: [230, 210], af: [140, 120] }, 220, 400)
+    ],
+    back: () => P.cone(112), key: 1
+  },
+  stepover: {
+    frames: [
+      fr(NEUTRAL(120), 1, 300),
+      fr({ v: 'hip', x: 118, y: 84, t: -6, ln: [186, 178], lf: [120, 175], an: [215, 200], af: [140, 150] }, 220),
+      fr({ v: 'hip', x: 124, y: 84, t: 6, ln: [186, 178], lf: [105, 150], an: [215, 200], af: [120, 110] }, 200),
+      fr({ v: 'hip', x: 136, y: 88, t: 22, ln: [210, 175], lf: [140, 160], an: [230, 215], af: [110, 100] }, 200, 260),
+      fr({ v: 'hip', x: 98, y: 95, t: -30, ln: [230, 185], lf: [138, 138], an: [120, 140], af: [210, 230] }, 180),
+      fr({ v: 'hip', x: 52, y: 86, t: -14, ln: [200, 178], lf: [160, 160], an: [230, 210], af: [140, 120] }, 220, 400)
+    ], key: 3
+  },
+  dropstep: {
+    frames: [
+      fr(STANCE(150), 1, 800),
+      fr({ v: 'hip', x: 134, y: 92, t: -15, ln: [220, 200], lf: [150, 205], an: [230, 190], af: [130, 170], ftn: 250, ftf: 100 }, 220),
+      fr(MIR(RUN_A(110)), 200), fr(MIR(RUN_B(74)), 200), fr(MIR(RUN_A(40)), 200, 400)
+    ],
+    back: () => P.cone(16), key: 1
+  },
+  skaterhold: {
+    frames: [
+      fr(S({ x: 116, t: 50, ln: [135, 200], lf: [235, 260], ftf: 200, an: [120, 100], af: [240, 230] }), 900, 1500),
+      fr(S({ x: 116, t: 40, ln: [150, 195], lf: [225, 255], ftf: 195, an: [110, 95], af: [235, 225] }), 900, 300)
+    ], key: 0
+  },
+  latlunge: {
+    frames: [
+      fr(LUNGE(105, 97, 0), 800, 200),
+      fr(LUNGE(96, 108, -12, { lnT: null, ln: [251.6, 180] }), 1000, 400),
+      fr(LUNGE(105, 97, 0), 900, 200),
+      fr(LUNGE(114, 108, 12, { lfT: null, lf: [108.4, 180] }), 1000, 400)
+    ],
+    front: j => P.db(mid(j.hn, j.hf), 8), key: 1
+  },
+  boxjump: {
+    frames: [
+      fr(S({ x: 96 }), 1, 400),
+      fr(S({ x: 96, ...DIP, ...ARMS_BACK }), 450, 80),
+      fr({ v: 'hip', x: 132, y: 58, t: 20, ln: [100, 200], lf: [104, 204], an: [20, 30], af: [24, 34], ftn: 150, ftf: 150 }, 300),
+      fr(S({ x: 166, y: 113, ...DIP, ...ARMS_FWD }), 260, 600),
+      fr(S({ x: 166, y: 113 }), 450, 900)
+    ],
+    back: () => P.box(140, 114, 62), key: 3
+  },
+  slboxjump: {
+    frames: [
+      fr(S({ x: 96, lf: [175, 240], ftf: 150 }), 1, 400),
+      fr(S({ x: 96, ...DIP, lf: [165, 250], ftf: 150, ...ARMS_BACK }), 450, 80),
+      fr({ v: 'hip', x: 132, y: 70, t: 20, ln: [100, 200], lf: [150, 250], an: [20, 30], af: [24, 34], ftn: 150, ftf: 150 }, 300),
+      fr(S({ x: 166, y: 127, ...DIP, lf: [165, 250], ftf: 150, ...ARMS_FWD }), 260, 700),
+      fr(S({ x: 166, y: 127, lf: [175, 240], ftf: 150 }), 450, 800)
+    ],
+    back: () => P.box(140, 128, 62), key: 3
+  },
+  boxdrop: {
+    frames: [
+      fr(S({ x: 70, y: 127 }), 1, 600),
+      fr(S({ x: 70, y: 127, lf: [150, 172], an: [170, 170], af: [174, 174] }), 400, 80),
+      fr(S({ x: 100, y: 144, t: 5, ln: [175, 182], lf: [170, 182], an: [120, 120], af: [124, 124], ftn: 120, ftf: 120 }), 250),
+      fr(S({ x: 124, ...DIP, ...ARMS_FWD }), 220, 1200),
+      fr(S({ x: 124 }), 450, 300)
+    ],
+    back: () => P.box(28, 128, 58), key: 3
+  },
+  boxdropsprint: {
+    frames: [
+      fr(S({ x: 62, y: 127 }), 1, 500),
+      fr(S({ x: 62, y: 127, lf: [150, 172], an: [170, 170], af: [174, 174] }), 350, 60),
+      fr(S({ x: 92, y: 144, t: 5, ln: [175, 182], lf: [170, 182], an: [120, 120], af: [124, 124], ftn: 120, ftf: 120 }), 230),
+      fr(S({ x: 112, ...DIP, ...ARMS_FWD }), 200, 250),
+      fr(RUN_A(132), 200), fr(RUN_B(158), 200), fr(RUN_A(180), 200, 400)
+    ],
+    back: () => P.box(20, 128, 58) + P.cone(228), key: 3
+  },
+  farmer: {
+    frames: [fr(WALK1(54), 1, 200), fr(WALK2(80), 420), fr(WALK1(106), 420), fr(WALK2(132), 420), fr(WALK1(158), 420), fr(WALK2(184), 420, 500)],
+    front: j => P.db(j.hn, 8), farFront: j => P.db(j.hf, 8), key: 2
+  },
+  highknees: {
+    frames: [
+      fr({ v: 'hip', x: 118, y: 80, t: 8, ln: [95, 180], lf: [182, 182], an: [210, 160], af: [60, 20], ftn: 120, ftf: 120 }, 180),
+      fr({ v: 'hip', x: 118, y: 80, t: 8, ln: [182, 182], lf: [95, 180], an: [60, 20], af: [210, 160], ftn: 120, ftf: 120 }, 180)
+    ], key: 0
+  },
+  askip: {
+    frames: [
+      fr({ v: 'hip', x: 50, y: 78, t: 6, ln: [95, 180], lf: [184, 184], an: [215, 165], af: [55, 10], ftn: 120, ftf: 120 }, 1, 120),
+      fr({ v: 'hip', x: 80, y: 82, t: 6, ln: [178, 178], lf: [178, 178], an: [180, 180], af: [180, 180], ftn: 110, ftf: 110 }, 220),
+      fr({ v: 'hip', x: 110, y: 78, t: 6, ln: [184, 184], lf: [95, 180], an: [55, 10], af: [215, 165], ftn: 120, ftf: 120 }, 220, 120),
+      fr({ v: 'hip', x: 140, y: 82, t: 6, ln: [178, 178], lf: [178, 178], an: [180, 180], af: [180, 180], ftn: 110, ftf: 110 }, 220),
+      fr({ v: 'hip', x: 170, y: 78, t: 6, ln: [95, 180], lf: [184, 184], an: [215, 165], af: [55, 10], ftn: 120, ftf: 120 }, 220, 300)
+    ], key: 0
+  },
+  legswing: {
+    frames: [
+      fr(S({ x: 112, lf: [128, 130], ftf: 70, an: [100, 90], af: [250, 240] }), 600, 100),
+      fr(S({ x: 112, lf: [226, 228], ftf: 160, an: [100, 90], af: [250, 240] }), 600, 100)
+    ], key: 0
+  }
+});
 // Warm-up demos.
 Object.assign(FIG, {
   jacks: {
@@ -980,7 +1146,25 @@ const PITCH = {
   hkthrow: { h: 'Core snap', t: 'With one knee down, the power has to come from your trunk and arms. That snap is what sends a throw-in long.' },
   yraise: { h: 'Healthy shoulders', t: 'Strong muscles around the shoulder blades keep your shoulders healthy through hundreds of throw-ins and falls.' },
   hollow: { h: 'A strong core', t: 'A strong core links your legs and arms, adding power to shots and throws and keeping you balanced in challenges.' },
-  deadbug: { h: 'Stay balanced when bumped', t: 'Keeping your trunk still while your arms and legs move is what keeps you balanced while dribbling or taking contact.' }
+  deadbug: { h: 'Stay balanced when bumped', t: 'Keeping your trunk still while your arms and legs move is what keeps you balanced while dribbling or taking contact.' },
+  decel: { h: 'Stop on a dime', t: 'Many knee injuries happen while slowing down. Braking in 3 quick steps, low with knees over toes, keeps knees safe and lets you stop, turn and go before the defender.' },
+  flying: { h: 'Top speed on a breakaway', t: 'Flying sprints train your fastest running: the speed that pulls away on a counterattack or gets you back to stop one.' },
+  reactsprint: { h: 'React first', t: 'Games are about reacting to a loose ball, a turnover or a run in behind. Sprinting off a signal trains your eyes and legs to fire together.' },
+  tdrill: { h: 'Speed in every direction', t: 'Sprint, shuffle and backpedal are how you press and defend. The T-drill trains all three, and the stopwatch shows you getting quicker.' },
+  boxdrill: { h: 'Quick feet on defense', t: 'Forward, sideways and backward around the square, like covering space as a defender. Smooth, fast changes between directions.' },
+  cut45: { h: 'Beat players on the dribble', t: 'Plant the outside foot and push off at an angle: the same cut you use to go past a defender. Doing it with knees over toes keeps cuts safe.' },
+  mirror: { h: 'Stay with your attacker', t: "Reacting to a partner's moves trains the quick shuffles that keep you goal-side. An attacker can't shake you if your feet are faster." },
+  shoulderfeint: { h: 'Wrong-foot defenders', t: 'A convincing shoulder drop makes the defender shift their weight. Exploding the other way while they recover is how you create space.' },
+  stepoverfeint: { h: 'Sell the step-over', t: 'Grooving the step-over shape without a ball builds fast feet and a strong push-off, so the move looks real and you leave the defender behind.' },
+  jabstep: { h: 'Fake one way, go the other', t: 'A sharp jab sells the fake. The power to push off that foot and go is what turns a feint into a chance.' },
+  dropstep: { h: 'Turn and chase', t: 'When a ball goes over your head or an attacker runs past, a quick drop step opens the hips so you can turn and sprint without losing a step.' },
+  skaterhold: { h: 'Strong in the low position', t: 'Feints and cuts happen low on one leg. Holding that position builds the hip and leg strength to stay balanced and push off hard.' },
+  latlunge: { h: 'Push off sideways', t: 'Side-to-side strength powers the push-off after a feint or cut, and strengthens the inner thighs and hips for kicking and changing direction.' },
+  boxjump: { h: 'Explosive takeoff', t: 'Jumping up onto a box trains maximum power with a soft landing, so you can jump high and often without pounding your knees.' },
+  latboxjump: { h: 'Explode sideways', t: 'Jumping sideways onto a box builds the side-to-side power behind quick cuts and recovery steps.' },
+  slboxjump: { h: 'One-leg launch', t: 'Your first step and every cut start from one leg. Jumping onto a box from one leg builds that single-leg power.' },
+  boxdrop: { h: 'Landing strength', t: 'Dropping off a box and sticking it trains your muscles to absorb big forces, so landings, stops and challenges get safer and stronger.' },
+  farmer: { h: 'Strong posture in contact', t: 'Carrying heavy dumbbells builds grip, core and upper-back strength, so you stay tall and balanced when you are pushed or pulled.' }
 };
 const GUARD_HEAD = { ham: 'Protect your ACL', hip: 'Stop knees caving in', glute: 'Steer your knees', adductor: 'Strong inner thighs', quad: 'Knees over toes', calf: 'Softer landings', soleus: 'Steady shins' };
 
@@ -1008,7 +1192,7 @@ const LIB = {
   rfess: { name: 'Rear-foot-elevated split squat', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]],
     tip: 'Back foot on the bench, dumbbells at sides. Front knee tracks over the middle toes. Weight is each dumbbell.' },
   stepup: { name: 'Step-up', type: 'load', startW: 10, side: 'per leg', dose: [[2, 8], [3, 6], [3, 5]],
-    tip: 'Whole foot on the bench, push up through that leg only, drive the other knee up at the top. Lower slowly. Weight is each dumbbell.' },
+    tip: 'Whole foot on the bench or box, push up through that leg only, drive the other knee up at the top. Lower slowly. Weight is each dumbbell.' },
   invrow: { name: 'Inverted row', type: 'reps', dose: [[2, 8], [3, 8], [3, 10]],
     tip: 'Barbell in the rack at waist height, body straight like a plank. Raise the bar to make it easier.' },
   dbrow: { name: 'One-arm dumbbell row', type: 'load', startW: 15, side: 'per arm', dose: [[2, 10], [3, 8], [3, 8]],
@@ -1028,7 +1212,8 @@ const LIB = {
     tip: 'On a field or turf before the gym part. Lean forward until you have to step, then sprint. Walk back between reps.' },
   sprintk: { name: 'Acceleration sprints, half-kneeling start', fig: 'sprint', type: 'check', label: '10 to 20 m', dose: [[6], [8], [8]],
     tip: 'Start with one knee down. Drive out low and push the ground back for the first five steps. Walk back between reps.' },
-  shuttle: { name: '5-10-5 shuttle', fig: 'sprint', type: 'check', label: 'one run', dose: [[4], [5], [6]],
+  shuttle: { name: '5-10-5 shuttle', fig: 'cutdrill', type: 'drill', label: 'one run', minT: 3.5, dose: [[4], [5], [6]],
+    setup: 'Three cones in a line, 5 yards apart.',
     tip: 'Sprint 5 yards, plant and cut back 10 yards, cut again and finish 5 yards. Sink the hips and keep the knee over the toes on every cut.' },
   latbound: { name: 'Lateral bound and stick', type: 'reps', side: 'per side', dose: [[3, 3], [3, 3], [3, 4]],
     tip: 'Push sideways off one leg, land on the other and hold 2 seconds. Knee stays over the foot.' },
@@ -1087,7 +1272,64 @@ const LIB = {
   hollow: { name: 'Hollow-body hold', type: 'time', dose: [[3, 20], [3, 25], [3, 30]],
     tip: 'Lower back pressed into the floor, arms overhead, legs and shoulders just off the floor.' },
   deadbug: { name: 'Dead bug', type: 'reps', side: 'per side', dose: [[2, 6], [3, 8], [3, 8]],
-    tip: 'Lower back pressed down. Slowly reach one arm overhead and the opposite leg out, return, switch sides.' }
+    tip: 'Lower back pressed down. Slowly reach one arm overhead and the opposite leg out, return, switch sides.' },
+
+  // Field day
+  decel: { name: 'Sprint and stop', type: 'check', label: '10 m + stop', word: 'Rep', dose: [[5], [6], [6]],
+    setup: 'Two cones 10 m apart.',
+    tip: 'Sprint hard to the cone, then stop within 3 quick steps. Finish low in an athletic stance, knees over toes, chest up, and freeze for 2 seconds.' },
+  flying: { name: 'Flying sprints', fig: 'sprint', type: 'check', label: '15 m build + 10 m fast', dose: [[4], [5], [6]],
+    setup: 'Cones at 0, 15 and 25 m.',
+    tip: 'Build speed smoothly over the first 15 m, then run as fast as you can for 10 m: tall, relaxed, driving the arms. Ease off gradually after the last cone.' },
+  reactsprint: { name: 'Reaction sprint', type: 'check', label: '10 m', dose: [[5], [6], [6]],
+    setup: 'A cone 10 m to each side of the start. A partner stands in front to point.',
+    tip: 'Start in an athletic stance facing your partner. When they point left or right, turn and sprint 10 m that way. No guessing: wait for the signal, then explode.' },
+  tdrill: { name: 'T-drill', fig: 'cutdrill', type: 'drill', label: 'one run', minT: 6, dose: [[3], [4], [4]],
+    setup: 'Four cones in a T: the start, a cone 10 yards ahead, and a cone 5 yards to each side of that one.',
+    tip: "Sprint to the middle cone and touch it. Shuffle left 5 yards and touch, shuffle right 10 yards and touch, shuffle back to the middle, then backpedal to the start. Don't cross your feet on the shuffles." },
+  boxdrill: { name: 'Four-cone box drill', fig: 'cutdrill', type: 'drill', label: 'one run', minT: 5, dose: [[3], [4], [4]],
+    setup: 'Four cones in a 5-yard square.',
+    tip: 'Sprint forward to cone 2, shuffle right to cone 3, backpedal to cone 4, then shuffle left to the finish. Stay low and plant hard around each cone.' },
+  cut45: { name: 'Zig-zag cuts', fig: 'cutdrill', type: 'check', label: 'one run', word: 'Run', dose: [[4], [5], [6]],
+    setup: 'Five cones in a zig-zag, about 5 yards apart.',
+    tip: 'Sprint to each cone and cut toward the next, planting the outside foot. Sink the hips, keep the knee over the toes, and push off hard out of every cut.' },
+  mirror: { name: 'Mirror drill', fig: 'shuffle', type: 'check', label: '10 sec', word: 'Round', dose: [[4], [5], [6]],
+    setup: 'Two cones 5 yards apart. A partner faces you across the channel.',
+    tip: 'Face your partner between the cones. They shuffle and change direction, and you mirror them, staying low and square, for 10 seconds. Swap who leads each round.' },
+  shoulderfeint: { name: 'Shoulder-drop feint and go', fig: 'feint', type: 'reps', side: 'per side', dose: [[3, 3], [3, 4], [4, 4]],
+    setup: 'A cone or a partner as the defender, 3 m ahead.',
+    tip: 'Jog toward the defender. Two steps away, drop your shoulder and lean hard one way, eyes and hips selling it. Then push off the outside foot and burst the other way for 5 m.' },
+  stepoverfeint: { name: 'Step-over feint, no ball', fig: 'stepover', type: 'reps', side: 'per side', dose: [[3, 3], [3, 4], [4, 4]],
+    setup: 'A cone or a partner as the defender, 3 m ahead.',
+    tip: 'Jog in. Circle one leg around an imaginary ball from inside to outside, plant that foot wide and lean as if going that way. Push off it hard and burst the other way for 5 m.' },
+  jabstep: { name: 'Jab step and go', fig: 'feint', type: 'reps', side: 'per side', dose: [[3, 3], [3, 4], [4, 4]],
+    setup: 'A cone or a partner as the defender, 3 m ahead.',
+    tip: 'From an athletic stance, jab one foot out to the side with a short, sharp step and dip that shoulder. Push hard off the jab foot and sprint the other way for 5 m.' },
+  dropstep: { name: 'Drop step and turn', type: 'reps', side: 'per side', dose: [[3, 3], [3, 4], [4, 4]],
+    setup: 'A cone 5 m behind you.',
+    tip: 'Start in an athletic stance facing forward. Step one foot back and open the hips toward it, turn and sprint 5 m. Stay low through the turn and alternate sides.' },
+  skaterhold: { name: 'Skater hold', type: 'time', side: 'per leg', dose: [[2, 20], [2, 25], [3, 30]],
+    tip: 'Stand on one leg, bend that knee and hinge forward with the other leg reaching back and the arms swung like a speed skater. Hold the low position with the knee over the middle toes.' },
+  latlunge: { name: 'Lateral lunge', type: 'load', startW: 10, side: 'per side', dose: [[2, 8], [3, 6], [3, 6]],
+    tip: 'Hold a dumbbell at the chest. Step wide to one side and sit the hips back over that foot, other leg straight, knee over the toes. Push back to the middle. Weight is the dumbbell.' },
+  boxjump: { name: 'Box jump', type: 'reps', dose: [[3, 4], [3, 5], [4, 4]],
+    setup: 'A sturdy box about knee height on flat ground.',
+    tip: 'Swing the arms and jump onto the box, landing softly in a quarter squat. Stand tall, then step down. Never jump down from this one: the box drop does that job.' },
+  latboxjump: { name: 'Lateral box jump', fig: 'boxjump', type: 'reps', side: 'per side', dose: [[3, 3], [3, 3], [3, 4]],
+    setup: 'A sturdy box about knee height on flat ground.',
+    tip: 'Stand beside the box, dip and jump sideways onto it, landing soft on both feet. Step down and repeat from the other side.' },
+  slboxjump: { name: 'Single-leg box jump', type: 'reps', side: 'per leg', dose: [[2, 3], [3, 3], [3, 3]],
+    setup: 'A low box, about mid-shin height.',
+    tip: 'On one leg, dip and jump onto the low box, landing on the same leg and holding 2 seconds. Step down with control.' },
+  boxdrop: { name: ['Box drop and stick', 'Box drop and stick, higher box', 'Box drop to sprint'], fig: ['boxdrop', 'boxdrop', 'boxdropsprint'], type: 'reps',
+    dose: [[3, 4], [3, 4], [3, 4]],
+    setup: ['A box 12 to 18 inches high.', 'A box 18 to 24 inches high.', 'A box 12 to 18 inches high and a cone 5 m ahead.'],
+    tip: ["Step off the box (don't jump up first), land on both feet and freeze in an athletic stance, knees over toes. Quiet, controlled landings build strength.",
+          'Same drop from a higher box. Absorb the landing quietly and hold 2 seconds. If a landing is loud or the knees cave, go back to the lower box.',
+          'Step off the box, land and stick for a split second, then sprint 5 m to the cone. Land, load, go.'] },
+  farmer: { name: 'Farmer carry', type: 'load', unit: 'm', startW: 15, dose: [[2, 20], [3, 20], [3, 30]],
+    setup: 'Two cones 10 m apart for the carry.',
+    tip: 'Hold a heavy dumbbell in each hand at your sides. Walk tall and steady with the shoulders back, down and back between the cones. Weight is each dumbbell.' }
 };
 for (const [id, ex] of Object.entries(LIB)) ex.id = id;
 
@@ -1101,7 +1343,12 @@ const SECTIONS = {
   throw: { title: 'Throw-in power', note: 'Throw as hard as you can on every rep.' },
   strength: { title: 'Strength', note: 'Leave 2 or 3 good reps in the tank.' },
   knee: { title: 'Knee armor', note: 'Deliberate work for the muscles that protect the knee ligaments: hamstrings, hips, inner thighs, quads and calves. Slow and controlled.', knee: true },
-  core: { title: 'Core and shoulders', note: 'Steady the trunk for throw-ins and contact.' }
+  core: { title: 'Core and shoulders', note: 'Steady the trunk for throw-ins and contact.' },
+  fspeed: { title: 'Speed and brakes', note: 'Full speed, full rest. Every stop low and under control.' },
+  agility: { title: 'Agility and cuts', note: 'Sink the hips, plant the outside foot, knee over toes.' },
+  feint: { title: 'Feints, no ball', note: 'Sell the fake with your shoulders, eyes and hips, then explode the other way.' },
+  box: { title: 'Box power', note: 'Jump up soft and step down. Drop off the box to build landing strength.' },
+  fstrength: { title: 'Dumbbell strength', note: 'Leave 2 or 3 good reps in the tank.' }
 };
 
 const DAYS = {
@@ -1136,8 +1383,29 @@ const DAYS = {
       { num: '9', sec: 'knee', pick: rot(['slrdl', 'hambridge', 'slidecurl']) },
       { num: '10', sec: 'core', pick: rot(['yraise', 'hollow', 'deadbug']) }
     ]
+  },
+  C: {
+    title: 'Field day',
+    tab: 'Field',
+    field: true,
+    sub: 'Speed, agility, feints, box power',
+    slots: [
+      { num: '1', sec: 'fspeed', pick: byStage([['decel', 'reactsprint', 'decel'], ['flying', 'decel', 'reactsprint'], ['flying', 'reactsprint', 'flying']]) },
+      { num: '2', sec: 'agility', pick: rot(['tdrill', 'shuttle', 'boxdrill']) },
+      { num: '3', sec: 'agility', pick: byStage(['cut45', ['mirror', 'cut45', 'mirror'], ['cut45', 'mirror', 'cut45']]) },
+      { num: '4a', sec: 'feint', pick: byStage([['shoulderfeint', 'jabstep', 'dropstep'], ['stepoverfeint', 'shoulderfeint', 'jabstep'], ['stepoverfeint', 'dropstep', 'shoulderfeint']]) },
+      { num: '4b', sec: 'feint', pick: rot(['latlunge', 'skaterhold', 'latlunge']) },
+      { num: '5', sec: 'box', pick: byStage([['boxjump', 'boxjump', 'latboxjump'], ['boxjump', 'latboxjump', 'boxjump'], ['slboxjump', 'latboxjump', 'slboxjump']]) },
+      { num: '6', sec: 'box', pick: () => 'boxdrop' },
+      { num: '7a', sec: 'fstrength', pick: rot(['stepup', 'lunge', 'rfess']) },
+      { num: '7b', sec: 'fstrength', pick: () => 'farmer' },
+      { num: '8', sec: 'knee', pick: rot(['stepdown', 'slrdl', 'slsit']) }
+    ]
   }
 };
+const DAY_KEYS = ['A', 'B', 'C'];
+const FIELD_NOTE = 'Use the Field day in place of a gym day, or as a third session in a light soccer week. Not the day before a game.';
+const FIELD_GEAR = 'You need cones, a sturdy plyo box, dumbbells, a stopwatch, and a partner to point, mirror and time.';
 const exAt = (slot, w) => LIB[slot.pick(blockOf(w))];
 const isNew = (slot, w) => blockOf(w) > 0 && wib(w) === 0 && slot.pick(blockOf(w)) !== slot.pick(blockOf(w) - 1);
 
@@ -1148,13 +1416,26 @@ const WARMUP = [
     how: 'Step into a long lunge with the left foot forward and the back leg straight. Put both hands on the floor inside the left foot and sink the hips. Then rotate and reach the left arm to the ceiling, eyes following the hand. Hold 2 seconds, bring the hand back down, and switch sides.', why: 'Opens the hips and upper back for a longer stride and a bigger throw-in arch.' },
   { t: 'Glute bridge x10, then side plank 20 seconds per side', sec: 20, label: '0:20', figs: ['bridge2', 'sideplank'],
     how: 'Glute bridge: lie on your back, knees bent, feet flat. Squeeze the glutes and lift the hips until knees, hips and shoulders line up, pause 1 second, lower slowly. Side plank: elbow under the shoulder, body straight from head to feet, hips high. Hold 20 seconds, then switch sides.', why: 'Wakes up the hip muscles that keep your knees safe on landings.' },
-  { t: 'Balance board, 3 minutes', sec: 180, figs: ['balboard'],
+  { t: 'Balance board, 3 minutes', sec: 180, figs: ['balboard'], balance: true,
     how: 'Feet on either side of the middle, knees soft, arms out, eyes on a spot ahead. Keep the board level so the edges don\'t touch down, breathing normally. Step off and reset whenever you need to. Pick today\'s level below and move up when it gets easy.', why: 'Better balance keeps you on your feet in challenges and makes landings safer.' },
   { t: 'Landing prep: 5 snap-downs, then 10 pogo hops', figs: ['landprep'],
     how: 'Snap-downs: rise onto the toes with the arms high, then snap down fast into an athletic stance, knees over toes and chest up, and freeze for 2 seconds. Pogo hops: small, quick bounces on the balls of the feet with the knees nearly straight, like the ground is hot.', why: 'Rehearses soft, safe landings before the real jumps.' },
   { t: 'Wall drives, 2 x 5 quick knee drives per leg', figs: ['walldrive'],
     how: 'Hands on a wall at shoulder height, body leaning in one straight line, heels up. Drive one knee up to hip height, then switch legs fast, like the first steps of a sprint. Keep the body straight; don\'t bend at the hips.', why: 'Grooves the forward lean and knee drive of a fast first step.' }
 ];
+const WARMUP_FIELD = [
+  { t: 'Jog and move, 3 minutes: easy jog, high knees, butt kicks, side shuffles', sec: 180, figs: ['highknees'],
+    how: 'Jog an easy lap of your area. Then 20 m each of high knees (knees to hip height, quick feet), butt kicks (heels to the seat) and side shuffles both ways. Keep it easy and relaxed.', why: 'Warm muscles are faster, springier and less likely to get hurt.' },
+  { t: 'Leg swings, 10 forward and back, 10 side to side, each leg', figs: ['legswing'],
+    how: 'Stand tall, one hand on a partner or the box for balance if needed. Swing one leg forward and back like a pendulum, then across the body and out to the side. Start small and swing a little higher each time.', why: 'Loosens the hips and hamstrings for a long, fast stride and a bigger push-off.' },
+  { t: "World's greatest stretch, 3 per side", figs: ['wgs'], how: WARMUP[1].how, why: 'Opens the hips and upper back for a longer stride and deeper cuts.' },
+  { t: 'A-skips, 2 x 20 m', figs: ['askip'],
+    how: 'Skip forward, driving one knee up to hip height while the other foot pushes off under your hips. Toes up, opposite arm swinging. Land on the ball of the foot, quick and light.', why: 'Grooves the knee drive and quick ground contact of fast sprinting.' },
+  { t: 'Build-up runs, 3 x 30 m: easy, medium, fast', figs: ['sprint'],
+    how: 'Run 30 m three times, getting faster each time: about 60, 75, then 90 percent of top speed. Walk back between runs. The last one should feel fast but smooth.', why: 'Gets the legs ready for full-speed sprints, so the first real one is safe and fast.' },
+  { t: 'Landing prep: 5 snap-downs, then 10 pogo hops', figs: ['landprep'], how: WARMUP[4].how, why: 'Rehearses soft, safe landings before box jumps and cuts.' }
+];
+const warmList = d => (d === 'C' ? WARMUP_FIELD : WARMUP);
 const BALANCE_LEVELS = [
   'Level 1: two feet, eyes forward',
   'Level 2: two feet, half squats or ball tosses',
@@ -1183,10 +1464,14 @@ const WEEK_HINT = [
 /* ---------- Helpers ---------- */
 const pick3 = (v, w) => (Array.isArray(v) ? v[stageOf(w)] : v);
 const sideOf = (ex, w) => pick3(ex.side || '', w);
-const repsOf = (ex, w) => (ex.type === 'check' ? ex.label : ex.dose[stageOf(w)][1]);
+const isRun = ex => ex.type === 'check' || ex.type === 'drill';
+const runWord = ex => ex.word || (ex.type === 'drill' ? 'Run' : 'Sprint');
+const fmtT = v => (+v).toFixed(2);
+const setWord = ex => (isRun(ex) ? runWord(ex).toLowerCase() : 'set');
+const repsOf = (ex, w) => (isRun(ex) ? ex.label : ex.dose[stageOf(w)][1]);
 function setsOf(ex, w) {
   const n = ex.dose[stageOf(w)][0];
-  if (isTest(w)) return ex.type === 'check' ? Math.min(n, 4) : Math.min(n, 2);
+  if (isTest(w)) return isRun(ex) ? Math.min(n, 4) : Math.min(n, 2);
   if (wib(w) === 2 && ex.type === 'load' && !ex.optionalLoad) return Math.min(n + 1, 4);
   return n;
 }
@@ -1265,7 +1550,7 @@ function info(ex, w, d) {
     const vv = ex.variants[v];
     return { name: vv.name, tip: vv.tip, fig: vv.fig, sid: vv.sid, startW: vv.startW };
   }
-  return { name: pick3(ex.name, w), tip: pick3(ex.tip, w), fig: ex.fig || ex.id, sid: ex.id, startW: ex.startW };
+  return { name: pick3(ex.name, w), tip: pick3(ex.tip, w), fig: pick3(ex.fig, w) || ex.id, sid: ex.id, startW: ex.startW };
 }
 function rowsFor(w, d, ex, create) {
   const s = session(w, d, create);
@@ -1285,7 +1570,7 @@ function hasData(row) { return row && (row.d || row.w !== '' || row.r !== ''); }
 // Most recent earlier week with logged data for this exercise, on either day.
 function lastFor(sid, w) {
   for (let wk = w - 1; wk >= 1; wk--) {
-    for (const d of ['A', 'B']) {
+    for (const d of DAY_KEYS) {
       const s = state.sessions[key(wk, d)];
       const rows = s && s.sets[sid];
       if (rows && rows.some(hasData)) return { week: wk, rows };
@@ -1318,8 +1603,12 @@ function lastLine(ex, w, d) {
   if (ex.type === 'check') return '';
   const last = lastFor(info(ex, w, d).sid, w);
   if (!last) return '';
+  if (ex.type === 'drill') {
+    const ts = last.rows.map(r => r.r).filter(Boolean);
+    return ts.length ? `Week ${last.week}: ${ts.join(', ')} sec` : '';
+  }
   const parts = last.rows.filter(hasData).map(r => {
-    if (ex.type === 'load') return (r.w || (ex.optionalLoad ? 'BW' : '?')) + ' x ' + (r.r || '?');
+    if (ex.type === 'load') return (r.w || (ex.optionalLoad ? 'BW' : '?')) + ' x ' + (r.r || '?') + (ex.unit ? ' ' + ex.unit : '');
     return (r.r || '?') + (ex.type === 'time' ? ' sec' : '');
   });
   return parts.length ? `Week ${last.week}: ${parts.join(', ')}` : '';
@@ -1341,7 +1630,7 @@ function startWeight(ex, w, d, i) {
 function completeSet(ex, w, d, i) {
   const rows = rowsFor(w, d, ex, true);
   const r = rows[i];
-  if (ex.type !== 'check' && r.r === '') r.r = String(repsOf(ex, w));
+  if (!isRun(ex) && r.r === '') r.r = String(repsOf(ex, w));
   if (ex.type === 'load' && r.w === '') r.w = startWeight(ex, w, d, i);
   const ch = isChallengeSet(slotOfEx(ex, w, d), w, d, i);
   if (ch) r.c = ch.mode; else delete r.c;
@@ -1370,7 +1659,8 @@ const PR_KIND = {
   hex: 'load', squat: 'load', lunge: 'load', rfess: 'load', stepup: 'load', dbrow: 'load', soleus: 'load',
   dbbench: 'load', hkpress: 'load', pullover: 'load', yraise: 'load', slrdl: 'load',
   calf: 'load', sideabd: 'load', slsit: 'load', stepdown: 'load',
-  pushup: 'reps', invrow: 'reps', copen: 'hold', hollow: 'hold', isosplit: 'hold'
+  pushup: 'reps', invrow: 'reps', copen: 'hold', hollow: 'hold', isosplit: 'hold',
+  latlunge: 'load', skaterhold: 'hold', tdrill: 'time', shuttle: 'time', boxdrill: 'time'
 };
 const sidEx = sid => LIB[sid] || (sid === 'goblet' || sid === 'backsquat' ? LIB.squat : null);
 const sidName = (sid, w) => (sid === 'goblet' ? 'Goblet squat' : sid === 'backsquat' ? 'Barbell back squat' : pick3(LIB[sid].name, w || 1));
@@ -1380,15 +1670,21 @@ const e1 = (wt, r) => wt * (1 + Math.min(r, 12) / 30);
 const fmtN = v => String(+(+v).toFixed(1));
 const ICON_TROPHY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3a1 1 0 011 1v2a5 5 0 01-4.6 5A6 6 0 0113 15.9V18h3v2H8v-2h3v-2.1A6 6 0 017.6 13 5 5 0 013 8V6a1 1 0 011-1h3zm10 4v3.9A3 3 0 0019 8V7zM7 7H5v1a3 3 0 002 2.9z"/></svg>';
 
-function metricOf(kind, row) {
+function metricOf(kind, row, sid) {
   if (kind === 'load') {
     const wt = num(row.w), r = num(row.r);
     return wt > 0 && r > 0 ? { w: wt, r, e: e1(wt, r) } : null;
+  }
+  if (kind === 'time') {
+    // Ignore mis-tapped stopwatch times that are faster than humanly possible for the drill.
+    const t = num(row.r), ex = sid && sidEx(sid);
+    return t > 0 && !(ex && ex.minT && t < ex.minT) ? { t } : null;
   }
   const r = num(row.r);
   return r > 0 ? { r } : null;
 }
 function recOf(m, wk) {
+  if (m.t != null) return { t: m.t, tk: wk };
   return m.w != null ? { w: m.w, wr: m.r, wk, e: m.e, ew: m.w, er: m.r, ek: wk } : { r: m.r, rk: wk };
 }
 function mergeRec(a, b) {
@@ -1398,9 +1694,14 @@ function mergeRec(a, b) {
   if (b.w != null && (a.w == null || b.w > a.w || (b.w === a.w && b.wr > a.wr))) { o.w = b.w; o.wr = b.wr; o.wk = b.wk; }
   if (b.e != null && (a.e == null || b.e > a.e)) { o.e = b.e; o.ew = b.ew; o.er = b.er; o.ek = b.ek; }
   if (b.r != null && (a.r == null || b.r > a.r)) { o.r = b.r; o.rk = b.rk; }
+  if (b.t != null && (a.t == null || b.t < a.t)) { o.t = b.t; o.tk = b.tk; }
   return o;
 }
 function judgePR(kind, m, ref) {
+  if (kind === 'time') {
+    return ref.t != null && m.t < ref.t - 0.004
+      ? { type: 'time', text: `${fmtT(m.t)} sec`, gain: `${fmtT(ref.t - m.t)} sec faster than your best (${fmtT(ref.t)} sec)` } : null;
+  }
   if (kind === 'load') {
     if (ref.w != null && m.w > ref.w) return { type: 'weight', text: `${fmtN(m.w)} lb x ${m.r}`, gain: `${fmtN(m.w - ref.w)} lb heavier than your best (${fmtN(ref.w)} lb x ${ref.wr})` };
     if (ref.e != null && m.e > ref.e * 1.005) return { type: 'strength', text: `${fmtN(m.w)} lb x ${m.r}`, gain: `Beats your best set of ${fmtN(ref.ew)} lb x ${ref.er}` };
@@ -1413,10 +1714,10 @@ function judgePR(kind, m, ref) {
   }
   return null;
 }
-// Walk the log in program order (Day A before Day B) and find every PR.
+// Walk the log in program order (Day A, Day B, Field day) and find every PR.
 function computePRs() {
   const best = {}, events = [], at = {};
-  for (let w = 1; w <= WEEKS; w++) for (const d of ['A', 'B']) {
+  for (let w = 1; w <= WEEKS; w++) for (const d of DAY_KEYS) {
     const s = state.sessions[key(w, d)];
     if (!s) continue;
     const live = {};
@@ -1425,7 +1726,7 @@ function computePRs() {
       if (!kind) continue;
       rows.forEach((row, i) => {
         if (!row.d) return;
-        const m = metricOf(kind, row);
+        const m = metricOf(kind, row, sid);
         if (!m) return;
         if (best[sid]) {
           const ev = judgePR(kind, m, mergeRec(best[sid], live[sid]));
@@ -1460,16 +1761,17 @@ function recordBefore(sid, w, d) {
   const ex = sidEx(sid), kind = ex && PR_KIND[ex.id];
   if (!kind) return null;
   let rec = null;
-  for (let wk = 1; wk <= w; wk++) for (const dd of ['A', 'B']) {
-    if (wk === w && (dd === d || d === 'A')) continue;
+  for (let wk = 1; wk <= w; wk++) for (const dd of DAY_KEYS) {
+    if (wk === w && DAY_KEYS.indexOf(dd) >= DAY_KEYS.indexOf(d)) continue;
     const s = state.sessions[key(wk, dd)];
     const rows = s && s.sets[sid];
-    if (rows) rows.forEach(row => { if (row.d) { const m = metricOf(kind, row); if (m) rec = mergeRec(rec, recOf(m, wk)); } });
+    if (rows) rows.forEach(row => { if (row.d) { const m = metricOf(kind, row, sid); if (m) rec = mergeRec(rec, recOf(m, wk)); } });
   }
   return rec;
 }
 function recordText(kind, rec) {
   if (!rec) return '';
+  if (kind === 'time') return rec.t != null ? `${fmtT(rec.t)} sec (week ${rec.tk})` : '';
   if (kind === 'load') return rec.w != null ? `${fmtN(rec.w)} lb x ${rec.wr} (week ${rec.wk})` : '';
   return rec.r != null ? `${rec.r}${kind === 'hold' ? ' sec' : ' reps'} (week ${rec.rk})` : '';
 }
@@ -1487,7 +1789,8 @@ function bestTestBefore(id, w) {
 // One PR Challenge per session, rotating through the block:
 // Day A: Copenhagen hold, hex bar weight, single-leg lift weight, hex bar rep max (test week).
 // Day B: push, squat weight, push, squat rep max (test week).
-const CHALLENGE_SLOT = { A: ['5b', '3', '4a', '3'], B: ['7a', '6', '7a', '6'] };
+// Field day: fastest agility drill, feint strength, single-leg lift, fastest drill (test week).
+const CHALLENGE_SLOT = { A: ['5b', '3', '4a', '3'], B: ['7a', '6', '7a', '6'], C: ['2', '4b', '7a', '2'] };
 function challengeOf(slot, w, d) {
   if (!slot || CHALLENGE_SLOT[d][wib(w)] !== slot.num) return null;
   const ex = exAt(slot, w), kind = PR_KIND[ex.id];
@@ -1507,6 +1810,10 @@ function challengeOf(slot, w, d) {
       ? `Last set: ${fmtN(up)} lb for ${target} clean reps. Only go up if every rep so far looked clean; otherwise match your best.`
       : `Last set: your heaviest clean set of ${target}.`;
     ch.beat = rec && rec.w != null ? `Record to beat: ${fmtN(rec.w)} lb x ${rec.wr}` : 'Set your first record';
+  } else if (kind === 'time') {
+    ch.mode = 'fastest'; ch.title = 'Fastest time challenge';
+    ch.rule = 'Last run: all-out effort. Start on the beep and have your partner stop the clock at the finish.';
+    ch.beat = rec && rec.t != null ? `Time to beat: ${fmtT(rec.t)} sec` : 'Set your first record';
   } else if (kind === 'reps') {
     ch.mode = 'reps'; ch.cap = 25; ch.title = 'Max reps challenge';
     ch.rule = `Last set: as many clean reps as you can. Stop at ${ch.cap}, or when form slips.`;
@@ -1526,7 +1833,7 @@ const slotOfEx = (ex, w, d) => DAYS[d].slots.find(s => exAt(s, w) === ex);
 function isChallengeSet(slot, w, d, i) { const ch = challengeOf(slot, w, d); return ch && ch.set === i ? ch : null; }
 
 /* ---------- Celebrations ---------- */
-const PR_TITLE = { weight: 'New weight PR', strength: 'New strength PR', reps: 'New rep PR', hold: 'Longest hold yet', test: 'New test PR', first: 'First record set' };
+const PR_TITLE = { time: 'Fastest time yet', weight: 'New weight PR', strength: 'New strength PR', reps: 'New rep PR', hold: 'Longest hold yet', test: 'New test PR', first: 'First record set' };
 let prTimer = null;
 function celebrate(ev, name, challenge) {
   const $pr = document.getElementById('pr');
@@ -1562,9 +1869,9 @@ function checkPR(w, d, ex, i, slot) {
   if (ev) { celebrate(ev, inf.name, !!ch); return true; }
   if (!ch) return false;
   const row = rowsFor(w, d, ex, false)[i];
-  const m = row && metricOf(ch.kind, row);
+  const m = row && metricOf(ch.kind, row, inf.sid);
   if (!ch.rec && m) {
-    celebrate({ type: 'first', text: ch.kind === 'load' ? `${fmtN(m.w)} lb x ${m.r}` : `${m.r}${ch.kind === 'hold' ? ' sec' : ' reps'}`, gain: 'Now there is a record to beat next time.' }, inf.name, true);
+    celebrate({ type: 'first', text: ch.kind === 'load' ? `${fmtN(m.w)} lb x ${m.r}` : ch.kind === 'time' ? `${fmtT(m.t)} sec` : `${m.r}${ch.kind === 'hold' ? ' sec' : ' reps'}`, gain: 'Now there is a record to beat next time.' }, inf.name, true);
     return true;
   }
   if (P.events.some(e => e.w === w && e.d === d && e.sid === inf.sid)) {
@@ -1639,8 +1946,8 @@ function renderHeader() {
       const segs = [];
       for (let k = 0; k < 4; k++) {
         const wk = b * 4 + k + 1;
-        const a = session(wk, 'A', false), bb = session(wk, 'B', false);
-        segs.push(`<button class="seg${wk === w ? ' cur' : ''}${isTest(wk) ? ' test' : ''}" data-act="week" data-w="${wk}" aria-label="Week ${wk}${isTest(wk) ? ', test week' : ''}${a && a.done ? ', Day A done' : ''}${bb && bb.done ? ', Day B done' : ''}"${wk === w ? ' aria-current="true"' : ''}><span class="h${a && a.done ? ' on' : ''}"></span><span class="h${bb && bb.done ? ' on' : ''}"></span></button>`);
+        const a = session(wk, 'A', false), bb = session(wk, 'B', false), fc = session(wk, 'C', false);
+        segs.push(`<button class="seg${wk === w ? ' cur' : ''}${isTest(wk) ? ' test' : ''}" data-act="week" data-w="${wk}" aria-label="Week ${wk}${isTest(wk) ? ', test week' : ''}${a && a.done ? ', Day A done' : ''}${bb && bb.done ? ', Day B done' : ''}${fc && fc.done ? ', Field day done' : ''}"${wk === w ? ' aria-current="true"' : ''}><span class="h${a && a.done ? ' on' : ''}"></span><span class="h${bb && bb.done ? ' on' : ''}"></span><span class="h f${fc && fc.done ? ' on' : ''}"></span></button>`);
       }
       blocks.push(`<div class="blk">${segs.join('')}</div>`);
     }
@@ -1663,7 +1970,7 @@ function renderHeader() {
 function renderTabs() {
   const t = (id, label, sub) => `<button class="tab" role="tab" data-act="view" data-v="${id}" aria-selected="${state.view === id}">${label}<small>${sub}</small></button>`;
   const status = d => { const s = session(state.week, d, false); const c = counts(state.week, d); return s && s.done ? 'Done' : `${c.done} of ${c.total} sets`; };
-  $tabs.innerHTML = t('A', 'Day A', status('A')) + t('B', 'Day B', status('B')) + t('P', 'Progress', 'Tests and lifts');
+  $tabs.innerHTML = t('A', 'Day A', status('A')) + t('B', 'Day B', status('B')) + t('C', 'Field', status('C')) + t('P', 'Progress', 'PRs and tests');
 }
 
 // Group a day's slots into sections and a/b pairs.
@@ -1688,10 +1995,12 @@ function renderDay(d) {
   let html = `
     <div class="sum"><h1>${day.title}: ${esc(day.sub)}</h1><span class="count" id="count"><b>${c.done}</b> / ${c.total}</span></div>
     <p class="weekhint"><b>Week ${wib(w) + 1} of the block.</b> ${WEEK_HINT[wib(w)](w)}</p>
+    ${day.field ? `<p class="weekhint field-note">${FIELD_NOTE}</p>` : ''}
     <div class="meter" aria-hidden="true"><i id="meter" style="width:${pct}%"></i></div>
     <div class="run-cta"><button class="btn" data-act="run">${ICON_PLAY}${s && s.done ? 'Run it again' : c.done > 0 ? 'Resume workout' : 'Run workout'}</button></div>
     ${challengeCallout(w, d, true)}`;
 
+  html += setupPanel(w, d);
   if (isTest(w)) html += testPanel(w);
   html += warmPanel(w, d, s);
 
@@ -1720,6 +2029,19 @@ function renderDay(d) {
   if (notes) notes.value = s ? s.notes || '' : '';
 }
 
+// Field day: what to set out before starting, from this week's exercises.
+function setupPanel(w, d) {
+  if (!DAYS[d].field) return '';
+  const seen = new Set(), items = [];
+  for (const slot of DAYS[d].slots) {
+    const ex = exAt(slot, w), t = pick3(ex.setup, w);
+    if (!t || seen.has(t)) continue;
+    seen.add(t);
+    items.push(`<li><b>${slot.num} ${esc(info(ex, w, d).name)}:</b> ${esc(t)}</li>`);
+  }
+  return `<section class="sec setup"><h2>Set up the field</h2><p>${esc(FIELD_GEAR)}</p><ul>${items.join('')}</ul></section>`;
+}
+
 function testPanel(w) {
   const t = state.tests[w] || {};
   const fields = TESTS.map(x => { const b = bestTestBefore(x.id, w); return `
@@ -1738,8 +2060,9 @@ function testPanel(w) {
 function warmPanel(w, d, s) {
   const warm = s ? s.warm : [];
   const bal = (s && s.balance) || lastBalance(w, d);
-  const allDone = WARMUP.every((_, i) => warm[i]);
-  const items = WARMUP.map((item, i) => {
+  const list = warmList(d);
+  const allDone = list.every((_, i) => warm[i]);
+  const items = list.map((item, i) => {
     let extra = '';
     if (item.sec) {
       const lab = item.label || fmtSec(item.sec);
@@ -1748,7 +2071,7 @@ function warmPanel(w, d, s) {
     if (item.how) {
       extra += `<details class="tip warm-tip"><summary>How to do it</summary><p>${esc(item.how)}</p>${item.figs ? `<div class="warm-figs${item.figs.length > 1 ? ' two' : ''}">${item.figs.map(f => figTag(f, item.t)).join('')}</div>` : ''}</details>`;
     }
-    if (i === 3) {
+    if (item.balance) {
       extra += `<div class="bal"><label for="bal-${d}">Balance level today</label>
         <select id="bal-${d}" data-act="balance">${BALANCE_LEVELS.map((l, j) => `<option value="${j + 1}"${bal === j + 1 ? ' selected' : ''}>${l}</option>`).join('')}</select>
         <span class="fine" style="margin:0">Move up a level after 30 seconds without the edge touching down.</span></div>`;
@@ -1772,8 +2095,8 @@ function variantControl(ex, w, d) {
 
 function specText(ex, w) {
   const n = setsOf(ex, w), target = repsOf(ex, w), side = sideOf(ex, w);
-  if (ex.type === 'check') return `${n} x ${target}`;
-  return `${n} x ${target}${ex.type === 'time' ? ' sec' : ''}${side ? ' ' + side : ''}`;
+  if (isRun(ex)) return `${n} x ${target}`;
+  return `${n} x ${target}${ex.type === 'time' ? ' sec' : ex.unit ? ' ' + ex.unit : ''}${side ? ' ' + side : ''}`;
 }
 
 function exCard(slot, w, d, restText) {
@@ -1803,10 +2126,12 @@ function exCard(slot, w, d, restText) {
       fields += `<span class="fld"><input inputmode="decimal" data-f="w" value="${esc(r.w)}" placeholder="${esc(phW)}" aria-label="${esc(inf.name)}, set ${i + 1}, weight in pounds"><span>lb</span></span>`;
     }
     if (ex.type === 'check') {
-      fields += `<span class="fld-text">${esc((ex.id === 'shuttle' ? 'Run ' : 'Sprint ') + (i + 1))}</span>`;
+      fields += `<span class="fld-text">${esc(runWord(ex) + ' ' + (i + 1))}</span>`;
+    } else if (ex.type === 'drill') {
+      fields += `<span class="fld"><input inputmode="decimal" data-f="r" value="${esc(r.r)}" placeholder="${ch && ch.set === i ? 'best' : 'time'}" aria-label="${esc(inf.name)}, run ${i + 1}, time in seconds"><span>sec</span></span>`;
     } else {
       const phR = ch && ch.set === i && ch.mode !== 'weight' ? 'max' : target;
-      fields += `<span class="fld"><input inputmode="numeric" data-f="r" value="${esc(r.r)}" placeholder="${esc(phR)}" aria-label="${esc(inf.name)}, set ${i + 1}, ${ex.type === 'time' ? 'seconds' : 'reps'}"><span>${ex.type === 'time' ? 'sec' : 'reps'}</span></span>`;
+      fields += `<span class="fld"><input inputmode="numeric" data-f="r" value="${esc(r.r)}" placeholder="${esc(phR)}" aria-label="${esc(inf.name)}, set ${i + 1}, ${ex.type === 'time' ? 'seconds' : 'reps'}"><span>${ex.type === 'time' ? 'sec' : ex.unit || 'reps'}</span></span>`;
     }
     const isPR = !!PRS.at[`${w}${d}:${inf.sid}:${i}`];
     const isChSet = ch && ch.set === i;
@@ -1848,9 +2173,10 @@ function renderProgress() {
         <div><span class="big">${won}</span><small>of ${attempts} PR challenges won</small></div>
       </div>
       ${recs.length ? `<h3>Records</h3><table><tbody>${recs.map(r => `<tr><td>${esc(r.name)}</td><td class="num">${esc(r.t)}</td></tr>`).join('')}</tbody></table>` : '<p>Records appear after an exercise is logged twice: the first time sets the baseline.</p>'}
-      ${recent.length ? `<h3>Recent PRs</h3><ul class="prlist">${recent.map(e => `<li>${ICON_TROPHY}<div><b>${esc(evName(e))}: ${esc(e.text)}</b><span>Week ${e.w}${e.d ? `, Day ${e.d}` : ''}${e.chal ? ', PR Challenge' : ''}. ${esc(e.gain)}</span></div></li>`).join('')}</ul>` : ''}
+      ${recent.length ? `<h3>Recent PRs</h3><ul class="prlist">${recent.map(e => `<li>${ICON_TROPHY}<div><b>${esc(evName(e))}: ${esc(e.text)}</b><span>Week ${e.w}${e.d ? `, ${DAYS[e.d].title}` : ''}${e.chal ? ', PR Challenge' : ''}. ${esc(e.gain)}</span></div></li>`).join('')}</ul>` : ''}
     </section>`;
-  const doneSessions = Object.values(state.sessions).filter(s => s.done).length;
+  const doneSessions = Object.entries(state.sessions).filter(([k, s]) => s.done && !k.endsWith('C')).length;
+  const fieldDone = Object.entries(state.sessions).filter(([k, s]) => s.done && k.endsWith('C')).length;
   const tw = TEST_WEEKS.filter(w => { const t = state.tests[w]; return t && TESTS.some(x => num(t[x.id]) != null); });
   const testRows = tw.map(w => `<tr><td>Week ${w}</td>${TESTS.map(x => { const v = num((state.tests[w] || {})[x.id]); return `<td class="num">${v == null ? '' : v}</td>`; }).join('')}</tr>`).join('');
   const gains = TESTS.map(x => {
@@ -1875,7 +2201,8 @@ function renderProgress() {
   $main.innerHTML = prBoard + `
     <section class="sec">
       <h2>Sessions finished</h2>
-      <div class="big">${doneSessions}<small>of ${WEEKS * 2}</small></div>
+      <div class="big">${doneSessions}<small>of ${WEEKS * 2} gym sessions</small></div>
+      <p class="fine">${fieldDone} field session${fieldDone === 1 ? '' : 's'} finished.</p>
       <p class="fine">${STAGES.map((s, i) => `Stage ${i + 1}, ${s.name} (weeks ${s.from} to ${s.to}): ${s.about.toLowerCase()}.`).join(' ')}</p>
     </section>
     <section class="sec">
@@ -1943,7 +2270,12 @@ const KIND = {
   slsit: 'knee', stepdown: 'knee', isosplit: 'knee', slrdl: 'knee', hambridge: 'knee', slidecurl: 'knee',
   sprint: 'sprint', sprintk: 'sprint', shuttle: 'shuttle',
   wallthrow: 'throw', stepthrow: 'throw', medthrow: 'throw', hkthrow: 'throw',
-  pullover: 'accessory', yraise: 'accessory', hollow: 'core', deadbug: 'core'
+  pullover: 'accessory', yraise: 'accessory', hollow: 'core', deadbug: 'core',
+  decel: 'agility', cut45: 'agility', mirror: 'agility', flying: 'sprint', reactsprint: 'sprint',
+  tdrill: 'shuttle', boxdrill: 'shuttle',
+  shoulderfeint: 'feint', stepoverfeint: 'feint', jabstep: 'feint', dropstep: 'feint',
+  skaterhold: 'knee', latlunge: 'strength', boxjump: 'plyo', latboxjump: 'plyo', slboxjump: 'plyo',
+  boxdrop: 'reactive', farmer: 'accessory'
 };
 // Seconds per stage [Foundation, Strength, Power].
 const REST = {
@@ -1957,8 +2289,8 @@ const REST = {
     why: 'Linked and depth jumps are the most intense jumps, so they get a little more rest than stick jumps.' },
   sprint: { s: [90, 90, 105], tag: 'Sprint',
     why: 'Speed only improves when every sprint is near max. Research on young athletes points to more than 90 seconds between short sprints.' },
-  shuttle: { s: [120, 120, 120], tag: 'Shuttle',
-    why: 'A shuttle takes about 5 seconds. Resting roughly 25 times the effort keeps every run fast.' },
+  shuttle: { s: [120, 120, 120], tag: 'Timed drill',
+    why: 'Timed drills are 5 to 12 seconds of all-out effort. Two minutes of rest keeps every run fast, so the clock measures speed, not tiredness.' },
   throw: { s: [45, 45, 60], tag: 'Throws',
     why: 'Throws are short, explosive efforts. A short rest keeps the arm fast without cooling down.' },
   nordic: { s: [60, 75, 90], tag: 'Nordic',
@@ -1968,7 +2300,11 @@ const REST = {
   accessory: { s: [45, 45, 60], tag: 'Accessory',
     why: 'Lighter work that recovers quickly.' },
   core: { s: [30, 40, 45], tag: 'Core',
-    why: 'Holds and core work recover quickly. Short rests keep the session moving.' }
+    why: 'Holds and core work recover quickly. Short rests keep the session moving.' },
+  agility: { s: [60, 75, 90], tag: 'Agility',
+    why: 'Cuts and stops are short, all-out efforts. A full minute or more keeps every rep sharp, and sharp cuts are safer cuts.' },
+  feint: { s: [40, 45, 60], tag: 'Feints',
+    why: 'Each feint is a 2 to 3 second burst. A short rest keeps the push-off explosive without cooling down.' }
 };
 const KID_NOTE = 'Kids recover from hard efforts faster than adults, so these rests are shorter than an adult plan would use.';
 const restKind = ex => REST[KIND[ex.id]] || REST.strength;
@@ -2021,7 +2357,7 @@ function restAfter(steps, idx, w, d) {
     why = k.why;
   }
   const row = rowsFor(w, d, st.ex, false)[st.i];
-  if (row && row.d && st.ex.type !== 'check' && num(row.r) != null && num(row.r) < repsOf(st.ex, w)) {
+  if (row && row.d && !isRun(st.ex) && num(row.r) != null && num(row.r) < repsOf(st.ex, w)) {
     sec += 30; why += ' Reps came up short, so 30 seconds extra.';
   }
   if (nx.group !== st.group) { sec += 30; why += ' Plus 30 seconds to set up the next exercise.'; }
@@ -2078,7 +2414,7 @@ function challengeCallout(w, d, asButton) {
   const dc = dayChallenge(w, d);
   if (!dc) return '';
   const name = info(dc.ex, w, d).name;
-  const inner = `${ICON_TROPHY}<span><b>Today's PR Challenge</b>${esc(dc.slot.num)} ${esc(name)}, set ${dc.ch.set + 1}. ${esc(dc.ch.beat)}.</span>`;
+  const inner = `${ICON_TROPHY}<span><b>Today's PR Challenge</b>${esc(dc.slot.num)} ${esc(name)}, ${setWord(dc.ex)} ${dc.ch.set + 1}. ${esc(dc.ch.beat)}.</span>`;
   return asButton
     ? `<button class="chal-callout" data-act="goto-ch" data-slot="${dc.slot.num}">${inner}</button>`
     : `<div class="chal-callout">${inner}</div>`;
@@ -2117,6 +2453,7 @@ function renderRun() {
   } else if (st.kind === 'warm') {
     body = challengeCallout(w, d, false)
       + `<p class="weekhint"><b>Week ${wib(w) + 1} of the block.</b> ${WEEK_HINT[wib(w)](w)}</p>`
+      + setupPanel(w, d)
       + (isTest(w) ? testPanel(w) : '') + warmPanel(w, d, s);
     primary = 'Start training';
   } else if (st.kind === 'set' && ch && !run.splashed[st.slot.num]) {
@@ -2132,7 +2469,7 @@ function renderRun() {
         <p class="splash-beat">${esc(ch.beat)}</p>
         <p class="splash-rule">${esc(ch.rule)}</p>
         ${benefitHead(st.ex) ? `<p class="splash-why">${st.ex.guard ? ICON_SHIELD : ICON_BALL}${esc(benefitHead(st.ex))}</p>` : ''}
-        <p class="splash-when">${ch.set === st.i ? 'The challenge is this set.' : `The challenge is set ${ch.set + 1} of ${st.of}. The sets before it build up to it.`}</p>
+        <p class="splash-when">${ch.set === st.i ? `The challenge is this ${setWord(st.ex)}.` : `The challenge is ${setWord(st.ex)} ${ch.set + 1} of ${st.of}. The ones before it build up to it.`}</p>
       </div></div>`;
     primary = 'Let\'s go';
     primaryAct = 'splash-go';
@@ -2148,17 +2485,27 @@ function renderRun() {
     const isCh = ch && ch.set === st.i;
     const kind = PR_KIND[ex.id];
     const rec = kind ? recordText(kind, computePRs().best[inf.sid]) : '';
-    const unitWord = ex.type === 'check' ? (ex.id === 'shuttle' ? 'Run' : 'Sprint') : 'Set';
+    const unitWord = isRun(ex) ? runWord(ex) : 'Set';
     const spec = isCh && ch.mode !== 'weight'
-      ? (ch.mode === 'hold' ? `as long as you can, up to ${ch.cap} sec` : `max reps, up to ${ch.cap}`)
-      : ex.type === 'check' ? `${target}` : `${target}${ex.type === 'time' ? ' sec' : ' reps'}${side ? ' ' + side : ''}`;
+      ? (ch.mode === 'hold' ? `as long as you can, up to ${ch.cap} sec` : ch.mode === 'fastest' ? 'fastest run of the day' : `max reps, up to ${ch.cap}`)
+      : isRun(ex) ? `${target}` : `${target}${ex.type === 'time' ? ' sec' : ex.unit ? ' ' + ex.unit : ' reps'}${side ? ' ' + side : ''}`;
     const head = `
       <p class="run-grp${sec.knee ? ' knee' : ''}">${sec.title}</p>
       <div class="run-ex"><span class="ex-num">${st.slot.num}</span><h2>${esc(inf.name)}</h2></div>
       <p class="run-setof">${unitWord} <b>${st.i + 1}</b> of ${st.of}: ${esc(spec)}${st.pair ? ', alternating' : ''}</p>
       ${isCh ? `<div class="chal-banner"><b>${ICON_TROPHY}PR set!</b>${esc(ch.beat)}. ${esc(ch.rule)}</div>`
-        : ch ? `<p class="chal-strip">${ICON_TROPHY}PR Challenge on set ${ch.set + 1}</p>` : ''}`;
-    if (run.hold) {
+        : ch ? `<p class="chal-strip">${ICON_TROPHY}PR Challenge on ${setWord(ex)} ${ch.set + 1}</p>` : ''}`;
+    if (run.sw) {
+      body = `${head}
+        <div class="hold-view" id="swView" data-phase="${run.sw.phase}">
+          <div class="lbl" id="swLbl">${run.sw.phase === 'go' ? 'Go!' : 'Ready'}</div>
+          <div class="clock" id="swClock">${swText(run.sw)}</div>
+        </div>
+        ${figTag(inf.fig, inf.name)}`;
+      primary = run.sw.phase === 'go' ? 'Stop' : 'Cancel';
+      primaryAct = 'sw-stop';
+      primaryClass = ' stop';
+    } else if (run.hold) {
       body = `${head}
         <div class="hold-view" id="holdView" data-phase="${run.hold.phase}">
           <div class="lbl" id="holdLbl">${holdLabel(run.hold)}</div>
@@ -2169,15 +2516,20 @@ function renderRun() {
       primaryAct = 'hold-stop';
       primaryClass = ' stop';
     } else {
-      const repLabel = isCh && ch.mode !== 'weight' ? 'Reps done' : 'Reps';
+      const repLabel = isCh && ch.mode !== 'weight' ? 'Reps done' : ex.unit === 'm' ? 'Meters' : 'Reps';
       let inputs = '';
       if (ex.type === 'load') {
         inputs = `<div class="steppers">${stepper('Weight, lb', 'w', r.w || startWeight(ex, w, d, st.i), ex.optionalLoad ? 'BW' : '0', loadStep(inf.sid))}${stepper(repLabel, 'r', r.r || String(target), String(target), 1)}</div>`;
       } else if (ex.type === 'reps' || ex.type === 'time') {
         inputs = `<div class="steppers single">${stepper(ex.type === 'time' ? 'Seconds held' : repLabel, 'r', r.r || String(target), String(target), ex.type === 'time' ? 5 : 1)}</div>`;
+      } else if (ex.type === 'drill') {
+        inputs = `<div class="steppers single">${stepper('Time, sec', 'r', r.r || '', 'not timed', 0.1)}</div>`;
       }
       let holdBtn = '';
-      if (ex.type === 'time') {
+      if (ex.type === 'drill') {
+        holdBtn = `<button class="btn hold-btn${isCh ? ' chal' : ''}" data-act="sw-start">Start stopwatch</button>
+          <p class="fine sw-note">Tap Start, the runner goes on the beep, and the partner taps Stop at the finish. Or type a time below.</p>`;
+      } else if (ex.type === 'time') {
         holdBtn = isCh && ch.mode === 'hold'
           ? `<button class="btn hold-btn chal" data-act="hold-start">Start max hold${perSide(ex, w) ? ', each side' : ''}</button>`
           : `<button class="btn hold-btn" data-act="hold-start">Start ${target} sec timer${perSide(ex, w) ? ', each side' : ''}</button>`;
@@ -2193,7 +2545,7 @@ function renderRun() {
         ${inputs}
         ${r.d ? '<p class="fine">Already logged. Change the numbers and log it again, or move on.</p>' : ''}
         <button class="run-skip" data-act="run-skip">Skip this set</button>`;
-      const verb = isCh ? 'Log PR attempt' : ex.type === 'check' ? `${unitWord} done` : 'Log set';
+      const verb = isCh ? 'Log PR attempt' : ex.type === 'drill' ? 'Log run' : ex.type === 'check' ? `${unitWord} done` : 'Log set';
       const rr = restAfter(steps, run.idx, w, d);
       primary = isCh || !rr ? verb : rr.tag === 'Switch' ? `${verb}, then ${steps[run.idx + 1].slot.num}` : `${verb}, rest ${restLabel(rr.sec)}`;
       primaryAct = 'run-log';
@@ -2252,6 +2604,7 @@ function logRunSet(repsOverride) {
   checkPR(w, d, st.ex, st.i, st.slot);
   const rest = restAfter(steps, run.idx, w, d);
   run.hold = null;
+  run.sw = null;
   run.idx = Math.min(run.idx + 1, steps.length - 1);
   if (rest && rest.sec > 0) startRest(rest); else renderRun();
 }
@@ -2345,6 +2698,48 @@ function finishHold() {
   if (H.phase === 'ready') { run.hold = null; renderRun(); return; }
   const done = H.sides === 2 && H.side === 2 ? Math.min(H.work[0], H.work[1]) : H.work[0];
   logRunSet(Math.round(done));
+}
+
+/* ---------- Stopwatch (timed agility drills) ---------- */
+// 3-2-1 beeps, then GO; counts up until a partner taps Stop.
+function swText(S) {
+  if (S.phase === 'ready') return String(Math.max(1, Math.ceil((S.end - Date.now()) / 1000)));
+  return ((Date.now() - S.start) / 1000).toFixed(2);
+}
+function startSW() {
+  run.sw = { phase: 'ready', end: Date.now() + 3000, beeped: {} };
+  beep(660, 90);
+  renderRun();
+  requestAnimationFrame(swLoop);
+}
+function swLoop() {
+  if (!run || !run.sw) return;
+  const S = run.sw, now = Date.now();
+  if (S.phase === 'ready') {
+    const sLeft = Math.ceil((S.end - now) / 1000);
+    if (sLeft > 0 && sLeft < 3 && !S.beeped[sLeft]) { S.beeped[sLeft] = 1; beep(660, 90); }
+    if (now >= S.end) {
+      S.phase = 'go'; S.start = now;
+      beep(990, 260); buzz();
+      const v = document.getElementById('swView'); if (v) v.dataset.phase = 'go';
+      const l = document.getElementById('swLbl'); if (l) l.textContent = 'Go!';
+      const b = $run.querySelector('[data-act="sw-stop"]'); if (b) b.textContent = 'Stop';
+    }
+  } else if (now - S.start > 90000) { stopSW(); return; }
+  const c = document.getElementById('swClock');
+  if (c) c.textContent = swText(S);
+  requestAnimationFrame(swLoop);
+}
+function stopSW() {
+  const S = run && run.sw;
+  if (!S) return;
+  if (S.phase !== 'go') { run.sw = null; renderRun(); return; }
+  const t = (Date.now() - S.start) / 1000;
+  run.sw = null;
+  beep(990, 200);
+  const ex = buildSteps(run.w, run.d)[run.idx].ex;
+  if (ex.minT && t < ex.minT) toast(`${t.toFixed(2)} sec looks like a mis-tap. It won't count as a record; edit it if it was real.`);
+  logRunSet(t.toFixed(2));
 }
 
 /* ---------- Session clock, sounds, screen wake ---------- */
@@ -2445,7 +2840,7 @@ function runAction(act, t) {
   if (act === 'run-close') closeRun();
   else if (act === 'run-next' || act === 'run-skip') { run.idx = Math.min(run.idx + 1, steps.length - 1); renderRun(); }
   else if (act === 'run-back') {
-    run.rest = null; run.hold = null;
+    run.rest = null; run.hold = null; run.sw = null;
     run.idx = Math.max(0, run.idx - 1);
     renderRun();
   }
@@ -2470,6 +2865,8 @@ function runAction(act, t) {
     if (ch && ch.mode === 'hold') startHold(ch.cap, perSide(st.ex, w) ? 2 : 1, true);
     else startHold(num(runField('r')) || repsOf(st.ex, w), perSide(st.ex, w) ? 2 : 1, false);
   }
+  else if (act === 'sw-start' && st && st.kind === 'set') startSW();
+  else if (act === 'sw-stop') stopSW();
   else if (act === 'hold-stop') {
     if (run.hold && run.hold.max && run.hold.phase === 'work') endSide(); else finishHold();
   }
@@ -2493,7 +2890,7 @@ document.addEventListener('click', e => {
   const w = inRun ? run.w : state.week, d = inRun ? run.d : state.view;
 
   if (act === 'pr-close') { closePR(); return; }
-  if (inRun && (act.startsWith('run-') || act.startsWith('rest-') || act.startsWith('hold-') || act === 'step' || act === 'sound' || act === 'splash-go')) { runAction(act, t); return; }
+  if (inRun && (act.startsWith('run-') || act.startsWith('rest-') || act.startsWith('hold-') || act === 'step' || act === 'sound' || act === 'splash-go' || act.startsWith('sw-'))) { runAction(act, t); return; }
   if (act === 'goto-ch') {
     const card = document.getElementById('ex-' + t.dataset.slot);
     if (card) { card.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash'); }
@@ -2533,7 +2930,7 @@ document.addEventListener('click', e => {
     else {
       const ch = isChallengeSet(slot, w, d, i);
       if (ch && ch.mode !== 'weight' && r.r === '') {
-        toast('Type the reps or seconds you hit, then check it off.');
+        toast(ch.mode === 'fastest' ? 'Type the time in seconds, then check it off.' : 'Type the reps or seconds you hit, then check it off.');
         const ri = row.querySelector('[data-f="r"]');
         if (ri) ri.focus();
         return;
@@ -2598,7 +2995,7 @@ document.addEventListener('change', e => {
     s.warm[+t.dataset.i] = t.checked;
     t.closest('label').classList.toggle('done', t.checked);
     const h = t.closest('.sec').querySelector('[data-warm-title]');
-    if (h) h.textContent = WARMUP.every((_, i) => s.warm[i]) ? 'Warm-up done' : 'Warm-up';
+    if (h) h.textContent = warmList(d).every((_, i) => s.warm[i]) ? 'Warm-up done' : 'Warm-up';
     save();
   } else if (t.dataset.act === 'balance') {
     session(w, d, true).balance = +t.value; save();

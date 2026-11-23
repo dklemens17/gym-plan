@@ -1,8 +1,8 @@
 # Gym Plan
 
-A 36-week, twice-a-week gym logbook for a 12-year-old soccer player: explosiveness, speed, throw-in power, and deliberate strength work for the muscles that protect the knee ligaments.
+A 36-week, twice-a-week gym logbook for a 12-year-old soccer player: explosiveness, speed, throw-in power, and deliberate strength work for the muscles that protect the knee ligaments. A third **Field day** adds agility, speed, ball-less feints and box work on the field.
 
-Open it on a phone, pick the week and Day A or Day B, then tap **Run workout** to go set by set with an animated demo of each exercise, or log sets directly in the list.
+Open it on a phone, pick the week and Day A, Day B or Field, then tap **Run workout** to go set by set with an animated demo of each exercise, or log sets directly in the list.
 
 ## How the program is built
 
@@ -14,6 +14,24 @@ Open it on a phone, pick the week and Day A or Day B, then tap **Run workout** t
   - Week 4: lighter test week (2 sets) plus broad jump, 10 m sprint and throw-in tests.
 - **Day A:** jumps, hex bar deadlift, a rotating single-leg lift and pull, then Knee armor.
 - **Day B:** sprints or shuttles, lateral bounds and hops, throw-in power, squat (goblet or back squat), push and pullover, Knee armor, core.
+
+## Field day
+
+A third workout for the field, using cones, a plyo box, dumbbells, a stopwatch and a partner. Use it in place of a gym day, or as a third session in a light soccer week. Don't do it the day before a game. It follows the same 36-week stages and 4-week blocks, and a **Set up the field** card lists exactly what to lay out that day.
+
+| Section | What's in it (rotates by block and stage) |
+| --- | --- |
+| Speed and brakes | Sprint and stop (deceleration), reaction sprints, flying sprints |
+| Agility and cuts | Timed T-drill, 5-10-5 shuttle and four-cone box drill; zig-zag cuts; partner mirror drill |
+| Feints, no ball | Shoulder-drop feint, step-over feint, jab step, drop step; paired with lateral lunges or skater holds for feint strength |
+| Box power | Box jumps (two-leg, lateral, single-leg) up onto the box, then box drops off it to build landing strength; in Stage 3, drop to sprint |
+| Dumbbell strength | Step-ups onto the box, reverse lunges or split squats, farmer carries |
+| Knee armor | Forward step-down, single-leg RDL or single-leg sit to box |
+
+- **Timed drills:** Run workout has a built-in stopwatch. It beeps 3, 2, 1 and GO, and the partner taps Stop at the finish. You can also type a time.
+- **Time PRs:** faster times are logged as PRs with the same celebration. Impossibly fast mis-taps are ignored.
+- **The Field day PR Challenge** rotates through the block: fastest drill time, feint strength, single-leg lift, and fastest drill time in test week.
+- The Field day has its own warm-up: jog and move, leg swings, world's greatest stretch, A-skips, build-up runs and landing prep.
 
 ## Why each exercise matters
 
